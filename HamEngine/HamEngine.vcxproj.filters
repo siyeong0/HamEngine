@@ -60,5 +60,14 @@
     <ClCompile Include="STL\LinkedList.ixx">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="MemPool\MemPool.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MemPool\ObjectPool.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MemPool\Page.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

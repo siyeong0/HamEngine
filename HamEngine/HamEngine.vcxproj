@@ -150,6 +150,9 @@
     <ClCompile Include="ECS\ArchetypeChunk.ixx" />
     <ClCompile Include="ECS\ComponentManager.ixx" />
     <ClCompile Include="ECS\EntityManager.ixx" />
+    <ClCompile Include="MemPool\MemPool.ixx" />
+    <ClCompile Include="MemPool\ObjectPool.ixx" />
+    <ClCompile Include="MemPool\Page.ixx" />
     <ClCompile Include="Renderer\Renderer.ixx" />
     <ClCompile Include="STL\Array.ixx" />
     <ClCompile Include="ECS\Archetype.ixx" />
