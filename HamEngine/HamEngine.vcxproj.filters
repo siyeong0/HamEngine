@@ -60,10 +60,20 @@
     <ClCompile Include="STL\LinkedList.ixx">
       <Filter>소스 파일</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="ECS\ECS.ixx">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Common\TypeId.ixx">
+=======
+    <ClCompile Include="MemPool\MemPool.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MemPool\ObjectPool.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MemPool\Page.ixx">
+>>>>>>> 3a3d274989923ad7944b759b3ea384bf67c850f5
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
