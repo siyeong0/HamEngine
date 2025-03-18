@@ -2,10 +2,10 @@ module;
 
 import std.core;
 import Common;
+import STL.Array;
+import STL.LinkedList;
 import ECS.IComponent;
 import ECS.Archetype;
-import STL.LinkedList;
-import STL.Array;
 
 export module ECS.ComponentManager;
 

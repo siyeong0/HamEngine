@@ -3,7 +3,6 @@ module;
 #include <SDL2\SDL.h>
 
 import std.core;
-
 import Common;
 
 export module Renderer;

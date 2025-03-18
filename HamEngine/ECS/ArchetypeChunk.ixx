@@ -1,11 +1,11 @@
 module;
 
 import Common;
+import STL.Array;
 import ECS.Entity;
 import ECS.IComponent;
 import ECS.Archetype;
 import ECS.ComponentManager;
-import STL.Array;
 
 export module ECS.ArchetypeChunk;
 

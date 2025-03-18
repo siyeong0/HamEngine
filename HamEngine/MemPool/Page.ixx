@@ -7,12 +7,10 @@ export module MemPool.Page;
 
 export namespace ham
 {
-
 	template <typename T>
 	class Page
 	{
 	public:
-
 		Page(const size_t pageSize);
 		~Page();
 
