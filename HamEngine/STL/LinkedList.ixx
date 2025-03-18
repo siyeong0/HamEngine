@@ -19,8 +19,8 @@ export namespace ham
 		LinkedList();
 		~LinkedList();
 
-		LinkedList(const LinkedList&) = delete;
-		LinkedList(const LinkedList&&) = delete;
+		LinkedList(LinkedList& rhs);
+		LinkedList(LinkedList&& rhs);
 
 		void Add(const T& val);
 		void Remove(size_t idx);
@@ -60,6 +60,29 @@ export namespace ham
 			curr = next;
 		}
 		ASSERT(curr == nullptr);
+	}
+
+	template <typename T>
+	LinkedList<T>::LinkedList(LinkedList& rhs)
+		: mHead(nullptr)
+		, mTail(nullptr)
+		, mSize(rhs.mSize)
+	{
+		for (int i = 0; i < rhs.mSize; ++i)
+		{
+			this->Add(rhs[i]);
+		}
+
+	}
+
+	template <typename T>
+	LinkedList<T>::LinkedList(LinkedList&& rhs)
+		: mHead(rhs.mHead)
+		, mTail(rhs.mTail)
+		, mSize(rhs.mSize)
+	{
+		rhs.mHead = nullptr;
+		rhs.mTail = nullptr;
 	}
 
 	template <typename T>

@@ -1,64 +1,69 @@
 import std.core;
 
 import Common;
-import Renderer;
-import STL;
+import ECS;
 
 using namespace ham;
 
 int main(void)
 {
-	class Foo
+	struct Transform : public IComponent
 	{
-	public:
-		Foo() = default;
-		Foo(int v) : x(v) {}
-		~Foo() = default;
-		int x;
+		int px;
+		int py;
+		int rot;
+		int s;
+	};
+	struct CompA : public IComponent
+	{
+		int a;
+	};
+	struct CompB : public IComponent
+	{
+		int b;
+		int bb;
+	};
+	struct CompC : public IComponent
+	{
+		int c;
+		int cc;
+		int ccc;
 	};
 
-	LinkedList<Foo> ll;
+	EntityManager::Initialze();
+	ComponentManager::Initialize();
 
-	auto prFn = [&]()
-		{
-			for (int i = 0; i < ll.Size(); ++i)
-			{
-				std::cout << std::setw(2) << ll[i].x << " ";
-			}
-			std::cout << std::endl;
-		};
+	ComponentManager::Regist<Transform>();
+	ComponentManager::Regist<CompA>();
+	ComponentManager::Regist<CompB>();
+	ComponentManager::Regist<CompC>();
 
-	ll.Add(Foo(0));
-	prFn();
-	ll.Add(Foo(1));
-	prFn();
-	ll.Add(Foo(2));
-	prFn();
-	ll.Add(Foo(3));
-	prFn();
-	ll.Add(Foo(4));
-	prFn();
-	ll.Remove(2);
-	prFn();
-	ll.Add(3);
-	prFn();
-	ll.Remove(2);
-	prFn();
-	ll.Remove(3);
-	prFn();
-	ll.Add(Foo(4));
-	prFn();
-	ll.Remove(0);
-	prFn();
-	ll.Add(Foo(8));
-	prFn();
+	std::cout << TypeId<CompA>::GetId() << std::endl;
+	std::cout << TypeId<CompA>::GetSize() << std::endl;
+	std::cout << TypeId<CompB>::GetId() << std::endl;
+	std::cout << TypeId<CompB>::GetSize() << std::endl;
+	std::cout << TypeId<CompC>::GetId() << std::endl;
+	std::cout << TypeId<CompC>::GetSize() << std::endl;
 
-	//Renderer ren;
-	//ren.Initialize();
-	//while (true)
-	//{
-	//	ren.Render();
-	//}
+	const Entity& entity0 = EntityManager::CreateEntity();
+	Transform& t = EntityManager::AddComponent<Transform>(entity0);
 
+	const Entity& entity1 = EntityManager::CreateEntity();
+	EntityManager::AddComponent<Transform>(entity1);
+	EntityManager::AddComponent<CompA>(entity1);
+
+	const Entity& entity2 = EntityManager::CreateEntity();
+	EntityManager::AddComponent<Transform>(entity2);
+	EntityManager::AddComponent<CompA>(entity2);
+
+	const Entity& entity3 = EntityManager::CreateEntity();
+	EntityManager::AddComponent<Transform>(entity3);
+	EntityManager::AddComponent<CompA>(entity3);
+	EntityManager::AddComponent<CompB>(entity3);
+
+	EntityManager::RemoveComponent<CompA>(entity2);
+
+	EntityManager::Finalize();
+	ComponentManager::Finalize();
 	return 0;
 }

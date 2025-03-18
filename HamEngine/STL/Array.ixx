@@ -15,11 +15,13 @@ export namespace ham
 		~Array();
 
 		Array(const Array& rhs);
-		Array(const Array&& rhs);
+		Array(Array&& rhs);
 
 		T& operator[](size_t idx);
-
+		const T& Get(size_t idx) const;
 		inline size_t Capacity() const;
+		inline T* Begin();
+		inline T* End();
 
 		size_t GenerateHash() const;
 
@@ -44,15 +46,16 @@ export namespace ham
 
 	template <typename T>
 	Array<T>::Array(const Array& rhs)
-		: mData(Alloc<T>(mCapacity))
+		: mData(Alloc<T>(rhs.mCapacity))
 		, mCapacity(rhs.mCapacity)
 	{
 		std::memcpy(mData, rhs.mData, sizeof(T) * mCapacity);
 	}
 
 	template <typename T>
-	Array<T>::Array(const Array&& rhs)
+	Array<T>::Array(Array&& rhs)
 		: mData(rhs.mData)
+		, mCapacity(rhs.mCapacity)
 	{
 		rhs.mData = nullptr;
 	}
@@ -65,9 +68,28 @@ export namespace ham
 	}
 
 	template <typename T>
+	const T& Array<T>::Get(size_t idx) const
+	{
+		ASSERT(idx < mCapacity);
+		return mData[idx];
+	}
+
+	template <typename T>
 	inline size_t Array<T>::Capacity() const
 	{
 		return mCapacity;
+	}
+
+	template <typename T>
+	inline T* Array<T>::Begin()
+	{
+		return mData;
+	}
+
+	template <typename T>
+	inline T* Array<T>::End()
+	{
+		return mData + mCapacity;
 	}
 
 	template<typename T>

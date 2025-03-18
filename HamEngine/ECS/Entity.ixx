@@ -18,11 +18,22 @@ export namespace ham
 
 		inline operator uint32();
 
-		inline bool operator ==(const Entity& rhs);
-		inline bool operator !=(const Entity& rhs);
+		inline bool operator ==(const Entity& rhs) const;
+		inline bool operator !=(const Entity& rhs) const;
+
+		inline uint32 GetId() const;
 
 	private:
 		uint32 mId;
+	};
+
+	class EntityHash
+	{
+	public:
+		std::size_t operator()(const Entity& ent) const 
+		{
+			return static_cast<std::size_t>(ent.GetId());
+		}
 	};
 
 	Entity::Entity(uint32 id)
@@ -45,13 +56,18 @@ export namespace ham
 		return mId;
 	}
 
-	bool Entity::operator ==(const Entity& rhs)
+	bool Entity::operator ==(const Entity& rhs)  const
 	{
 		return mId == rhs.mId;
 	}
 
-	bool Entity::operator !=(const Entity& rhs)
+	bool Entity::operator !=(const Entity& rhs)  const
 	{
 		return mId != rhs.mId;
+	}
+
+	inline uint32 Entity::GetId() const
+	{
+		return mId;
 	}
 }

@@ -60,5 +60,11 @@
     <ClCompile Include="STL\LinkedList.ixx">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ECS\ECS.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\TypeId.ixx">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -146,9 +146,11 @@
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
     <ClCompile Include="Common\Memory\Memory.ixx" />
+    <ClCompile Include="Common\TypeId.ixx" />
     <ClCompile Include="Common\Types.ixx" />
     <ClCompile Include="ECS\ArchetypeChunk.ixx" />
     <ClCompile Include="ECS\ComponentManager.ixx" />
+    <ClCompile Include="ECS\ECS.ixx" />
     <ClCompile Include="ECS\EntityManager.ixx" />
     <ClCompile Include="Renderer\Renderer.ixx" />
     <ClCompile Include="STL\Array.ixx" />
