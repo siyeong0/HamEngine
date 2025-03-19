@@ -148,6 +148,18 @@
     <ClCompile Include="Common\Memory\Memory.ixx" />
     <ClCompile Include="Common\TypeId.ixx" />
     <ClCompile Include="Common\Types.ixx" />
+    <ClCompile Include="EASTL\Array.ixx" />
+    <ClCompile Include="EASTL\Deque.ixx" />
+    <ClCompile Include="EASTL\EASTL.ixx" />
+    <ClCompile Include="EASTL\FixedList.ixx" />
+    <ClCompile Include="EASTL\FixedVector.ixx" />
+    <ClCompile Include="EASTL\HashMap.ixx" />
+    <ClCompile Include="EASTL\HashSet.ixx" />
+    <ClCompile Include="EASTL\List.ixx" />
+    <ClCompile Include="EASTL\Queue.ixx" />
+    <ClCompile Include="EASTL\Stack.ixx" />
+    <ClCompile Include="EASTL\String.ixx" />
+    <ClCompile Include="EASTL\Vector.ixx" />
     <ClCompile Include="ECS\ArchetypeChunk.ixx" />
     <ClCompile Include="ECS\ComponentManager.ixx" />
     <ClCompile Include="ECS\ECS.ixx" />
@@ -156,13 +168,10 @@
     <ClCompile Include="MemPool\ObjectPool.ixx" />
     <ClCompile Include="MemPool\Page.ixx" />
     <ClCompile Include="Renderer\Renderer.ixx" />
-    <ClCompile Include="STL\Array.ixx" />
     <ClCompile Include="ECS\Archetype.ixx" />
     <ClCompile Include="ECS\Entity.ixx" />
     <ClCompile Include="ECS\IComponent.ixx" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="STL\LinkedList.ixx" />
-    <ClCompile Include="STL\STL.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
