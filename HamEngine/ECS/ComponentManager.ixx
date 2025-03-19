@@ -2,23 +2,18 @@ module;
 
 import std.core;
 import Common;
-import STL.Array;
-import STL.LinkedList;
+import HamSTL.Utility;
+import HamSTL.Vector;
+import HamSTL.HashSet;
 import ECS.IComponent;
 import ECS.Archetype;
 
 export module ECS.ComponentManager;
 
-namespace ham
+export namespace ham
 {
-	export class ComponentManager
+	class ComponentManager
 	{
-	public:
-		struct CompTypeInfo
-		{
-			uint32 Id;
-			size_t Size;
-		};
 	public:
 		ComponentManager();
 		~ComponentManager() = default;
@@ -30,9 +25,9 @@ namespace ham
 		static void Regist();
 
 		static inline size_t NumComponents();
-		static inline size_t SizeOfComponent(const CompTypeId& compTypeId);
-		static inline Array<size_t> GetSizeArrOfArchetype(const Archetype& archetype);
-		static inline size_t SizeOfArchetype(const Archetype& archetype);
+		static inline size_t GetSizeOfComponent(const CompTypeId& compTypeId);
+		static inline size_t GetSizeOfArchetype(const Archetype& archetype);
+		static inline const Vector<Pair<CompTypeId, size_t>> GetSizeVectorOfArchetype(const Archetype& archetype);
 
 	private:
 		static ComponentManager* sInstance;
@@ -79,36 +74,36 @@ namespace ham
 		return sInstance->mCompTypeCount;
 	}
 
-	inline size_t ComponentManager::SizeOfComponent(const CompTypeId& compTypeId)
+	inline size_t ComponentManager::GetSizeOfComponent(const CompTypeId& compTypeId)
 	{
 		return sInstance->mCompTypeSizeMap[compTypeId];
 	}
 
-	inline Array<size_t> ComponentManager::GetSizeArrOfArchetype(const Archetype& archetype)
+	inline size_t ComponentManager::GetSizeOfArchetype(const Archetype& archetype)
 	{
-		const Array<CompTypeId>& compTypes = archetype.GetCompTypes();
-
-		Array<size_t> sizeArr(archetype.GetNumCompTypes());
-		for (size_t i = 0; i < compTypes.Capacity(); ++i)
-		{
-			const CompTypeId& compTypeId = compTypes.Get(i);
-			sizeArr[i] = sInstance->mCompTypeSizeMap[compTypeId];
-		}
-
-		return sizeArr;
-	}
-
-	inline size_t ComponentManager::SizeOfArchetype(const Archetype& archetype)
-	{
-		const Array<CompTypeId>& compTypes = archetype.GetCompTypes();
+		const HashSet<CompTypeId>& componentTypeIdSet = archetype.GetComponentTypeIdSet();
 
 		size_t totalSize = 0;
-		for (size_t i = 0; i < compTypes.Capacity(); ++i)
+		for (auto iter = componentTypeIdSet.begin(); iter != componentTypeIdSet.end(); ++iter)
 		{
-			const CompTypeId& compTypeId = compTypes.Get(i);
-			totalSize += sInstance->mCompTypeSizeMap[compTypeId];
+			totalSize += GetSizeOfComponent(*iter);
 		}
 
 		return totalSize;
+	}
+
+	inline const Vector<Pair<CompTypeId, size_t>> ComponentManager::GetSizeVectorOfArchetype(const Archetype& archetype)
+	{
+		const HashSet<CompTypeId>& componentTypeIdSet = archetype.GetComponentTypeIdSet();
+
+		Vector<Pair<CompTypeId, size_t>> sizeVector;
+		sizeVector.reserve(componentTypeIdSet.size());
+
+		for (auto iter = componentTypeIdSet.begin(); iter != componentTypeIdSet.end(); ++iter)
+		{
+			sizeVector.push_back({ *iter, GetSizeOfComponent(*iter) });
+		}
+
+		return sizeVector;
 	}
 }

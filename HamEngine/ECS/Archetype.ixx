@@ -3,9 +3,10 @@ module;
 import std.core;
 
 import Common;
-import STL;
+import HamSTL.Utility;
+import HamSTL.Vector;
+import HamSTL.HashSet;
 import ECS.Entity;
-import ECS.IComponent;
 
 export module ECS.Archetype;
 
@@ -17,85 +18,112 @@ export namespace ham
 		static constexpr size_t CHUNK_MEM_SIZE = 16 * 1024;
 	public:
 		Archetype();
-		Archetype(const Array<CompTypeId>& compTypes);
 		~Archetype() = default;
 
-		Archetype(const Archetype& rhs);
-		Archetype(const Archetype&& rhs);
+		Archetype(const Archetype& other);
+		Archetype(const Archetype&& other);
+		Archetype& operator=(const Archetype& other);
 
-		inline bool operator==(const Archetype& rhs) const;
-		inline bool operator!=(const Archetype& rhs) const;
-		
-		inline const Array<CompTypeId>& GetCompTypes() const;
-		inline size_t GetNumCompTypes() const;
-		inline size_t GetHash() const;
+		const HashSet<uint32> GetComponentTypeIdSet() const;
+
+		Archetype& Insert(uint32 componentTypeId);
+		Archetype& Insert(const Archetype& other);
+		Archetype& Erase(uint32 componentTypeId);
+
+		inline bool operator==(const Archetype& other) const;
+		inline bool operator!=(const Archetype& other) const;
+
+		inline size_t GetSize() const;
 
 	private:
-		// TODO: Set으로 변경, 현재 중복 처리 안됨
-		Array<CompTypeId> mCompTypes;
-		size_t mHash;
+		HashSet<uint32> mSet;
 	};
 
-	class ArchetypeHash
+	struct ArchetypeHash
 	{
-	public:
-		std::size_t operator()(const Archetype& arche) const
+		size_t operator()(const Archetype& archetype) const
 		{
-			return arche.GetHash();
+			size_t hash = 0;
+			for (auto v : archetype.GetComponentTypeIdSet())
+			{
+				hash = 65599 * hash + v;
+			}
+			return hash;
 		}
 	};
+}
 
+namespace ham
+{
 	Archetype::Archetype()
-		: mCompTypes(0)
-		, mHash(0)
+		: mSet()
 	{
 
 	}
 
-	Archetype::Archetype(const Array<CompTypeId>& compTypes)
-		: mCompTypes(compTypes)
-		, mHash(0)
-	{
-		std::sort(mCompTypes.Begin(), mCompTypes.End());
-		mHash = mCompTypes.GenerateHash();
-	}
-
-	Archetype::Archetype(const Archetype& rhs)
-		: mCompTypes(rhs.mCompTypes)
-		, mHash(rhs.mHash)
+	Archetype::Archetype(const Archetype& other)
+		: mSet(other.mSet)
 	{
 
 	}
 
-	Archetype::Archetype(const Archetype&& rhs)
-		: mCompTypes(std::move(rhs.mCompTypes))
-		, mHash(rhs.mHash)
+	Archetype::Archetype(const Archetype&& other)
+		: mSet(std::move(other.mSet))
 	{
 
 	}
 
-	inline bool Archetype::operator==(const Archetype& rhs) const
+	Archetype& Archetype::operator=(const Archetype& other)
 	{
-		return mHash == rhs.mHash;
+		mSet = other.mSet;
+		return *this;
 	}
 
-	inline bool Archetype::operator!=(const Archetype& rhs) const
+	const HashSet<uint32> Archetype::GetComponentTypeIdSet() const
 	{
-		return mHash != rhs.mHash;
+		return mSet;
 	}
 
-	inline const Array<CompTypeId>& Archetype::GetCompTypes() const
+	Archetype& Archetype::Insert(uint32 componentTypeId)
 	{
-		return mCompTypes;
+		ASSERT(mSet.find(componentTypeId) == mSet.end());
+		mSet.insert(componentTypeId);
+		return *this;
 	}
 
-	inline size_t Archetype::GetNumCompTypes() const
+	Archetype& Archetype::Insert(const Archetype& other)
 	{
-		return mCompTypes.Capacity();
+		mSet.merge(HashSet<uint32>(other.mSet));
+		return *this;
 	}
 
-	inline size_t Archetype::GetHash() const
+	Archetype& Archetype::Erase(uint32 componentTypeId)
 	{
-		return mHash;
+		ASSERT(mSet.find(componentTypeId) != mSet.end());
+		mSet.erase(componentTypeId);
+		return *this;
+	}
+
+	inline bool Archetype::operator==(const Archetype& other) const
+	{
+		if (mSet.size() != other.mSet.size())
+			return false;
+
+		bool bResult = true;
+		for (const auto& elem : mSet)
+		{
+			bResult &= other.mSet.find(elem) != other.mSet.end();
+		}
+		return bResult;
+	}
+
+	inline bool Archetype::operator!=(const Archetype& other) const
+	{
+		return !(operator==(other));
+	}
+
+	inline size_t Archetype::GetSize() const
+	{
+		return mSet.size();
 	}
 }

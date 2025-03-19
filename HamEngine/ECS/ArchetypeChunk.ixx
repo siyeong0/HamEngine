@@ -1,11 +1,12 @@
 module;
 
 import Common;
-import STL.Array;
+import HamSTL.Utility;
+import HamSTL.Vector;
 import ECS.Entity;
 import ECS.IComponent;
-import ECS.Archetype;
 import ECS.ComponentManager;
+import ECS.Archetype;
 
 export module ECS.ArchetypeChunk;
 
@@ -16,62 +17,40 @@ export namespace ham
 	public:
 		static constexpr size_t MEM_SIZE = 16 * 1024;
 	public:
-		ArchetypeChunk();
 		ArchetypeChunk(const Archetype& archetype);
 		~ArchetypeChunk();
 
-		ArchetypeChunk(const ArchetypeChunk& rhs);
-		ArchetypeChunk(ArchetypeChunk&& rhs);
+		ArchetypeChunk(const ArchetypeChunk&) = delete;
+		ArchetypeChunk(ArchetypeChunk&& other);
 
 		void Add(const Entity& entity);
 		void Remove(const Entity& entity);
 
 		template <typename CompType>
 		CompType& GetComponent(const Entity& entity);
+		IComponent& GetComponent(const Entity& entity, uint32 componentTypeId);
 
-		IComponent& GetComponent(const Entity& entity, const CompTypeId& compTypeId);
+		inline int GetEntityIdx(const Entity& entity) const;
 
 		inline bool Has(const Entity& entity);
 		inline bool IsFull() const;
 
 	private:
-		inline int getEntityIdx(const Entity& entity) const;
-
-	private:
-		Archetype mArchetype;
-		size_t mCapacity;
+		const Archetype mArchetype;
+		uint8* mBuffer;
 		size_t mEntityCount;
-
-		void* mBuffer;
-		Array<void*> mCompBaseAddressArr;
+		const size_t mCapacity;
+		const Vector<Pair<CompTypeId, size_t>> mArchetypeSizeVec;
 	};
-
-	ArchetypeChunk::ArchetypeChunk()
-		: mArchetype()
-		, mCapacity(MEM_SIZE / (ComponentManager::SizeOfArchetype(mArchetype)))
-		, mEntityCount(0)
-		, mBuffer(Alloc(MEM_SIZE))
-		, mCompBaseAddressArr(0)
-	{
-
-	}
 
 	ArchetypeChunk::ArchetypeChunk(const Archetype& archetype)
 		: mArchetype(archetype)
-		, mCapacity(MEM_SIZE / (ComponentManager::SizeOfArchetype(mArchetype)))
+		, mBuffer(reinterpret_cast<uint8*>(Alloc(MEM_SIZE)))
 		, mEntityCount(0)
-		, mBuffer(Alloc(MEM_SIZE))
-		, mCompBaseAddressArr(archetype.GetNumCompTypes())
+		, mCapacity(MEM_SIZE / (ComponentManager::GetSizeOfArchetype(mArchetype)))
+		, mArchetypeSizeVec(ComponentManager::GetSizeVectorOfArchetype(mArchetype))
 	{
 		std::memset(mBuffer, 0, MEM_SIZE);
-
-		Array<size_t> sizeArr = ComponentManager::GetSizeArrOfArchetype(mArchetype);
-		size_t sizeStride = sizeof(Entity);
-		for (int i = 0; i < mArchetype.GetCompTypes().Capacity(); ++i)
-		{
-			mCompBaseAddressArr[i] = reinterpret_cast<void*>(reinterpret_cast<uint8*>(mBuffer) + sizeStride * mCapacity);
-			sizeStride += sizeArr[i];
-		}
 	}
 
 	ArchetypeChunk::~ArchetypeChunk()
@@ -79,70 +58,69 @@ export namespace ham
 		Free(mBuffer);
 	}
 
-	ArchetypeChunk::ArchetypeChunk(const ArchetypeChunk& rhs)
-		: mArchetype(rhs.mArchetype)
-		, mCapacity(rhs.mCapacity)
-		, mEntityCount(rhs.mEntityCount)
-		, mBuffer(Alloc(MEM_SIZE))
-		, mCompBaseAddressArr(mArchetype.GetNumCompTypes())
+	ArchetypeChunk::ArchetypeChunk(ArchetypeChunk&& other)
+		: mArchetype(other.mArchetype)
+		, mBuffer(other.mBuffer)
+		, mEntityCount(other.mEntityCount)
+		, mCapacity(other.mCapacity)
+		, mArchetypeSizeVec(std::move(other.mArchetypeSizeVec))
 	{
-		std::memcpy(mBuffer, rhs.mBuffer, MEM_SIZE);
-		for (int i = 0; i < mArchetype.GetCompTypes().Capacity(); ++i)
-		{
-			size_t baseAddress = reinterpret_cast<size_t>(mBuffer);
-			size_t rhsBaseAddress = reinterpret_cast<size_t>(rhs.mBuffer);
-			size_t rhsCompBaseAddress = reinterpret_cast<size_t>(rhs.mCompBaseAddressArr.Get(i));
-			mCompBaseAddressArr[i] = reinterpret_cast<void*>(baseAddress + rhsCompBaseAddress - rhsBaseAddress);
-		}
-	}
-
-	ArchetypeChunk::ArchetypeChunk(ArchetypeChunk&& rhs)
-		: mArchetype(std::move(rhs.mArchetype))
-		, mCapacity(rhs.mCapacity)
-		, mEntityCount(rhs.mEntityCount)
-		, mBuffer(rhs.mBuffer)
-		, mCompBaseAddressArr(std::move(rhs.mCompBaseAddressArr))
-	{
-		rhs.mBuffer = nullptr;
+		other.mBuffer = nullptr;
 	}
 
 	void ArchetypeChunk::Add(const Entity& entity)
 	{
 		ASSERT(mEntityCount < mCapacity);
 
-		size_t numComponents = mArchetype.GetNumCompTypes();
+		uint8* baseAddress = mBuffer + mEntityCount * sizeof(Entity);
+		std::memcpy(baseAddress, &entity, sizeof(Entity));
 
-		Entity* entityPtr = reinterpret_cast<Entity*>(mBuffer) + mEntityCount;
-		std::memcpy(entityPtr, &entity, sizeof(Entity));
+		size_t offset = 0;
+		for (auto& typeInfo : mArchetypeSizeVec)
+		{
+			size_t size = typeInfo.second;
+			std::memset(baseAddress + offset, 0, size);	// Component Initialization
+			offset += size * mCapacity;
+		}
 
 		++mEntityCount;
 	}
 
 	void ArchetypeChunk::Remove(const Entity& entity)
 	{
-		size_t entityIdx = getEntityIdx(entity);
+		size_t entityIdx = GetEntityIdx(entity);
 		ASSERT(entityIdx != -1);	// Contains
 
-		if (entityIdx == mEntityCount)
+		if (entityIdx == mEntityCount) // Remove the tail data
 		{
-			--mEntityCount;
-			return;
+			uint8* tailPtr = mBuffer + mEntityCount * sizeof(Entity);
+			// remove entity data
+			std::memset(tailPtr, 0, sizeof(Entity));
+			// remove component data
+			size_t offset = 0;
+			for (auto& typeInfo : mArchetypeSizeVec)
+			{
+				size_t size = typeInfo.second;
+				std::memset(tailPtr + offset, 0, size);
+				offset += size * mCapacity;
+			}
 		}
-
-		Entity* targetPtr = reinterpret_cast<Entity*>(mBuffer) + entityIdx;
-		Entity* tailPtr = reinterpret_cast<Entity*>(mBuffer) + mEntityCount;
-		std::memcpy(targetPtr, tailPtr, sizeof(Entity));
-		std::memset(tailPtr, 0, sizeof(Entity));
-
-		Array<size_t> sizeArr = ComponentManager::GetSizeArrOfArchetype(mArchetype);
-		for (size_t i = 0; i < mArchetype.GetCompTypes().Capacity(); ++i)
+		else // Copy the tail data to space be removed
 		{
-			const size_t SIZE = sizeArr[i];
-			uint8* basePtr = reinterpret_cast<uint8*>(mCompBaseAddressArr[i]);
-			void* targetPtr = reinterpret_cast<void*>(basePtr + SIZE * entityIdx);
-			void* tailPtr = reinterpret_cast<void*>(basePtr + SIZE * mEntityCount);
-			std::memcpy(targetPtr, tailPtr, SIZE);
-			std::memset(tailPtr, 0, SIZE);
+			uint8* targetPtr = mBuffer + entityIdx * sizeof(Entity);
+			uint8* tailPtr = mBuffer + mEntityCount * sizeof(Entity);
+			// copy entity data
+			std::memcpy(targetPtr, tailPtr, sizeof(Entity));
+			std::memset(tailPtr, 0, sizeof(Entity));
+			// copy component data
+			size_t offset = 0;
+			for (auto& typeInfo : mArchetypeSizeVec)
+			{
+				size_t size = typeInfo.second;
+				std::memcpy(targetPtr + offset, tailPtr + offset, size);
+				std::memset(tailPtr + offset, 0, size);
+				offset += size * mCapacity;
+			}
 		}
 
 		--mEntityCount;
@@ -152,38 +130,39 @@ export namespace ham
 	template <typename CompType>
 	CompType& ArchetypeChunk::GetComponent(const Entity& entity)
 	{
-		size_t entityIdx = getEntityIdx(entity);
-		ASSERT(entityIdx != -1);
+		ASSERT(GetEntityIdx(entity) != -1);
 
-		uint32 compTypeId = TypeId<CompType>::GetId();
-		Array<CompTypeId> typeIdArr = mArchetype.GetCompTypes();
-		size_t idx = 0;
-		while (compTypeId != typeIdArr[idx])
+		uint8* baseAddress = mBuffer + GetEntityIdx(entity) * sizeof(Entity);
+		size_t offset = 0;
+		for (auto& typeInfo : mArchetypeSizeVec)
 		{
-			idx++;
+			if (typeInfo.first == TypeId<CompType>::GetId())
+				break;
+			offset += typeInfo.second * mCapacity;
 		}
 
-		return *(reinterpret_cast<CompType*>(mCompBaseAddressArr[idx]) + entityIdx);
+		return *reinterpret_cast<CompType*>(baseAddress + offset);
 	}
 
-	IComponent& ArchetypeChunk::GetComponent(const Entity& entity, const CompTypeId& compTypeId)
+	IComponent& ArchetypeChunk::GetComponent(const Entity& entity, uint32 componentTypeId)
 	{
-		size_t entityIdx = getEntityIdx(entity);
-		ASSERT(entityIdx != -1);
+		ASSERT(GetEntityIdx(entity) != -1);
 
-		Array<CompTypeId> typeIdArr = mArchetype.GetCompTypes();
-		size_t idx = 0;
-		while (compTypeId != typeIdArr[idx])
+		uint8* baseAddress = mBuffer + GetEntityIdx(entity) * sizeof(Entity);
+		size_t offset = 0;
+		for (auto& typeInfo : mArchetypeSizeVec)
 		{
-			idx++;
+			if (typeInfo.first == componentTypeId)
+				break;
+			offset += typeInfo.second * mCapacity;
 		}
 
-		return *(reinterpret_cast<IComponent*>(mCompBaseAddressArr[idx]) + entityIdx);
+		return *reinterpret_cast<IComponent*>(baseAddress + offset);
 	}
 
 	inline bool ArchetypeChunk::Has(const Entity& entity)
 	{
-		size_t entityIdx = getEntityIdx(entity);
+		size_t entityIdx = GetEntityIdx(entity);
 		return entityIdx != -1;
 	}
 
@@ -192,7 +171,7 @@ export namespace ham
 		return mEntityCount == mCapacity;
 	}
 
-	inline int ArchetypeChunk::getEntityIdx(const Entity& entity) const
+	inline int ArchetypeChunk::GetEntityIdx(const Entity& entity) const
 	{
 		Entity* iter = reinterpret_cast<Entity*>(mBuffer);
 		for (int i = 0; i < mEntityCount; i++)

@@ -4,6 +4,8 @@ import std.core;
 
 export module Common.Types;
 
+import HamSTL.String;
+
 export namespace ham
 {
 	using uint8 = std::uint8_t;
@@ -11,7 +13,7 @@ export namespace ham
 	using uint32 = std::uint32_t;
 	using uint64 = std::uint64_t;
 
-	using hash_t = size_t;
-
-	using String = std::string;
+	// Smart pointer
+	template <typename T>
+	using UniquePtr = std::unique_ptr<T>;
 }

@@ -70,6 +70,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -116,6 +124,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,26 +149,25 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
-    <ClCompile Include="Common\Memory\Memory.ixx" />
+    <ClCompile Include="Common\Memory.ixx" />
     <ClCompile Include="Common\TypeId.ixx" />
     <ClCompile Include="Common\Types.ixx" />
-    <ClCompile Include="EASTL\Array.ixx" />
-    <ClCompile Include="EASTL\Deque.ixx" />
-    <ClCompile Include="EASTL\EASTL.ixx" />
-    <ClCompile Include="EASTL\FixedList.ixx" />
-    <ClCompile Include="EASTL\FixedVector.ixx" />
-    <ClCompile Include="EASTL\HashMap.ixx" />
-    <ClCompile Include="EASTL\HashSet.ixx" />
-    <ClCompile Include="EASTL\List.ixx" />
-    <ClCompile Include="EASTL\Queue.ixx" />
-    <ClCompile Include="EASTL\Stack.ixx" />
-    <ClCompile Include="EASTL\String.ixx" />
-    <ClCompile Include="EASTL\Vector.ixx" />
+    <ClCompile Include="HamSTL\Array.ixx" />
+    <ClCompile Include="HamSTL\HamSTL.ixx" />
+    <ClCompile Include="HamSTL\HashMap.ixx" />
+    <ClCompile Include="HamSTL\HashSet.ixx" />
+    <ClCompile Include="HamSTL\List.ixx" />
+    <ClCompile Include="HamSTL\Queue.ixx" />
+    <ClCompile Include="HamSTL\Stack.ixx" />
+    <ClCompile Include="HamSTL\String.ixx" />
+    <ClCompile Include="HamSTL\Utility.ixx" />
+    <ClCompile Include="HamSTL\Vector.ixx" />
     <ClCompile Include="ECS\ArchetypeChunk.ixx" />
     <ClCompile Include="ECS\ComponentManager.ixx" />
     <ClCompile Include="ECS\ECS.ixx" />

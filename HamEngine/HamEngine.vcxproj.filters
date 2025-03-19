@@ -3,7 +3,7 @@
   <ItemGroup>
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
-    <ClCompile Include="Common\Memory\Memory.ixx" />
+    <ClCompile Include="Common\Memory.ixx" />
     <ClCompile Include="Common\TypeId.ixx" />
     <ClCompile Include="Common\Types.ixx" />
     <ClCompile Include="ECS\ArchetypeChunk.ixx" />
@@ -18,5 +18,15 @@
     <ClCompile Include="ECS\Entity.ixx" />
     <ClCompile Include="ECS\IComponent.ixx" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="HamSTL\Array.ixx" />
+    <ClCompile Include="HamSTL\HamSTL.ixx" />
+    <ClCompile Include="HamSTL\HashMap.ixx" />
+    <ClCompile Include="HamSTL\HashSet.ixx" />
+    <ClCompile Include="HamSTL\List.ixx" />
+    <ClCompile Include="HamSTL\Queue.ixx" />
+    <ClCompile Include="HamSTL\Stack.ixx" />
+    <ClCompile Include="HamSTL\String.ixx" />
+    <ClCompile Include="HamSTL\Vector.ixx" />
+    <ClCompile Include="HamSTL\Utility.ixx" />
   </ItemGroup>
 </Project>
