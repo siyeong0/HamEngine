@@ -1,10 +1,9 @@
 module;
 
 import std.core;
+import HamSTL.String;
 
 export module Common.Types;
-
-import HamSTL.String;
 
 export namespace ham
 {
@@ -12,6 +11,8 @@ export namespace ham
 	using uint16 = std::uint16_t;
 	using uint32 = std::uint32_t;
 	using uint64 = std::uint64_t;
+
+	using String = ham::String;
 
 	// Smart pointer
 	template <typename T>
