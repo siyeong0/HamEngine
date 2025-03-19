@@ -31,10 +31,9 @@ namespace ham
 		const Entity& CreateEntity();
 		void DestroyEntity();
 
-		template <typename CompType>
-		CompType& AddComponent(const Entity& entity);
-
-		template <typename CompType>
+		template <typename ComponentType>
+		ComponentType& AddComponent(const Entity& entity);
+		template <typename ComponentType>
 		void RemoveComponent(const Entity& entity);
 
 		void moveEntity(const Entity& entity, const Archetype& srcArchetype, const Archetype& dstArchetype, ArchetypeChunk** outDstArchetypeChunk = nullptr);
@@ -73,14 +72,14 @@ namespace ham
 
 	}
 
-	template <typename CompType>
-	CompType& EntityManager::AddComponent(const Entity& entity)
+	template <typename ComponentType>
+	ComponentType& EntityManager::AddComponent(const Entity& entity)
 	{
 		if (mEntitiyToArchetypeMap.find(entity) == mEntitiyToArchetypeMap.end()) // Without components
 		{
 			// Build an archetype
 			Archetype archetype;
-			archetype.Insert(TypeId<CompType>::GetId());
+			archetype.Insert(TypeId<ComponentType>::GetId());
 			mEntitiyToArchetypeMap.insert({ entity, archetype });
 
 			// Build chunk list for archetype if not exist;
@@ -106,29 +105,29 @@ namespace ham
 			dstChunk = &chunkList.back();
 		EXIT:
 			dstChunk->Add(entity);
-			return dstChunk->GetComponent<CompType>(entity);
+			return dstChunk->GetComponent<ComponentType>(entity);
 		}
 		else // With components
 		{
 			const Archetype& srcArchetype = mEntitiyToArchetypeMap[entity];
 			Archetype dstArchetype;
-			dstArchetype.Insert(srcArchetype).Insert(TypeId<CompType>::GetId());
+			dstArchetype.Insert(srcArchetype).Insert(TypeId<ComponentType>::GetId());
 
 			ArchetypeChunk* dstChunk = nullptr;
 			moveEntity(entity, srcArchetype, dstArchetype, &dstChunk);
 
-			return dstChunk->GetComponent<CompType>(entity);
+			return dstChunk->GetComponent<ComponentType>(entity);
 		}
 	}
 
-	template <typename CompType>
+	template <typename ComponentType>
 	void EntityManager::RemoveComponent(const Entity& entity)
 	{
 		ASSERT(mEntitiyToArchetypeMap.find(entity) != mEntitiyToArchetypeMap.end());	// Entity has a component
 
 		const Archetype& srcArchetype = mEntitiyToArchetypeMap[entity];
 		Archetype dstArchetype;
-		dstArchetype.Insert(srcArchetype).Erase(TypeId<CompType>::GetId());
+		dstArchetype.Insert(srcArchetype).Erase(TypeId<ComponentType>::GetId());
 
 		if (dstArchetype.GetSize() == 0)
 		{
@@ -145,7 +144,6 @@ namespace ham
 			ASSERT(srcChunk != nullptr);
 
 			srcChunk->Remove(entity);
-
 			mEntitiyToArchetypeMap.erase(entity);
 		}
 		else

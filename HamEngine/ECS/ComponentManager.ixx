@@ -32,8 +32,8 @@ export namespace ham
 	private:
 		static ComponentManager* sInstance;
 	private:
-		uint32 mCompTypeCount;
-		std::unordered_map<uint32, size_t> mCompTypeSizeMap;
+		uint32 mComponentTypeCount;
+		std::unordered_map<uint32, size_t> mComponentTypeSizeMap;
 	};
 }
 
@@ -42,8 +42,8 @@ namespace ham
 	ComponentManager* ComponentManager::sInstance = nullptr;
 
 	ComponentManager::ComponentManager()
-		: mCompTypeCount(0)
-		, mCompTypeSizeMap()
+		: mComponentTypeCount(0)
+		, mComponentTypeSizeMap()
 	{
 
 	}
@@ -65,18 +65,18 @@ namespace ham
 	void ComponentManager::Regist()
 	{
 		TypeId<CompType>::Regist();
-		sInstance->mCompTypeSizeMap[TypeId<CompType>::GetId()] = TypeId<CompType>::GetSize();
-		sInstance->mCompTypeCount++;
+		sInstance->mComponentTypeSizeMap[TypeId<CompType>::GetId()] = TypeId<CompType>::GetSize();
+		sInstance->mComponentTypeCount++;
 	}
 
 	inline size_t ComponentManager::NumComponents()
 	{
-		return sInstance->mCompTypeCount;
+		return sInstance->mComponentTypeCount;
 	}
 
 	inline size_t ComponentManager::GetSizeOfComponent(const CompTypeId& compTypeId)
 	{
-		return sInstance->mCompTypeSizeMap[compTypeId];
+		return sInstance->mComponentTypeSizeMap[compTypeId];
 	}
 
 	inline size_t ComponentManager::GetSizeOfArchetype(const Archetype& archetype)

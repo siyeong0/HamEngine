@@ -38,7 +38,7 @@ export namespace ham
 	private:
 		const Archetype mArchetype;
 		uint8* mBuffer;
-		size_t mEntityCount;
+		size_t mSize;
 		const size_t mCapacity;
 		const Vector<Pair<CompTypeId, size_t>> mArchetypeSizeVec;
 	};
@@ -46,7 +46,7 @@ export namespace ham
 	ArchetypeChunk::ArchetypeChunk(const Archetype& archetype)
 		: mArchetype(archetype)
 		, mBuffer(reinterpret_cast<uint8*>(Alloc(MEM_SIZE)))
-		, mEntityCount(0)
+		, mSize(0)
 		, mCapacity(MEM_SIZE / (ComponentManager::GetSizeOfArchetype(mArchetype)))
 		, mArchetypeSizeVec(ComponentManager::GetSizeVectorOfArchetype(mArchetype))
 	{
@@ -61,7 +61,7 @@ export namespace ham
 	ArchetypeChunk::ArchetypeChunk(ArchetypeChunk&& other)
 		: mArchetype(other.mArchetype)
 		, mBuffer(other.mBuffer)
-		, mEntityCount(other.mEntityCount)
+		, mSize(other.mSize)
 		, mCapacity(other.mCapacity)
 		, mArchetypeSizeVec(std::move(other.mArchetypeSizeVec))
 	{
@@ -70,9 +70,9 @@ export namespace ham
 
 	void ArchetypeChunk::Add(const Entity& entity)
 	{
-		ASSERT(mEntityCount < mCapacity);
+		ASSERT(mSize < mCapacity);
 
-		uint8* baseAddress = mBuffer + mEntityCount * sizeof(Entity);
+		uint8* baseAddress = mBuffer + mSize * sizeof(Entity);
 		std::memcpy(baseAddress, &entity, sizeof(Entity));
 
 		size_t offset = 0;
@@ -83,7 +83,7 @@ export namespace ham
 			offset += size * mCapacity;
 		}
 
-		++mEntityCount;
+		++mSize;
 	}
 
 	void ArchetypeChunk::Remove(const Entity& entity)
@@ -91,9 +91,9 @@ export namespace ham
 		size_t entityIdx = GetEntityIdx(entity);
 		ASSERT(entityIdx != -1);	// Contains
 
-		if (entityIdx == mEntityCount) // Remove the tail data
+		if (entityIdx == mSize) // Remove the tail data
 		{
-			uint8* tailPtr = mBuffer + mEntityCount * sizeof(Entity);
+			uint8* tailPtr = mBuffer + mSize * sizeof(Entity);
 			// remove entity data
 			std::memset(tailPtr, 0, sizeof(Entity));
 			// remove component data
@@ -108,7 +108,7 @@ export namespace ham
 		else // Copy the tail data to space be removed
 		{
 			uint8* targetPtr = mBuffer + entityIdx * sizeof(Entity);
-			uint8* tailPtr = mBuffer + mEntityCount * sizeof(Entity);
+			uint8* tailPtr = mBuffer + mSize * sizeof(Entity);
 			// copy entity data
 			std::memcpy(targetPtr, tailPtr, sizeof(Entity));
 			std::memset(tailPtr, 0, sizeof(Entity));
@@ -123,7 +123,7 @@ export namespace ham
 			}
 		}
 
-		--mEntityCount;
+		--mSize;
 		return;
 	}
 
@@ -168,13 +168,13 @@ export namespace ham
 
 	inline bool ArchetypeChunk::IsFull() const
 	{
-		return mEntityCount == mCapacity;
+		return mSize == mCapacity;
 	}
 
 	inline int ArchetypeChunk::GetEntityIdx(const Entity& entity) const
 	{
 		Entity* iter = reinterpret_cast<Entity*>(mBuffer);
-		for (int i = 0; i < mEntityCount; i++)
+		for (int i = 0; i < mSize; i++)
 		{
 			if (iter[i] == entity)
 			{
