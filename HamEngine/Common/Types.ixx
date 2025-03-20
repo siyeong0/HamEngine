@@ -14,6 +14,8 @@ export namespace ham
 
 	using String = ham::String;
 
+	using Id = uint32;
+
 	// Smart pointer
 	template <typename T>
 	using UniquePtr = std::unique_ptr<T>;

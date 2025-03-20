@@ -26,8 +26,8 @@ export namespace ham
 		void Add(const Entity& entity);
 		void Remove(const Entity& entity);
 
-		template <typename CompType>
-		CompType& GetComponent(const Entity& entity);
+		template <typename ComponentType>
+		ComponentType& GetComponent(const Entity& entity);
 		IComponent& GetComponent(const Entity& entity, uint32 componentTypeId);
 
 		inline int GetEntityIdx(const Entity& entity) const;
@@ -40,7 +40,7 @@ export namespace ham
 		uint8* mBuffer;
 		size_t mSize;
 		const size_t mCapacity;
-		const Vector<Pair<CompTypeId, size_t>> mArchetypeSizeVec;
+		const Vector<Pair<Id, size_t>> mArchetypeSizeVec;
 	};
 
 	ArchetypeChunk::ArchetypeChunk(const Archetype& archetype)
@@ -127,8 +127,8 @@ export namespace ham
 		return;
 	}
 
-	template <typename CompType>
-	CompType& ArchetypeChunk::GetComponent(const Entity& entity)
+	template <typename ComponentType>
+	ComponentType& ArchetypeChunk::GetComponent(const Entity& entity)
 	{
 		ASSERT(GetEntityIdx(entity) != -1);
 
@@ -136,12 +136,12 @@ export namespace ham
 		size_t offset = 0;
 		for (auto& typeInfo : mArchetypeSizeVec)
 		{
-			if (typeInfo.first == TypeId<CompType>::GetId())
+			if (typeInfo.first == TypeId<ComponentType>::GetId())
 				break;
 			offset += typeInfo.second * mCapacity;
 		}
 
-		return *reinterpret_cast<CompType*>(baseAddress + offset);
+		return *reinterpret_cast<ComponentType*>(baseAddress + offset);
 	}
 
 	IComponent& ArchetypeChunk::GetComponent(const Entity& entity, uint32 componentTypeId)

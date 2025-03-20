@@ -13,32 +13,26 @@ export namespace ham
 	{
 	public:
 		static void Regist();
-		static uint32 GetId();
-		static size_t GetSize();
+		static Id GetId();
 	private:
-		static uint32 mId;
-		static size_t mSize;
+		static Id mId;
 	};
 
 }
 
 namespace ham
 {
-	static uint32 sIdCount;
-	static constexpr uint32 INVALID_TYPE_ID = std::numeric_limits<uint32>::max();
+	static Id sIdCount;
+	static constexpr Id INVALID_TYPE_ID = std::numeric_limits<Id>::max();
 
 	template <typename T>
 	uint32 TypeId<T>::mId = INVALID_TYPE_ID;
-
-	template <typename T>
-	size_t TypeId<T>::mSize = 0;
 
 	template <typename T>
 	void TypeId<T>::Regist()
 	{
 		ASSERT(INVALID_TYPE_ID == mId); // 두번 Regist 방지
 		mId = sIdCount++;
-		mSize = sizeof(T);
 	}
 
 	template <typename T>
@@ -46,12 +40,5 @@ namespace ham
 	{
 		ASSERT(INVALID_TYPE_ID != mId);
 		return mId;
-	}
-
-	template <typename T>
-	size_t TypeId<T>::GetSize()
-	{
-		ASSERT(mSize != 0);
-		return mSize;
 	}
 }
