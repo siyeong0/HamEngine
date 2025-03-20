@@ -28,5 +28,11 @@
     <ClCompile Include="HamSTL\String.ixx" />
     <ClCompile Include="HamSTL\Vector.ixx" />
     <ClCompile Include="HamSTL\Utility.ixx" />
+    <ClCompile Include="ECS\ISystem.ixx" />
+    <ClCompile Include="HamEngine\GameObject.ixx" />
+    <ClCompile Include="HamEngine\Component\Transform.ixx" />
+    <ClCompile Include="Math\Vec2.ixx" />
+    <ClCompile Include="Math\Float.ixx" />
+    <ClCompile Include="Math\Math.ixx" />
   </ItemGroup>
 </Project>

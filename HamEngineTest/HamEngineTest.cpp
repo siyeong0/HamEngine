@@ -15,7 +15,6 @@ namespace HamEngineTest
 		
 		TEST_METHOD(TestMethod1)
 		{
-			std::random_device rd;
 			// Constructor
 			{
 				Vec2 v0;

@@ -9,7 +9,6 @@ export namespace ham
 	class IComponent
 	{
 	public:
-		IComponent() = default;
-		virtual ~IComponent() = 0;
+		virtual ~IComponent() { };
 	};
 }

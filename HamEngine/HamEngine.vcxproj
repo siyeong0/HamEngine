@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
-    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
-    <AllProjectBMIsArePublic>false</AllProjectBMIsArePublic>
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+    <AllProjectBMIsArePublic>true</AllProjectBMIsArePublic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,6 +158,10 @@
     <ClCompile Include="Common\Memory.ixx" />
     <ClCompile Include="Common\TypeId.ixx" />
     <ClCompile Include="Common\Types.ixx" />
+    <ClCompile Include="ECS\ISystem.ixx" />
+    <ClCompile Include="HamEngine\Component\2D\RigidBody2D.ixx" />
+    <ClCompile Include="HamEngine\Component\2D\Transform2D.ixx" />
+    <ClCompile Include="HamEngine\GameObject.ixx" />
     <ClCompile Include="HamSTL\Array.ixx" />
     <ClCompile Include="HamSTL\HamSTL.ixx" />
     <ClCompile Include="HamSTL\HashMap.ixx" />
@@ -172,6 +176,9 @@
     <ClCompile Include="ECS\ComponentManager.ixx" />
     <ClCompile Include="ECS\ECS.ixx" />
     <ClCompile Include="ECS\EntityManager.ixx" />
+    <ClCompile Include="Math\Float.ixx" />
+    <ClCompile Include="Math\Math.ixx" />
+    <ClCompile Include="Math\Vec2.ixx" />
     <ClCompile Include="MemPool\MemPool.ixx" />
     <ClCompile Include="MemPool\ObjectPool.ixx" />
     <ClCompile Include="MemPool\Page.ixx" />
