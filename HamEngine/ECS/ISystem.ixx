@@ -1,7 +1,9 @@
 module;
 
 import Common;
+import ECS.Entity;
 import ECS.Archetype;
+import ECS.ComponentPack;
 
 export module ECS.ISystem;
 
@@ -10,21 +12,8 @@ export namespace ham
 	class ISystem
 	{
 	public:
-		ISystem(const Archetype& targetArchetype);
-		virtual ~ISystem() = 0;
+		ISystem() {};
+		virtual ~ISystem() = default;
 
-		virtual void Update(float dt) = 0;
-
-	private:
-		Archetype mTargetArchetype;
 	};
-}
-
-namespace ham
-{
-	ISystem::ISystem(const Archetype& targetArchetype)
-		: mTargetArchetype(targetArchetype)
-	{
-
-	}
 }

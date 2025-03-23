@@ -24,7 +24,7 @@ export namespace ham
 		Archetype(const Archetype&& other);
 		Archetype& operator=(const Archetype& other);
 
-		const HashSet<uint32> GetComponentTypeIdSet() const;
+		const HashSet<uint32>& GetComponentTypeIdSet() const;
 
 		Archetype& Insert(uint32 componentTypeId);
 		Archetype& Insert(const Archetype& other);
@@ -79,7 +79,7 @@ namespace ham
 		return *this;
 	}
 
-	const HashSet<uint32> Archetype::GetComponentTypeIdSet() const
+	const HashSet<uint32>& Archetype::GetComponentTypeIdSet() const
 	{
 		return mSet;
 	}

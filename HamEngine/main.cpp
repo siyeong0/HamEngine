@@ -2,24 +2,113 @@ import Common;
 import std.core;
 import Math;
 import ECS;
+import Renderer;
+import ResourceManager.TextureManager;
+import Game.GameObject;
+import HamEngine.Component.PixelPerfectCamera;
+import HamEngine.Component.RigidBody2D;
+import HamEngine.Component.SpriteRenderer;
+import HamEngine.Component.Transform2D;
+import HamEngine.System.PixelPerfectSpriteRenderSystem;
 
 using namespace ham;
 
 int main(void)
 {
-	EntityManager entityManager;
+	// Initialize ECS
+	EntityManager::Initialize();
 	ComponentManager::Initialize();
-	entityManager.Initialze();
+
+	ComponentManager::Regist<Transform2D>();
+	ComponentManager::Regist<PixelPerfectCamera>();
+	ComponentManager::Regist<SpriteRenderer>();
+
+	// Initialize Renderer
+	Renderer::Initialize();
+
+	// Initialize ResourceManager
+	TextureManager::Initialize(Renderer::GetInstance()->GetRenderer());
+	if (!TextureManager::GetInstance()->LoadTexture(HName("glorp"), "../Resource/Image/Temp/glorp.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
+	if (!TextureManager::GetInstance()->LoadTexture(HName("jonghoon"), "../Resource/Image/Temp/jonghoon.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
+
+	// Create Camera
+	GameObject mainCamera("MainCamera");
+	mainCamera.AddComponent<Transform2D>();
+	mainCamera.AddComponent<PixelPerfectCamera>();
+
+	Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
+	PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+	pixelPerfectCamera.PixelPerUnit = 16;
+	pixelPerfectCamera.RefResoulution = { 640, 360 };
+
+	// Create Player
+	GameObject player("Player");
+	player.AddComponent<Transform2D>();
+	player.AddComponent<SpriteRenderer>();
+
+	Transform2D& playerTransform = player.GetComponent<Transform2D>();
+	SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
+
+	playerTransform.Position.X = 1.0f;
+	playerTransform.Position.Y = 2.0f;
+	//playerTransform.Rotation = 3.14f / 2.f;
+	playerTransform.Scale.X = 1.0f;
+	playerTransform.Scale.Y = 1.0f;
+	playerSpriteRenderer.SpriteTexId = HName("glorp");
+
+	GameObject jong("JongHoon");
+	jong.AddComponent<Transform2D>();
+	jong.AddComponent<SpriteRenderer>();
+
+	Transform2D& jongTransform = jong.GetComponent<Transform2D>();
+	SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
+
+	jongTransform.Position.X = -1.0f;
+	jongTransform.Position.Y = -2.0f;
+	//jongTransform.Rotation = 3.14f / 2.f;
+	jongTransform.Scale.X = 2.0f;
+	jongTransform.Scale.Y = 2.0f;
+	jongSpriteRenderer.SpriteTexId = HName("jonghoon");
+
+	// System set up
+	PixelPerfectSpriteRenderSystem ppsr;
+	Renderer::GetInstance()->AddRTTexture("PixelPerfect", pixelPerfectCamera.RefResoulution);
+	while (true)
+	{
+		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
+		ppsr.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
+		ppsr.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
+
+		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
+		Renderer::GetInstance()->Render();
+
+		playerTransform.Position.X -= 0.0005f;
+		playerTransform.Position.Y += 0.0005f;
+		playerTransform.Rotation += 0.001f;
+		playerTransform.Scale.X += 0.0001f;
+		playerTransform.Scale.Y += 0.0001f;
+
+		jongTransform.Position.X += 0.0005f;
+		jongTransform.Position.Y -= 0.0005f;
+		jongTransform.Rotation -= 0.001f;
+		jongTransform.Scale.X -= 0.0001f;
+		jongTransform.Scale.Y -= 0.0001f;
+	}
 
 
-	const Entity& e0 = entityManager.CreateEntity();
-	const Entity& e1 = entityManager.CreateEntity();
-	const Entity& e2 = entityManager.CreateEntity();
-	const Entity& e3 = entityManager.CreateEntity();
-	const Entity& e4 = entityManager.CreateEntity();
-
-	entityManager.Finalize();
+	Renderer::Finalize();
 	ComponentManager::Finalize();
+	EntityManager::Finalize();
 	return 0;
 }
 

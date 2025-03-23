@@ -30,12 +30,15 @@ export namespace ham
 	class EntityHash
 	{
 	public:
-		std::size_t operator()(const Entity& ent) const 
+		std::size_t operator()(const Entity& ent) const
 		{
 			return static_cast<std::size_t>(ent.GetId());
 		}
 	};
+}
 
+namespace ham
+{
 	Entity::Entity(uint32 id)
 		: mId(id)
 	{

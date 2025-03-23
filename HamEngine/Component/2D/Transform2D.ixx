@@ -2,13 +2,12 @@ module;
 
 import Common;
 import Math;
-import ECS.IComponent;
 
 export module HamEngine.Component.Transform2D;
 
 export namespace ham
 {
-	struct Transform2D final : public IComponent
+	struct Transform2D
 	{
 		Vec2 Position;
 		FLOAT Rotation;
@@ -17,8 +16,7 @@ export namespace ham
 		Transform2D();
 		Transform2D(const Vec2& pos, FLOAT rot = 0.f, Vec2 Scale = {1.f, 1.f});
 		Transform2D(const Transform2D& other);
-
-		virtual ~Transform2D();
+		~Transform2D();
 	};
 }
 

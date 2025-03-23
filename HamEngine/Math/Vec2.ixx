@@ -1,12 +1,13 @@
 module;
 
 import std.core;
-import Math.Float;
+import Common;
 
 export module Math.Vec2;
 
 export namespace ham
 {
+	struct Vec2i;
 
 	struct Vec2
 	{
@@ -31,6 +32,8 @@ export namespace ham
 		inline Vec2 operator-=(const Vec2& other);
 		inline Vec2 operator*=(FLOAT v);
 		inline Vec2 operator/=(FLOAT v);
+
+		operator Vec2i();
 	};
 
 	inline Vec2 operator-(const Vec2& vec);
@@ -73,17 +76,17 @@ namespace ham
 
 	inline FLOAT Vec2::Magnitude() const
 	{
-		return std::sqrtf(SqrMagnitude());
+		return Dot(*this);
 	}
 
 	inline FLOAT Vec2::SqrMagnitude() const
 	{
-		return std::powf(X, 2.f) + std::powf(Y, 2.f);
+		return std::sqrtf(Magnitude());
 	}
 
 	inline FLOAT Vec2::Length() const
 	{
-		return Magnitude();
+		return SqrMagnitude();
 	}
 
 	inline void Vec2::Normalize()
@@ -156,5 +159,4 @@ namespace ham
 	{
 		return (lhs.X != rhs.Y) || (lhs.X != rhs.Y);
 	}
-
 }

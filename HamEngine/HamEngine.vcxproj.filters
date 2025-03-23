@@ -16,7 +16,6 @@
     <ClCompile Include="Renderer\Renderer.ixx" />
     <ClCompile Include="ECS\Archetype.ixx" />
     <ClCompile Include="ECS\Entity.ixx" />
-    <ClCompile Include="ECS\IComponent.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="HamSTL\Array.ixx" />
     <ClCompile Include="HamSTL\HamSTL.ixx" />
@@ -29,10 +28,25 @@
     <ClCompile Include="HamSTL\Vector.ixx" />
     <ClCompile Include="HamSTL\Utility.ixx" />
     <ClCompile Include="ECS\ISystem.ixx" />
-    <ClCompile Include="HamEngine\GameObject.ixx" />
-    <ClCompile Include="HamEngine\Component\Transform.ixx" />
+    <ClCompile Include="Game\GameObject.ixx" />
     <ClCompile Include="Math\Vec2.ixx" />
-    <ClCompile Include="Math\Float.ixx" />
     <ClCompile Include="Math\Math.ixx" />
+    <ClCompile Include="Component\2D\RigidBody2D.ixx" />
+    <ClCompile Include="Component\2D\Transform2D.ixx" />
+    <ClCompile Include="Component\2D\SpriteRenderer.ixx" />
+    <ClCompile Include="System\SpriteRenderSystem.ixx" />
+    <ClCompile Include="ECS\ComponentPack.ixx" />
+    <ClCompile Include="Math\Rect.ixx" />
+    <ClCompile Include="ResourceManager\TextureManager.ixx" />
+    <ClCompile Include="Common\HName.ixx" />
+    <ClCompile Include="ResourceManager\Texture.ixx" />
+    <ClCompile Include="ResourceManager\ResourceManager.ixx" />
+    <ClCompile Include="Math\Vec2i.ixx" />
+    <ClCompile Include="Math\Basic.ixx" />
+    <ClCompile Include="Component\2D\PixelPerfectCamera.ixx" />
+    <ClCompile Include="Math\Recti.ixx" />
+    <ClCompile Include="Game\SceneManager.ixx" />
+    <ClCompile Include="Game\Scene.ixx" />
+    <ClCompile Include="System\PixelPerfectSpriteRenderSystem.ixx" />
   </ItemGroup>
 </Project>

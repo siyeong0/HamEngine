@@ -4,7 +4,7 @@ import Common;
 import HamSTL.Utility;
 import HamSTL.Vector;
 import ECS.Entity;
-import ECS.IComponent;
+import ECS.ComponentPack;
 import ECS.ComponentManager;
 import ECS.Archetype;
 
@@ -27,8 +27,9 @@ export namespace ham
 		void Remove(const Entity& entity);
 
 		template <typename ComponentType>
-		ComponentType& GetComponent(const Entity& entity);
-		IComponent& GetComponent(const Entity& entity, uint32 componentTypeId);
+		ComponentType* GetComponentOrNull(const Entity& entity);
+		void* GetComponentOrNull(const Entity& entity, uint32 componentTypeId);
+		bool GetComponentPack(const Entity& entity, ComponentPack* outComponentPack);
 
 		inline int GetEntityIdx(const Entity& entity) const;
 
@@ -41,6 +42,7 @@ export namespace ham
 		size_t mSize;
 		const size_t mCapacity;
 		const Vector<Pair<Id, size_t>> mArchetypeSizeVec;
+		size_t mBundleSize;
 	};
 
 	ArchetypeChunk::ArchetypeChunk(const Archetype& archetype)
@@ -49,8 +51,13 @@ export namespace ham
 		, mSize(0)
 		, mCapacity(MEM_SIZE / (ComponentManager::GetSizeOfArchetype(mArchetype)))
 		, mArchetypeSizeVec(ComponentManager::GetSizeVectorOfArchetype(mArchetype))
+		, mBundleSize(sizeof(Entity))
 	{
 		std::memset(mBuffer, 0, MEM_SIZE);
+		for (auto& sizeInfo : mArchetypeSizeVec)
+		{
+			mBundleSize += sizeInfo.second;
+		}
 	}
 
 	ArchetypeChunk::~ArchetypeChunk()
@@ -64,6 +71,7 @@ export namespace ham
 		, mSize(other.mSize)
 		, mCapacity(other.mCapacity)
 		, mArchetypeSizeVec(std::move(other.mArchetypeSizeVec))
+		, mBundleSize(other.mBundleSize)
 	{
 		other.mBuffer = nullptr;
 	}
@@ -72,16 +80,8 @@ export namespace ham
 	{
 		ASSERT(mSize < mCapacity);
 
-		uint8* baseAddress = mBuffer + mSize * sizeof(Entity);
+		uint8* baseAddress = mBuffer + mSize * mBundleSize;
 		std::memcpy(baseAddress, &entity, sizeof(Entity));
-
-		size_t offset = 0;
-		for (auto& typeInfo : mArchetypeSizeVec)
-		{
-			size_t size = typeInfo.second;
-			std::memset(baseAddress + offset, 0, size);	// Component Initialization
-			offset += size * mCapacity;
-		}
 
 		++mSize;
 	}
@@ -93,34 +93,17 @@ export namespace ham
 
 		if (entityIdx == mSize) // Remove the tail data
 		{
-			uint8* tailPtr = mBuffer + mSize * sizeof(Entity);
-			// remove entity data
-			std::memset(tailPtr, 0, sizeof(Entity));
-			// remove component data
-			size_t offset = 0;
-			for (auto& typeInfo : mArchetypeSizeVec)
-			{
-				size_t size = typeInfo.second;
-				std::memset(tailPtr + offset, 0, size);
-				offset += size * mCapacity;
-			}
+			uint8* tailPtr = mBuffer + mSize * mBundleSize;
+			// remove entity/component data
+			std::memset(tailPtr, 0, mBundleSize);
 		}
 		else // Copy the tail data to space be removed
 		{
-			uint8* targetPtr = mBuffer + entityIdx * sizeof(Entity);
-			uint8* tailPtr = mBuffer + mSize * sizeof(Entity);
-			// copy entity data
-			std::memcpy(targetPtr, tailPtr, sizeof(Entity));
-			std::memset(tailPtr, 0, sizeof(Entity));
-			// copy component data
-			size_t offset = 0;
-			for (auto& typeInfo : mArchetypeSizeVec)
-			{
-				size_t size = typeInfo.second;
-				std::memcpy(targetPtr + offset, tailPtr + offset, size);
-				std::memset(tailPtr + offset, 0, size);
-				offset += size * mCapacity;
-			}
+			uint8* targetPtr = mBuffer + entityIdx * mBundleSize;
+			uint8* tailPtr = mBuffer + mSize * mBundleSize;
+			// copy entity/component data
+			std::memcpy(targetPtr, tailPtr, mBundleSize);
+			std::memset(tailPtr, 0, mBundleSize);
 		}
 
 		--mSize;
@@ -128,28 +111,32 @@ export namespace ham
 	}
 
 	template <typename ComponentType>
-	ComponentType& ArchetypeChunk::GetComponent(const Entity& entity)
+	ComponentType* ArchetypeChunk::GetComponentOrNull(const Entity& entity)
 	{
-		ASSERT(GetEntityIdx(entity) != -1);
+		int entityIdx = GetEntityIdx(entity);
+		if (entityIdx == -1)
+			return nullptr;
 
-		uint8* baseAddress = mBuffer + GetEntityIdx(entity) * sizeof(Entity);
-		size_t offset = 0;
+		uint8* baseAddress = mBuffer + entityIdx * mBundleSize;
+		size_t offset = sizeof(Entity);
 		for (auto& typeInfo : mArchetypeSizeVec)
 		{
 			if (typeInfo.first == TypeId<ComponentType>::GetId())
 				break;
-			offset += typeInfo.second * mCapacity;
+			offset += typeInfo.second;
 		}
 
-		return *reinterpret_cast<ComponentType*>(baseAddress + offset);
+		return reinterpret_cast<ComponentType*>(baseAddress + offset);
 	}
 
-	IComponent& ArchetypeChunk::GetComponent(const Entity& entity, uint32 componentTypeId)
+	void* ArchetypeChunk::GetComponentOrNull(const Entity& entity, uint32 componentTypeId)
 	{
-		ASSERT(GetEntityIdx(entity) != -1);
+		int entityIdx = GetEntityIdx(entity);
+		if (entityIdx == -1)
+			return nullptr;
 
-		uint8* baseAddress = mBuffer + GetEntityIdx(entity) * sizeof(Entity);
-		size_t offset = 0;
+		uint8* baseAddress = mBuffer + entityIdx * mBundleSize;
+		size_t offset = sizeof(Entity);
 		for (auto& typeInfo : mArchetypeSizeVec)
 		{
 			if (typeInfo.first == componentTypeId)
@@ -157,7 +144,22 @@ export namespace ham
 			offset += typeInfo.second * mCapacity;
 		}
 
-		return *reinterpret_cast<IComponent*>(baseAddress + offset);
+		return reinterpret_cast<void*>(baseAddress + offset);
+	}
+
+	bool ArchetypeChunk::GetComponentPack(const Entity& entity, ComponentPack* outComponentPack)
+	{
+		int entityIdx = GetEntityIdx(entity);
+		if (entityIdx == -1)
+		{
+			outComponentPack = nullptr;
+			return false;
+		}
+		// TODO: placement new ¿¡·¯
+		outComponentPack->mData = mBuffer + entityIdx * mBundleSize;
+		outComponentPack->mArchetypeSizeVec = &mArchetypeSizeVec;
+
+		return true;
 	}
 
 	inline bool ArchetypeChunk::Has(const Entity& entity)
@@ -173,13 +175,12 @@ export namespace ham
 
 	inline int ArchetypeChunk::GetEntityIdx(const Entity& entity) const
 	{
-		Entity* iter = reinterpret_cast<Entity*>(mBuffer);
+		uint8* iter = mBuffer;
 		for (int i = 0; i < mSize; i++)
 		{
-			if (iter[i] == entity)
-			{
+			if (*reinterpret_cast<Entity*>(iter) == entity)
 				return i;
-			}
+			iter += mBundleSize;
 		}
 		return -1;
 	}

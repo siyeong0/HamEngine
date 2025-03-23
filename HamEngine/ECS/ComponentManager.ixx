@@ -5,7 +5,6 @@ import Common;
 import HamSTL.Utility;
 import HamSTL.Vector;
 import HamSTL.HashSet;
-import ECS.IComponent;
 import ECS.Archetype;
 
 export module ECS.ComponentManager;
