@@ -25,7 +25,7 @@ export namespace ham
 		inline FLOAT Magnitude() const;
 		inline FLOAT SqrMagnitude() const;
 		inline FLOAT Length() const;
-		inline void Normalize();
+		inline Vec2 Normalize() const;
 		inline void Rotate(FLOAT rad);
 
 		inline Vec2 operator+=(const Vec2& other);
@@ -40,6 +40,7 @@ export namespace ham
 
 	inline Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
 	inline Vec2 operator-(const Vec2& lhs, const Vec2& rhs);
+	inline Vec2 operator*(const Vec2& lhs, const Vec2& rhs);
 	inline Vec2 operator*(FLOAT v, const Vec2& vec);
 	inline Vec2 operator*(const Vec2& vec, FLOAT v);
 	inline Vec2 operator/(const Vec2& vec, FLOAT v);
@@ -89,9 +90,9 @@ namespace ham
 		return SqrMagnitude();
 	}
 
-	inline void Vec2::Normalize()
+	inline Vec2 Vec2::Normalize() const
 	{
-		*this = *this / Magnitude();
+		return *this / Length();
 	}
 
 	inline void Vec2::Rotate(FLOAT rad)
@@ -109,16 +110,19 @@ namespace ham
 	inline Vec2 Vec2::operator-=(const Vec2& other)
 	{
 		*this = *this - other;
+		return *this;
 	}
 
 	inline Vec2 Vec2::operator*=(FLOAT v)
 	{
 		*this = *this * v;
+		return *this;
 	}
 
 	inline Vec2 Vec2::operator/=(FLOAT v)
 	{
 		*this = *this / v;
+		return *this;
 	}
 
 	inline Vec2 operator+(const Vec2& lhs, const Vec2& rhs)
@@ -129,6 +133,11 @@ namespace ham
 	inline Vec2 operator-(const Vec2& lhs, const Vec2& rhs)
 	{
 		return Vec2{ lhs.X - rhs.X, lhs.Y - rhs.Y };
+	}
+
+	inline Vec2 operator*(const Vec2& lhs, const Vec2& rhs)
+	{
+		return Vec2{ lhs.X * rhs.X, lhs.Y * rhs.Y };
 	}
 
 	inline Vec2 operator*(FLOAT v, const Vec2& vec)

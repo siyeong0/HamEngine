@@ -28,7 +28,11 @@ namespace ham
 		Transform2D& transform = entityComponentPack.GetComponent<Transform2D>();
 		RigidBody2D& rigidBody = entityComponentPack.GetComponent<RigidBody2D>();
 
-		rigidBody.Velocity += Vec2{ 0.f, -GRAVITY * rigidBody.GravityScale };
-		transform.Position += rigidBody.Velocity * FIXED_DELTA_TIME;
+		if (rigidBody.BodyType == EBodyType::Dynamic)
+		{
+			rigidBody.Velocity += rigidBody.Acceleration * FIXED_DELTA_TIME;
+			transform.Position += rigidBody.Velocity * FIXED_DELTA_TIME;
+		}
+		rigidBody.Acceleration = { 0.f, -GRAVITY * rigidBody.GravityScale };
 	}
 }

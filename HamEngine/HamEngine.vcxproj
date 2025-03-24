@@ -160,6 +160,7 @@
     <ClCompile Include="Common\RTTI.ixx" />
     <ClCompile Include="Common\Types.ixx" />
     <ClCompile Include="Common\HName.ixx" />
+    <ClCompile Include="Component\2D\BoxCollider2D.ixx" />
     <ClCompile Include="Component\Component.ixx" />
     <ClCompile Include="ECS\ComponentPack.ixx" />
     <ClCompile Include="ECS\ISystem.ixx" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Game\GameObject.ixx" />
     <ClCompile Include="Game\Scene.ixx" />
     <ClCompile Include="Game\SceneManager.ixx" />
+    <ClCompile Include="System\CollisionSystem.ixx" />
     <ClCompile Include="System\PixelPerfectSpriteRenderSystem.ixx" />
     <ClCompile Include="System\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="System\SpriteRenderSystem.ixx" />

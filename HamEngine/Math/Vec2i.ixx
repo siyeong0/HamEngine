@@ -25,7 +25,7 @@ export namespace ham
 		inline FLOAT Magnitude() const;
 		inline FLOAT SqrMagnitude() const;
 		inline FLOAT Length() const;
-		inline void Normalize();
+		inline Vec2i Normalize() const;
 		inline void Rotate(FLOAT rad);
 
 		inline Vec2i operator+=(const Vec2i& other);
@@ -89,9 +89,9 @@ namespace ham
 		return SqrMagnitude();
 	}
 
-	inline void Vec2i::Normalize()
+	inline Vec2i Vec2i::Normalize() const
 	{
-		*this = *this / static_cast<int>(SqrMagnitude());
+		return *this / static_cast<int>(Length());
 	}
 
 	inline void Vec2i::Rotate(FLOAT rad)
@@ -103,21 +103,25 @@ namespace ham
 	inline Vec2i Vec2i::operator+=(const Vec2i& other)
 	{
 		*this = *this + other;
+		return *this;
 	}
 
 	inline Vec2i Vec2i::operator-=(const Vec2i& other)
 	{
 		*this = *this - other;
+		return *this;
 	}
 
 	inline Vec2i Vec2i::operator*=(int32 v)
 	{
 		*this = *this * v;
+		return *this;
 	}
 
 	inline Vec2i Vec2i::operator/=(int32 v)
 	{
 		*this = *this / v;
+		return *this;
 	}
 
 	inline Vec2i operator+(const Vec2i& lhs, const Vec2i& rhs)

@@ -8,6 +8,7 @@ import Game.GameObject;
 import HamEngine.Component;
 import HamEngine.System.PixelPerfectSpriteRenderSystem;
 import HamEngine.System.RigidbodyPhysicsSystem;
+import HamEngine.System.CollisionSystem;
 
 using namespace ham;
 
@@ -19,6 +20,7 @@ int main(void)
 
 	ComponentManager::Regist<Transform2D>();
 	ComponentManager::Regist<RigidBody2D>();
+	ComponentManager::Regist<BoxCollider2D>();
 	ComponentManager::Regist<PixelPerfectCamera>();
 	ComponentManager::Regist<SpriteRenderer>();
 
@@ -45,45 +47,75 @@ int main(void)
 		ASSERT(false);
 		return 1;
 	}
+	if (!TextureManager::GetInstance()->LoadTexture(HName("stone"), "../Resource/Image/Texture/stone.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
 
 	// Create Camera
 	GameObject mainCamera("MainCamera");
-	mainCamera.AddComponent<Transform2D>();
-	mainCamera.AddComponent<PixelPerfectCamera>();
+	{
+		mainCamera.AddComponent<Transform2D>();
+		mainCamera.AddComponent<PixelPerfectCamera>();
 
-	Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
-	PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+		Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
+		PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+	}
+	// Create Floor
+	GameObject floor("Floor");
+	{
+		floor.AddComponent<Transform2D>();
+		floor.AddComponent<RigidBody2D>();
+		floor.AddComponent<BoxCollider2D>();
+		floor.AddComponent<SpriteRenderer>();
 
+		Transform2D& floorTransform = floor.GetComponent<Transform2D>();
+		RigidBody2D& floorRigidBody = floor.GetComponent<RigidBody2D>();
+		SpriteRenderer& floorSpriteRenderer = floor.GetComponent<SpriteRenderer>();
+
+		floorTransform.Position.Y = -3.f;
+		floorTransform.Scale.X = 32.f;
+		floorRigidBody.BodyType = EBodyType::Static;
+		floorSpriteRenderer.SpriteTexId = HName("stone");
+	}
 	// Create Player
 	GameObject player("Player");
-	player.AddComponent<Transform2D>();
-	player.AddComponent<RigidBody2D>();
-	player.AddComponent<SpriteRenderer>();
+	{
+		player.AddComponent<Transform2D>();
+		player.AddComponent<RigidBody2D>();
+		player.AddComponent<BoxCollider2D>();
+		player.AddComponent<SpriteRenderer>();
 
-	Transform2D& playerTransform = player.GetComponent<Transform2D>();
-	RigidBody2D& playerRigidBody = player.GetComponent<RigidBody2D>();
-	SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
+		Transform2D& playerTransform = player.GetComponent<Transform2D>();
+		RigidBody2D& playerRigidBody = player.GetComponent<RigidBody2D>();
+		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
-	playerTransform.Position.X = 2.0f;
-	playerRigidBody.GravityScale = 0.2f;
-	playerSpriteRenderer.SpriteTexId = HName("glorp");
-
+		playerTransform.Position.X = 1.f;
+		playerRigidBody.GravityScale = 0.2f;
+		playerSpriteRenderer.SpriteTexId = HName("glorp");
+	}
+	// Create JongHoon
 	GameObject jong("JongHoon");
-	jong.AddComponent<Transform2D>();
-	jong.AddComponent<RigidBody2D>();
-	jong.AddComponent<SpriteRenderer>();
+	{
+		jong.AddComponent<Transform2D>();
+		jong.AddComponent<RigidBody2D>();
+		jong.AddComponent<BoxCollider2D>();
+		jong.AddComponent<SpriteRenderer>();
 
-	Transform2D& jongTransform = jong.GetComponent<Transform2D>();
-	RigidBody2D& jongRigidBody = jong.GetComponent<RigidBody2D>();
-	SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
+		Transform2D& jongTransform = jong.GetComponent<Transform2D>();
+		RigidBody2D& jongRigidBody = jong.GetComponent<RigidBody2D>();
+		SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
-	jongSpriteRenderer.SpriteTexId = HName("jonghoon");
-
+		jongSpriteRenderer.SpriteTexId = HName("jonghoon");
+	}
 	// System set up
-	PixelPerfectSpriteRenderSystem ppsr;
-	RigidbodyPhysicsSystem rbp;
-	Renderer::GetInstance()->AddRTTexture("PixelPerfect", pixelPerfectCamera.RefResoulution);
+	PixelPerfectSpriteRenderSystem spriteRenderSys;
+	RigidbodyPhysicsSystem RigidBodyPhysicsSys;
+	CollisionSystem CollisionSys;
 
+	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
 	uint64 prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	while (true)
 	{
@@ -94,34 +126,30 @@ int main(void)
 		{
 			continue;
 		}
+		static int count = 0;
+		std::cout << "f" << count++ << std::endl;
 		prevTime = currTime;
 
+		auto& jt = jong.GetComponent<Transform2D>();
+
+		// Collision
+		CollisionSys.Execute(floor.GetComponentPack(), jong.GetComponentPack());
+		CollisionSys.Execute(player.GetComponentPack(), floor.GetComponentPack());
+		CollisionSys.Execute(player.GetComponentPack(), jong.GetComponentPack());
+
 		// Physics
-		rbp.Execute(player.GetComponentPack());
-		rbp.Execute(jong.GetComponentPack());
+		RigidBodyPhysicsSys.Execute(player.GetComponentPack());
+		RigidBodyPhysicsSys.Execute(jong.GetComponentPack());
 
 		// Render
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
-		ppsr.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
-		ppsr.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
+		spriteRenderSys.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
+		spriteRenderSys.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
+		spriteRenderSys.Execute(floor.GetComponentPack(), mainCamera.GetComponentPack());
 
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
 		Renderer::GetInstance()->Render();
-
-		// Event
-		//playerTransform.Position.X -= 0.0005f;
-		//playerTransform.Position.Y += 0.0005f;
-		//playerTransform.Rotation += 0.001f;
-		//playerTransform.Scale.X += 0.0001f;
-		//playerTransform.Scale.Y += 0.0001f;
-
-		//jongTransform.Position.X += 0.0005f;
-		//jongTransform.Position.Y -= 0.0005f;
-		//jongTransform.Rotation -= 0.001f;
-		//jongTransform.Scale.X -= 0.0001f;
-		//jongTransform.Scale.Y -= 0.0001f;
 	}
-
 
 	Renderer::Finalize();
 	ComponentManager::Finalize();

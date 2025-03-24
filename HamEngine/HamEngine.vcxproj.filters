@@ -50,5 +50,7 @@
     <ClCompile Include="System\PixelPerfectSpriteRenderSystem.ixx" />
     <ClCompile Include="Component\Component.ixx" />
     <ClCompile Include="System\RigidbodyPhysicsSystem.ixx" />
+    <ClCompile Include="Component\2D\BoxCollider2D.ixx" />
+    <ClCompile Include="System\CollisionSystem.ixx" />
   </ItemGroup>
 </Project>
