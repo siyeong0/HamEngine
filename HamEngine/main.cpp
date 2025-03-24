@@ -28,6 +28,12 @@ int main(void)
 
 	// Initialize ResourceManager
 	TextureManager::Initialize(Renderer::GetInstance()->GetRenderer());
+	if (!TextureManager::GetInstance()->LoadTexture(0, "../Resource/Image/Temp/ERROR.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
 	if (!TextureManager::GetInstance()->LoadTexture(HName("glorp"), "../Resource/Image/Temp/glorp.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
@@ -48,8 +54,6 @@ int main(void)
 
 	Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
 	PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
-	pixelPerfectCamera.PixelPerUnit = 16;
-	pixelPerfectCamera.RefResoulution = { 640, 360 };
 
 	// Create Player
 	GameObject player("Player");
@@ -59,12 +63,7 @@ int main(void)
 	Transform2D& playerTransform = player.GetComponent<Transform2D>();
 	SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
-	playerTransform.Position.X = 1.0f;
-	playerTransform.Position.Y = 2.0f;
-	//playerTransform.Rotation = 3.14f / 2.f;
-	playerTransform.Scale.X = 1.0f;
-	playerTransform.Scale.Y = 1.0f;
-	playerSpriteRenderer.SpriteTexId = HName("glorp");
+	//playerSpriteRenderer.SpriteTexId = HName("glorp");
 
 	GameObject jong("JongHoon");
 	jong.AddComponent<Transform2D>();
@@ -73,11 +72,6 @@ int main(void)
 	Transform2D& jongTransform = jong.GetComponent<Transform2D>();
 	SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
-	jongTransform.Position.X = -1.0f;
-	jongTransform.Position.Y = -2.0f;
-	//jongTransform.Rotation = 3.14f / 2.f;
-	jongTransform.Scale.X = 2.0f;
-	jongTransform.Scale.Y = 2.0f;
 	jongSpriteRenderer.SpriteTexId = HName("jonghoon");
 
 	// System set up

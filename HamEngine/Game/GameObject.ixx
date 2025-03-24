@@ -17,7 +17,7 @@ export namespace ham
 		~GameObject() = default;
 
 		template <typename T>
-		T& AddComponent() const;
+		void AddComponent() const;
 
 		template <typename T>
 		T& GetComponent() const;
@@ -51,10 +51,11 @@ namespace ham
 	}
 
 	template <typename T>
-	T& GameObject::AddComponent() const
+	void GameObject::AddComponent() const
 	{
 		EntityManager* entityManager = EntityManager::GetInstance();
-		return entityManager->AddComponent<T>(mEntity);
+		T& component = entityManager->AddComponent<T>(mEntity);
+		new(&component) (T);
 	}
 
 	template <typename T>

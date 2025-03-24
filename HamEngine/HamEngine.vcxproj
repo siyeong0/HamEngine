@@ -24,6 +24,7 @@
     <ProjectGuid>{83be50e2-f07d-4752-952f-25204ffec107}</ProjectGuid>
     <RootNamespace>HamEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -159,6 +160,7 @@
     <ClCompile Include="Common\RTTI.ixx" />
     <ClCompile Include="Common\Types.ixx" />
     <ClCompile Include="Common\HName.ixx" />
+    <ClCompile Include="Component\Component.ixx" />
     <ClCompile Include="ECS\ComponentPack.ixx" />
     <ClCompile Include="ECS\ISystem.ixx" />
     <ClCompile Include="Component\2D\PixelPerfectCamera.ixx" />

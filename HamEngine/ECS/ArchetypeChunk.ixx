@@ -23,17 +23,17 @@ export namespace ham
 		ArchetypeChunk(const ArchetypeChunk&) = delete;
 		ArchetypeChunk(ArchetypeChunk&& other);
 
-		void Add(const Entity& entity);
-		void Remove(const Entity& entity);
+		void Add(const Entity entity);
+		void Remove(const Entity entity);
 
 		template <typename ComponentType>
-		ComponentType* GetComponentOrNull(const Entity& entity);
-		void* GetComponentOrNull(const Entity& entity, uint32 componentTypeId);
-		bool GetComponentPack(const Entity& entity, ComponentPack* outComponentPack);
+		ComponentType* GetComponentOrNull(const Entity entity);
+		void* GetComponentOrNull(const Entity entity, uint32 componentTypeId);
+		bool GetComponentPack(const Entity entity, ComponentPack* outComponentPack);
 
-		inline int GetEntityIdx(const Entity& entity) const;
+		inline int GetEntityIdx(const Entity entity) const;
 
-		inline bool Has(const Entity& entity);
+		inline bool Has(const Entity entity);
 		inline bool IsFull() const;
 
 	private:
@@ -76,7 +76,7 @@ export namespace ham
 		other.mBuffer = nullptr;
 	}
 
-	void ArchetypeChunk::Add(const Entity& entity)
+	void ArchetypeChunk::Add(const Entity entity)
 	{
 		ASSERT(mSize < mCapacity);
 
@@ -86,7 +86,7 @@ export namespace ham
 		++mSize;
 	}
 
-	void ArchetypeChunk::Remove(const Entity& entity)
+	void ArchetypeChunk::Remove(const Entity entity)
 	{
 		size_t entityIdx = GetEntityIdx(entity);
 		ASSERT(entityIdx != -1);	// Contains
@@ -111,7 +111,7 @@ export namespace ham
 	}
 
 	template <typename ComponentType>
-	ComponentType* ArchetypeChunk::GetComponentOrNull(const Entity& entity)
+	ComponentType* ArchetypeChunk::GetComponentOrNull(const Entity entity)
 	{
 		int entityIdx = GetEntityIdx(entity);
 		if (entityIdx == -1)
@@ -129,7 +129,7 @@ export namespace ham
 		return reinterpret_cast<ComponentType*>(baseAddress + offset);
 	}
 
-	void* ArchetypeChunk::GetComponentOrNull(const Entity& entity, uint32 componentTypeId)
+	void* ArchetypeChunk::GetComponentOrNull(const Entity entity, uint32 componentTypeId)
 	{
 		int entityIdx = GetEntityIdx(entity);
 		if (entityIdx == -1)
@@ -147,7 +147,7 @@ export namespace ham
 		return reinterpret_cast<void*>(baseAddress + offset);
 	}
 
-	bool ArchetypeChunk::GetComponentPack(const Entity& entity, ComponentPack* outComponentPack)
+	bool ArchetypeChunk::GetComponentPack(const Entity entity, ComponentPack* outComponentPack)
 	{
 		int entityIdx = GetEntityIdx(entity);
 		if (entityIdx == -1)
@@ -162,18 +162,7 @@ export namespace ham
 		return true;
 	}
 
-	inline bool ArchetypeChunk::Has(const Entity& entity)
-	{
-		size_t entityIdx = GetEntityIdx(entity);
-		return entityIdx != -1;
-	}
-
-	inline bool ArchetypeChunk::IsFull() const
-	{
-		return mSize == mCapacity;
-	}
-
-	inline int ArchetypeChunk::GetEntityIdx(const Entity& entity) const
+	inline int ArchetypeChunk::GetEntityIdx(const Entity entity) const
 	{
 		uint8* iter = mBuffer;
 		for (int i = 0; i < mSize; i++)
@@ -183,5 +172,16 @@ export namespace ham
 			iter += mBundleSize;
 		}
 		return -1;
+	}
+
+	inline bool ArchetypeChunk::Has(const Entity entity)
+	{
+		size_t entityIdx = GetEntityIdx(entity);
+		return entityIdx != -1;
+	}
+
+	inline bool ArchetypeChunk::IsFull() const
+	{
+		return mSize == mCapacity;
 	}
 }
