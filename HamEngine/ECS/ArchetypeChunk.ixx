@@ -121,7 +121,7 @@ export namespace ham
 		size_t offset = sizeof(Entity);
 		for (auto& typeInfo : mArchetypeSizeVec)
 		{
-			if (typeInfo.first == TypeId<ComponentType>::GetId())
+			if (typeInfo.first == RTTI<ComponentType>::GetId())
 				break;
 			offset += typeInfo.second;
 		}

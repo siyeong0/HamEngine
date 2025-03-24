@@ -4,7 +4,7 @@
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
     <ClCompile Include="Common\Memory.ixx" />
-    <ClCompile Include="Common\TypeId.ixx" />
+    <ClCompile Include="Common\RTTI.ixx" />
     <ClCompile Include="Common\Types.ixx" />
     <ClCompile Include="ECS\ArchetypeChunk.ixx" />
     <ClCompile Include="ECS\ComponentManager.ixx" />

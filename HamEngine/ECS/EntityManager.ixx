@@ -96,7 +96,7 @@ namespace ham
 		{
 			// Build an archetype
 			Archetype archetype;
-			archetype.Insert(TypeId<ComponentType>::GetId());
+			archetype.Insert(RTTI<ComponentType>::GetId());
 			mEntitiyToArchetypeMap.insert({ entity, archetype });
 
 			// Build chunk list for archetype if not exist;
@@ -128,7 +128,7 @@ namespace ham
 		{
 			const Archetype& srcArchetype = mEntitiyToArchetypeMap[entity];
 			Archetype dstArchetype;
-			dstArchetype.Insert(srcArchetype).Insert(TypeId<ComponentType>::GetId());
+			dstArchetype.Insert(srcArchetype).Insert(RTTI<ComponentType>::GetId());
 
 			// Find src/dst chunk list
 			List<ArchetypeChunk>& srcChunkList = mArchetypeChunkMap[srcArchetype];
@@ -197,7 +197,7 @@ namespace ham
 
 		const Archetype& srcArchetype = mEntitiyToArchetypeMap[entity];
 		Archetype dstArchetype;
-		dstArchetype.Insert(srcArchetype).Erase(TypeId<ComponentType>::GetId());
+		dstArchetype.Insert(srcArchetype).Erase(RTTI<ComponentType>::GetId());
 
 		if (dstArchetype.GetSize() == 0)
 		{

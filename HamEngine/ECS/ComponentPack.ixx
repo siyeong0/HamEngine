@@ -62,7 +62,7 @@ namespace ham
 	template <typename T>
 	T& ComponentPack::GetComponent() const
 	{
-		Id componentTypeId = TypeId<T>::GetId();
+		Id componentTypeId = RTTI<T>::GetId();
 		size_t offset = sizeof(Entity);
 		for (const auto& sizeInfo : *mArchetypeSizeVec)
 		{

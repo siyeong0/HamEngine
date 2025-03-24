@@ -63,8 +63,8 @@ namespace ham
 	template<typename ComponentType>
 	void ComponentManager::Regist()
 	{
-		TypeId<ComponentType>::Regist();
-		sInstance->mComponentTypeSizeMap[TypeId<ComponentType>::GetId()] = sizeof(ComponentType);
+		RTTI<ComponentType>::Regist();
+		sInstance->mComponentTypeSizeMap[RTTI<ComponentType>::GetId()] = sizeof(ComponentType);
 		sInstance->mComponentTypeCount++;
 	}
 
