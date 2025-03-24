@@ -5,11 +5,9 @@ import ECS;
 import Renderer;
 import ResourceManager.TextureManager;
 import Game.GameObject;
-import HamEngine.Component.PixelPerfectCamera;
-import HamEngine.Component.RigidBody2D;
-import HamEngine.Component.SpriteRenderer;
-import HamEngine.Component.Transform2D;
+import HamEngine.Component;
 import HamEngine.System.PixelPerfectSpriteRenderSystem;
+import HamEngine.System.RigidbodyPhysicsSystem;
 
 using namespace ham;
 
@@ -20,6 +18,7 @@ int main(void)
 	ComponentManager::Initialize();
 
 	ComponentManager::Regist<Transform2D>();
+	ComponentManager::Regist<RigidBody2D>();
 	ComponentManager::Regist<PixelPerfectCamera>();
 	ComponentManager::Regist<SpriteRenderer>();
 
@@ -58,27 +57,50 @@ int main(void)
 	// Create Player
 	GameObject player("Player");
 	player.AddComponent<Transform2D>();
+	player.AddComponent<RigidBody2D>();
 	player.AddComponent<SpriteRenderer>();
 
 	Transform2D& playerTransform = player.GetComponent<Transform2D>();
+	RigidBody2D& playerRigidBody = player.GetComponent<RigidBody2D>();
 	SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
-	//playerSpriteRenderer.SpriteTexId = HName("glorp");
+	playerTransform.Position.X = 2.0f;
+	playerRigidBody.GravityScale = 0.2f;
+	playerSpriteRenderer.SpriteTexId = HName("glorp");
 
 	GameObject jong("JongHoon");
 	jong.AddComponent<Transform2D>();
+	jong.AddComponent<RigidBody2D>();
 	jong.AddComponent<SpriteRenderer>();
 
 	Transform2D& jongTransform = jong.GetComponent<Transform2D>();
+	RigidBody2D& jongRigidBody = jong.GetComponent<RigidBody2D>();
 	SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
 	jongSpriteRenderer.SpriteTexId = HName("jonghoon");
 
 	// System set up
 	PixelPerfectSpriteRenderSystem ppsr;
+	RigidbodyPhysicsSystem rbp;
 	Renderer::GetInstance()->AddRTTexture("PixelPerfect", pixelPerfectCamera.RefResoulution);
+
+	uint64 prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	while (true)
 	{
+		// Update time
+		uint64 currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		FLOAT dt = (currTime - prevTime) / 1000.f;
+		if (dt < RigidbodyPhysicsSystem::FIXED_DELTA_TIME)
+		{
+			continue;
+		}
+		prevTime = currTime;
+
+		// Physics
+		rbp.Execute(player.GetComponentPack());
+		rbp.Execute(jong.GetComponentPack());
+
+		// Render
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
 		ppsr.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
 		ppsr.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
@@ -86,17 +108,18 @@ int main(void)
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
 		Renderer::GetInstance()->Render();
 
-		playerTransform.Position.X -= 0.0005f;
-		playerTransform.Position.Y += 0.0005f;
-		playerTransform.Rotation += 0.001f;
-		playerTransform.Scale.X += 0.0001f;
-		playerTransform.Scale.Y += 0.0001f;
+		// Event
+		//playerTransform.Position.X -= 0.0005f;
+		//playerTransform.Position.Y += 0.0005f;
+		//playerTransform.Rotation += 0.001f;
+		//playerTransform.Scale.X += 0.0001f;
+		//playerTransform.Scale.Y += 0.0001f;
 
-		jongTransform.Position.X += 0.0005f;
-		jongTransform.Position.Y -= 0.0005f;
-		jongTransform.Rotation -= 0.001f;
-		jongTransform.Scale.X -= 0.0001f;
-		jongTransform.Scale.Y -= 0.0001f;
+		//jongTransform.Position.X += 0.0005f;
+		//jongTransform.Position.Y -= 0.0005f;
+		//jongTransform.Rotation -= 0.001f;
+		//jongTransform.Scale.X -= 0.0001f;
+		//jongTransform.Scale.Y -= 0.0001f;
 	}
 
 

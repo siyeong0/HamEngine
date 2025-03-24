@@ -49,5 +49,6 @@
     <ClCompile Include="Game\Scene.ixx" />
     <ClCompile Include="System\PixelPerfectSpriteRenderSystem.ixx" />
     <ClCompile Include="Component\Component.ixx" />
+    <ClCompile Include="System\RigidbodyPhysicsSystem.ixx" />
   </ItemGroup>
 </Project>

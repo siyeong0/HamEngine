@@ -171,6 +171,7 @@
     <ClCompile Include="Game\Scene.ixx" />
     <ClCompile Include="Game\SceneManager.ixx" />
     <ClCompile Include="System\PixelPerfectSpriteRenderSystem.ixx" />
+    <ClCompile Include="System\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="System\SpriteRenderSystem.ixx" />
     <ClCompile Include="HamSTL\Array.ixx" />
     <ClCompile Include="HamSTL\HamSTL.ixx" />
