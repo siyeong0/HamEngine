@@ -2,16 +2,12 @@ module;
 
 import Common;
 import Math;
-import ECS.ComponentPack;
-import ECS.ISystem;
+import ECS;
 import Renderer;
 import ResourceManager.Texture;
 import ResourceManager.TextureManager;
 import Game.GameObject;
-import Game.SceneManager;
-import HamEngine.Component.Transform2D;
-import HamEngine.Component.SpriteRenderer;
-import HamEngine.Component.PixelPerfectCamera;
+import HamEngine.Component;
 
 export module HamEngine.System.PixelPerfectSpriteRenderSystem;
 
@@ -23,17 +19,17 @@ export namespace ham
 		PixelPerfectSpriteRenderSystem() = default;
 		virtual ~PixelPerfectSpriteRenderSystem() = default;
 
-		void Execute(const ComponentPack& cmpPack, const ComponentPack& cameraCompPack);
+		void Execute(const ComponentPack& entityComponentPack, const ComponentPack& cameraCompPack);
 	};
 }
 
 namespace ham
 {
-	void PixelPerfectSpriteRenderSystem::Execute(const ComponentPack& cmpPack, const ComponentPack& cameraCompPack)
+	void PixelPerfectSpriteRenderSystem::Execute(const ComponentPack& entityComponentPack, const ComponentPack& cameraCompPack)
 	{
 		// Unpack sprite components
-		const Transform2D& transform = cmpPack.GetComponent<Transform2D>();
-		const SpriteRenderer& spriteRenderer = cmpPack.GetComponent<SpriteRenderer>();
+		const Transform2D& transform = entityComponentPack.GetComponent<Transform2D>();
+		const SpriteRenderer& spriteRenderer = entityComponentPack.GetComponent<SpriteRenderer>();
 		// Unpack Camera components
 		Transform2D& cameraTransform = cameraCompPack.GetComponent<Transform2D>();
 		PixelPerfectCamera& pixelPerfect = cameraCompPack.GetComponent<PixelPerfectCamera>();

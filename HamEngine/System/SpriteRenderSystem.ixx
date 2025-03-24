@@ -4,9 +4,7 @@ import Common;
 import ECS.ISystem;
 import Renderer;
 import Game.GameObject;
-import Game.SceneManager;
-import HamEngine.Component.Transform2D;
-import HamEngine.Component.SpriteRenderer;
+import HamEngine.Component;
 
 export module HamEngine.System.SpriteRenderSystem;
 

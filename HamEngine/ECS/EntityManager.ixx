@@ -166,13 +166,9 @@ namespace ham
 
 			// Add an entity to dst chunk and copy component data from src
 			dstChunk->Add(entity);
-
-			const Archetype& subset = dstArchetype;
+			const Archetype& subset = srcArchetype;
 			for (auto& componentTypeId : subset.GetComponentTypeIdSet())
 			{
-				void* x = dstChunk->GetComponentOrNull(entity, componentTypeId);
-				void* y = srcChunk->GetComponentOrNull(entity, componentTypeId);
-				auto s = ComponentManager::GetSizeOfComponent(componentTypeId);
 				std::memcpy(
 					dstChunk->GetComponentOrNull(entity, componentTypeId),
 					srcChunk->GetComponentOrNull(entity, componentTypeId),
@@ -255,7 +251,7 @@ namespace ham
 			// Add an entity to dst chunk and copy component data from src
 			dstChunk->Add(entity);
 
-			const Archetype& subset = srcArchetype;
+			const Archetype& subset = dstArchetype;
 			for (auto& componentTypeId : subset.GetComponentTypeIdSet())
 			{
 				std::memcpy(

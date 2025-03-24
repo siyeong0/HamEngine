@@ -9,5 +9,11 @@ export namespace ham
 	struct SpriteRenderer
 	{
 		Id SpriteTexId;
+
+		SpriteRenderer()
+			: SpriteTexId(0)
+		{
+
+		}
 	};
 }

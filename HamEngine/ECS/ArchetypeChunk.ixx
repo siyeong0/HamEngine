@@ -141,7 +141,7 @@ export namespace ham
 		{
 			if (typeInfo.first == componentTypeId)
 				break;
-			offset += typeInfo.second * mCapacity;
+			offset += typeInfo.second;
 		}
 
 		return reinterpret_cast<void*>(baseAddress + offset);
