@@ -55,18 +55,33 @@ namespace ham
 			return;
 
 		Vec2 v1 = ((rigidBody1.Mass - rigidBody2.Mass) * rigidBody1.Velocity + (rigidBody1.Mass + rigidBody2.Mass) * rigidBody2.Velocity) / (rigidBody1.Mass + rigidBody2.Mass);
-		Vec2 v2 = ((rigidBody1.Mass - rigidBody2.Mass) * rigidBody2.Velocity + (rigidBody1.Mass + rigidBody2.Mass) * rigidBody1.Velocity) / (rigidBody1.Mass + rigidBody2.Mass);
+		Vec2 v2 = ((rigidBody1.Mass + rigidBody2.Mass) * rigidBody1.Velocity + (rigidBody2.Mass - rigidBody1.Mass) * rigidBody2.Velocity) / (rigidBody1.Mass + rigidBody2.Mass);
+
+		if (rigidBody1.BodyType == EBodyType::Dynamic && rigidBody2.BodyType == EBodyType::Dynamic)
+		{
+			transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
+			rigidBody1.Velocity = v1;
+
+			transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
+			rigidBody2.Velocity = v2;
+
+			return;
+		}
 
 		if (rigidBody1.BodyType == EBodyType::Dynamic)
 		{
-			transform1.Position -= rigidBody1.Velocity.Normalize() * Vec2{ intersection.W, intersection.H };
+			transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
 			rigidBody1.Velocity = v1;
+
+			return;
 		}
 
 		if (rigidBody2.BodyType == EBodyType::Dynamic)
 		{
-			transform2.Position -= rigidBody2.Velocity.Normalize() * Vec2 { intersection.W, intersection.H };
+			transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
 			rigidBody2.Velocity = v2;
+
+			return;
 		}
 	}
 }

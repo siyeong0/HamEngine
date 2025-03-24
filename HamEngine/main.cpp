@@ -92,8 +92,10 @@ int main(void)
 		RigidBody2D& playerRigidBody = player.GetComponent<RigidBody2D>();
 		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
-		playerTransform.Position.X = 1.f;
-		playerRigidBody.GravityScale = 0.2f;
+		playerTransform.Position.X = 10.f;
+		playerRigidBody.Mass = 2.f;
+		playerRigidBody.GravityScale = 1.f;
+		playerRigidBody.Acceleration += {-500.f, 0.f};
 		playerSpriteRenderer.SpriteTexId = HName("glorp");
 	}
 	// Create JongHoon
@@ -108,6 +110,7 @@ int main(void)
 		RigidBody2D& jongRigidBody = jong.GetComponent<RigidBody2D>();
 		SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
+		jongRigidBody.Acceleration += {+500.f, 0.f};
 		jongSpriteRenderer.SpriteTexId = HName("jonghoon");
 	}
 	// System set up

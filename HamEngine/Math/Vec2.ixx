@@ -92,7 +92,11 @@ namespace ham
 
 	inline Vec2 Vec2::Normalize() const
 	{
-		return *this / Length();
+		FLOAT l = Length();
+		if (l == 0)
+			return Vec2{ 0.f, 0.f };
+		else
+			return *this / l;
 	}
 
 	inline void Vec2::Rotate(FLOAT rad)
