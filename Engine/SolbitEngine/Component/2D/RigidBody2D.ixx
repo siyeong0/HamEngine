@@ -27,7 +27,7 @@ export namespace solbit
 			: BodyType(EBodyType::Dynamic)
 			, Velocity({ 0.f, 0.f })
 			, Acceleration({ 0.f, 0.f })
-			, PhysicMaterialId(INVALID_ID)
+			, PhysicMaterialId(DEFAULT_ID)
 			, Mass(1.f)
 			, GravityScale(1.f)
 		{

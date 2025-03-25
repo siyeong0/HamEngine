@@ -36,9 +36,9 @@ namespace solbit
 		const int32 ppu = pixelPerfect.PixelPerUnit;
 		const IVector2& refRes = pixelPerfect.RefResoulution;
 		// Texture
-		Texture& texture = TextureManager::GetInstance()->GetTexture(spriteRenderer.SpriteTexId);
+		Texture& texture = TextureManager::GetInstance()->Get(spriteRenderer.SpriteTexId);
 		const IVector2 texRes = texture.GetResoulution();
-		const IVector2 texResF = static_cast<IVector2>(texture.GetResoulution());
+		const FVector2 texResF = static_cast<FVector2>(texture.GetResoulution());
 		FLOAT scaleY = texResF.Y / texResF.X;
 
 		FRectangle spriteRect;

@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Resource.ixx" />
     <ClCompile Include="Support\Memory\Alloc.ixx" />
     <ClCompile Include="Support\Memory\Memory.ixx" />
@@ -173,7 +174,7 @@
     <ClCompile Include="SolbitEngine\GameObject\GameObject.ixx" />
     <ClCompile Include="SolbitEngine\Scene\Scene.ixx" />
     <ClCompile Include="SolbitEngine\Scene\SceneManager.ixx" />
-    <ClCompile Include="SolbitEngine\Resource\PhysicMaterial.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\PhysicalMaterial.ixx" />
     <ClCompile Include="SolbitEngine\System\CollisionSystem.ixx" />
     <ClCompile Include="SolbitEngine\System\PixelPerfectSpriteRenderSystem.ixx" />
     <ClCompile Include="SolbitEngine\System\RigidbodyPhysicsSystem.ixx" />

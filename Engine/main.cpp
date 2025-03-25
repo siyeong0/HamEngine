@@ -30,30 +30,35 @@ int main(void)
 
 	// Initialize ResourceManager
 	TextureManager::Initialize(Renderer::GetInstance()->GetRenderer());
-	if (!TextureManager::GetInstance()->LoadTexture(0, "../Resource/Image/Temp/ERROR.png"))
+	if (!TextureManager::GetInstance()->Load(0, "../Resource/Image/Temp/ERROR.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
 		return 1;
 	}
-	if (!TextureManager::GetInstance()->LoadTexture(SName("glorp"), "../Resource/Image/Temp/glorp.png"))
+	if (!TextureManager::GetInstance()->Load(SName("glorp"), "../Resource/Image/Temp/glorp.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
 		return 1;
 	}
-	if (!TextureManager::GetInstance()->LoadTexture(SName("jonghoon"), "../Resource/Image/Temp/jonghoon.png"))
+	if (!TextureManager::GetInstance()->Load(SName("jonghoon"), "../Resource/Image/Temp/jonghoon.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
 		return 1;
 	}
-	if (!TextureManager::GetInstance()->LoadTexture(SName("stone"), "../Resource/Image/Texture/stone.png"))
+	if (!TextureManager::GetInstance()->Load(SName("stone"), "../Resource/Image/Texture/stone.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
 		return 1;
 	}
+
+	PhysicalMaterailManager::Initialize();
+	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
+	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.8f, 0.0f));
+	PhysicalMaterailManager::GetInstance()->Add(SName("player"), PhysicalMaterial(0.5f, 1.0f, 0.5f, 0.0f));
 
 	// Create Camera
 	GameObject mainCamera("MainCamera");
@@ -79,6 +84,7 @@ int main(void)
 		floorTransform.Position.Y = -3.f;
 		floorTransform.Scale.X = 32.f;
 		floorRigidBody.BodyType = EBodyType::Static;
+		floorRigidBody.PhysicMaterialId = SName("stone");
 		floorSpriteRenderer.SpriteTexId = SName("stone");
 	}
 	// Create Player
@@ -94,9 +100,10 @@ int main(void)
 		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
 		playerTransform.Position.X = 10.f;
-		playerRigidBody.Mass = 1.5f;
+		playerRigidBody.Mass = 2.f;
 		playerRigidBody.GravityScale = 1.f;
 		playerRigidBody.Acceleration += {-500.f, 0.f};
+		playerRigidBody.PhysicMaterialId = SName("player");
 		playerSpriteRenderer.SpriteTexId = SName("glorp");
 	}
 	// Create JongHoon
@@ -112,6 +119,7 @@ int main(void)
 		SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
 		jongRigidBody.Acceleration += {+500.f, 0.f};
+		jongRigidBody.PhysicMaterialId = SName("player");
 		jongSpriteRenderer.SpriteTexId = SName("jonghoon");
 	}
 	// System set up

@@ -5,6 +5,7 @@ import Memory;
 import Math;
 import ECS;
 import SolbitEngine.Component;
+import SolbitEngine.Resource;
 
 export module SolbitEngine.System.CollisionSystem;
 
@@ -55,13 +56,17 @@ namespace solbit
 		if (!intersection.IsValid())
 			return;
 
-		const FLOAT epsilon = 0.5f;
-		const FLOAT friction = 0.95f;
+		const PhysicalMaterial physicalMaterial1 = PhysicalMaterailManager::GetInstance()->Get(rigidBody1.PhysicMaterialId);
+		const PhysicalMaterial physicalMaterial2 = PhysicalMaterailManager::GetInstance()->Get(rigidBody2.PhysicMaterialId);
+
+		const FLOAT BOUNCINESS = (physicalMaterial1.Bounciness + physicalMaterial2.Bounciness) * 0.5f;
+		// TODO: Á¤Áö¸¶Âû, ¿îµ¿¸¶Âû ±¸ºÐ
+		const FLOAT FRICTION = (physicalMaterial1.DynamicFriction + physicalMaterial2.DynamicFriction) * 0.5f;
 		if (rigidBody1.BodyType == EBodyType::Dynamic && rigidBody2.BodyType == EBodyType::Dynamic)
 		{
 			const FVector2 velRel = rigidBody1.Velocity - rigidBody2.Velocity;	// Relative velocity
 			const FVector2 normal = -(transform2.Position - transform1.Position).Normalize();
-			const FVector2 impulse = normal * -(1.0f + epsilon) * velRel.Dot(normal) / ((1.f / rigidBody1.Mass) + (1.f / rigidBody2.Mass));
+			const FVector2 impulse = normal * -(1.0f + BOUNCINESS) * velRel.Dot(normal) / ((1.f / rigidBody1.Mass) + (1.f / rigidBody2.Mass));
 
 			transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
 			transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
@@ -78,13 +83,13 @@ namespace solbit
 				transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
 				if (intersection.W > intersection.H)
 				{
-					rigidBody1.Velocity.X *= friction;
-					rigidBody1.Velocity.Y *= -1.f * epsilon;
+					rigidBody1.Velocity.X *= (1.f - FRICTION);
+					rigidBody1.Velocity.Y *= -BOUNCINESS;
 				}
 				else
 				{
-					rigidBody1.Velocity.X *= -1.f * epsilon;
-					rigidBody1.Velocity.Y *= friction;
+					rigidBody1.Velocity.X *= -BOUNCINESS;
+					rigidBody1.Velocity.Y *= (1.f - FRICTION);
 				}
 			}
 			else //(rigidBody2.BodyType == EBodyType::Dynamic) // && (rigidBody1.BodyType == EBodyType::Static)
@@ -92,13 +97,13 @@ namespace solbit
 				transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
 				if (intersection.W > intersection.H)
 				{
-					rigidBody2.Velocity.X *= friction;
-					rigidBody2.Velocity.Y *= -1.f * epsilon;
+					rigidBody2.Velocity.X *= (1.f - FRICTION);
+					rigidBody2.Velocity.Y *= -BOUNCINESS;
 				}
 				else
 				{
-					rigidBody2.Velocity.X *= -1.f * epsilon;
-					rigidBody2.Velocity.Y *= friction;
+					rigidBody2.Velocity.X *= -BOUNCINESS;
+					rigidBody2.Velocity.Y *= (1.f - FRICTION);
 				}
 			}
 

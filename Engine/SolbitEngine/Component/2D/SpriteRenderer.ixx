@@ -11,7 +11,7 @@ export namespace solbit
 		ID SpriteTexId;
 
 		SpriteRenderer()
-			: SpriteTexId(INVALID_ID)
+			: SpriteTexId(DEFAULT_ID)
 		{
 
 		}

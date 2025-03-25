@@ -48,9 +48,10 @@
     <ClCompile Include="SolbitEngine\System\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\BoxCollider2D.ixx" />
     <ClCompile Include="SolbitEngine\System\CollisionSystem.ixx" />
-    <ClCompile Include="SolbitEngine\Resource\PhysicMaterial.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\PhysicalMaterial.ixx" />
     <ClCompile Include="Support\STL\SolbitSTL.ixx" />
     <ClCompile Include="Support\Memory\Alloc.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Resource.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
   </ItemGroup>
 </Project>

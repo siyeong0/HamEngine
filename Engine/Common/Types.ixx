@@ -23,7 +23,7 @@ export namespace solbit
 	using String = solbit::String;
 
 	using ID = uint32;
-	constexpr ID INVALID_ID = 0;
+	constexpr ID DEFAULT_ID = 0;
 
 	// Smart pointer
 	template <typename T>

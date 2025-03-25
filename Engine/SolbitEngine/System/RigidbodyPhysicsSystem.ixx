@@ -3,6 +3,7 @@ module;
 import Common;
 import Memory;
 import ECS;
+import SolbitEngine.Resource;
 import SolbitEngine.Component;
 
 export module SolbitEngine.System.RigidbodyPhysicsSystem;
