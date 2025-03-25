@@ -156,6 +156,8 @@
   <ItemGroup>
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
+    <ClCompile Include="SolbitEngine\Input\EInputCode.ixx" />
+    <ClCompile Include="SolbitEngine\Input\Input.ixx" />
     <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Resource.ixx" />
     <ClCompile Include="Support\Memory\Alloc.ixx" />

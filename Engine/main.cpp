@@ -5,6 +5,7 @@ import Math;
 import ECS;
 import SolbitEngine.Renderer;
 import SolbitEngine.Resource;
+import SolbitEngine.Input;
 import SolbitEngine.GameObject;
 import SolbitEngine.Component;
 import SolbitEngine.System.PixelPerfectSpriteRenderSystem;
@@ -59,6 +60,18 @@ int main(void)
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
 	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.8f, 0.0f));
 	PhysicalMaterailManager::GetInstance()->Add(SName("player"), PhysicalMaterial(0.5f, 1.0f, 0.5f, 0.0f));
+
+	// Initialize Input
+	Input::Initialize();
+	Input::GetInstance()->Regist(SName("MoveLeft"), EInputType::Button);
+	Input::GetInstance()->Regist(SName("MoveRight"), EInputType::Button);
+	Input::GetInstance()->Regist(SName("MouseLeftClick"), EInputType::Button);
+	Input::GetInstance()->Regist(SName("MouseMove"), EInputType::Vector2);
+	Input::GetInstance()->Map(EInputCode::KEY_A, SName("MoveLeft"));
+	Input::GetInstance()->Map(EInputCode::KEY_D, SName("MoveLeft"));
+	Input::GetInstance()->Map(EInputCode::MOUSE_LEFTBUTTON, SName("MouseLeftClick"));
+	Input::GetInstance()->Map(EInputCode::MOUSE_MOVE, SName("MouseMove"));
+
 
 	// Create Camera
 	GameObject mainCamera("MainCamera");
@@ -139,10 +152,20 @@ int main(void)
 			continue;
 		}
 		static int count = 0;
-		std::cout << "f" << count++ << std::endl;
+		// std::cout << "f" << count++ << std::endl;
 		prevTime = currTime;
 
 		auto& jt = jong.GetComponent<Transform2D>();
+
+		// Input
+		Input::GetInstance()->Update(dt);
+		EButtonState moveLeft = Input::GetInstance()->GetButtonState(SName("MoveLeft"));
+		EButtonState moveRight = Input::GetInstance()->GetButtonState(SName("MoveRight"));
+		EButtonState leftClick = Input::GetInstance()->GetButtonState(SName("MouseLeftClick"));
+		FVector2 mousePos = Input::GetInstance()->GetVectorState(SName("MouseMove"));
+
+		String x = moveLeft == EButtonState::Pressed ? "A Pressed" : "A Released";
+		std::cout << x << std::endl;
 
 		// Collision
 		CollisionSys.Execute(floor.GetComponentPack(), jong.GetComponentPack());
@@ -163,6 +186,7 @@ int main(void)
 		Renderer::GetInstance()->Render();
 	}
 
+	Input::Finalize();
 	Renderer::Finalize();
 	ComponentManager::Finalize();
 	EntityManager::Finalize();
