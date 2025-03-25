@@ -20,7 +20,7 @@ export namespace solbit
 		bool Load(ID id, const std::string& path);
 		void Free(ID id);
 
-		inline PhysicalMaterial& Get(ID id);
+		inline const PhysicalMaterial& Get(ID id) const;
 
 	private:
 		PhysicalMaterailManager() = default;
@@ -87,9 +87,9 @@ namespace solbit
 		mPhysicalMaterialMap.erase(id);
 	}
 
-	inline PhysicalMaterial& PhysicalMaterailManager::Get(ID id)
+	inline const PhysicalMaterial& PhysicalMaterailManager::Get(ID id) const
 	{
 		ASSERT(mPhysicalMaterialMap.find(id) != mPhysicalMaterialMap.end());
-		return mPhysicalMaterialMap[id];
+		return mPhysicalMaterialMap.at(id);
 	}
 }

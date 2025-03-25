@@ -95,6 +95,6 @@ namespace solbit
 	inline Texture& TextureManager::Get(ID id)
 	{
 		ASSERT(mTextureMap.find(id) != mTextureMap.end());
-		return mTextureMap[id];
+		return mTextureMap.at(id);
 	}
 }
