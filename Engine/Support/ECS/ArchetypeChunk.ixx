@@ -41,7 +41,7 @@ export namespace solbit
 		uint8* mBuffer;
 		size_t mSize;
 		const size_t mCapacity;
-		const Vector<Pair<Id, size_t>> mArchetypeSizeVec;
+		const Vector<Pair<ID, size_t>> mArchetypeSizeVec;
 		size_t mBundleSize;
 	};
 

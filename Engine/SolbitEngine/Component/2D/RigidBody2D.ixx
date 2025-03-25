@@ -19,7 +19,7 @@ export namespace solbit
 		EBodyType BodyType;
 		Vec2 Velocity;
 		Vec2 Acceleration;
-		Id PhysicMaterialId;
+		ID PhysicMaterialId;
 		FLOAT Mass;
 		FLOAT GravityScale;
 

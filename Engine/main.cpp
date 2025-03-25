@@ -36,19 +36,19 @@ int main(void)
 		ASSERT(false);
 		return 1;
 	}
-	if (!TextureManager::GetInstance()->LoadTexture(HName("glorp"), "../Resource/Image/Temp/glorp.png"))
+	if (!TextureManager::GetInstance()->LoadTexture(SName("glorp"), "../Resource/Image/Temp/glorp.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
 		return 1;
 	}
-	if (!TextureManager::GetInstance()->LoadTexture(HName("jonghoon"), "../Resource/Image/Temp/jonghoon.png"))
+	if (!TextureManager::GetInstance()->LoadTexture(SName("jonghoon"), "../Resource/Image/Temp/jonghoon.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
 		return 1;
 	}
-	if (!TextureManager::GetInstance()->LoadTexture(HName("stone"), "../Resource/Image/Texture/stone.png"))
+	if (!TextureManager::GetInstance()->LoadTexture(SName("stone"), "../Resource/Image/Texture/stone.png"))
 	{
 		std::cout << "Image Load Failed." << std::endl;
 		ASSERT(false);
@@ -79,7 +79,7 @@ int main(void)
 		floorTransform.Position.Y = -3.f;
 		floorTransform.Scale.X = 32.f;
 		floorRigidBody.BodyType = EBodyType::Static;
-		floorSpriteRenderer.SpriteTexId = HName("stone");
+		floorSpriteRenderer.SpriteTexId = SName("stone");
 	}
 	// Create Player
 	GameObject player("Player");
@@ -97,7 +97,7 @@ int main(void)
 		playerRigidBody.Mass = 1.5f;
 		playerRigidBody.GravityScale = 1.f;
 		playerRigidBody.Acceleration += {-500.f, 0.f};
-		playerSpriteRenderer.SpriteTexId = HName("glorp");
+		playerSpriteRenderer.SpriteTexId = SName("glorp");
 	}
 	// Create JongHoon
 	GameObject jong("JongHoon");
@@ -112,7 +112,7 @@ int main(void)
 		SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
 		jongRigidBody.Acceleration += {+500.f, 0.f};
-		jongSpriteRenderer.SpriteTexId = HName("jonghoon");
+		jongSpriteRenderer.SpriteTexId = SName("jonghoon");
 	}
 	// System set up
 	PixelPerfectSpriteRenderSystem spriteRenderSys;

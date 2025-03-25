@@ -14,7 +14,7 @@ export namespace solbit
 	{
 	public:
 		ComponentPack();
-		ComponentPack(uint8* entityAddress, const Vector<Pair<Id, size_t>>* archetypeSizeVec);
+		ComponentPack(uint8* entityAddress, const Vector<Pair<ID, size_t>>* archetypeSizeVec);
 		~ComponentPack() = default;
 
 		ComponentPack(const ComponentPack& other);
@@ -25,7 +25,7 @@ export namespace solbit
 
 	public:
 		uint8* mData;
-		const Vector<Pair<Id, size_t>>* mArchetypeSizeVec;
+		const Vector<Pair<ID, size_t>>* mArchetypeSizeVec;
 	};
 }
 
@@ -38,7 +38,7 @@ namespace solbit
 
 	}
 
-	ComponentPack::ComponentPack(uint8* entityAddress, const Vector<Pair<Id, size_t>>* archetypeSizeVec)
+	ComponentPack::ComponentPack(uint8* entityAddress, const Vector<Pair<ID, size_t>>* archetypeSizeVec)
 		: mData(entityAddress)
 		, mArchetypeSizeVec(archetypeSizeVec)
 	{
@@ -62,7 +62,7 @@ namespace solbit
 	template <typename T>
 	T& ComponentPack::GetComponent() const
 	{
-		Id componentTypeId = RTTI<T>::GetId();
+		ID componentTypeId = RTTI<T>::GetId();
 		size_t offset = sizeof(Entity);
 		for (const auto& sizeInfo : *mArchetypeSizeVec)
 		{

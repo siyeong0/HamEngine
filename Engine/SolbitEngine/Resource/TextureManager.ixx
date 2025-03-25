@@ -19,10 +19,10 @@ export namespace solbit
 		static bool Initialize(SDL_Renderer* targetRenderer);
 		static void Finalize();
 
-		bool LoadTexture(Id id, const std::string& path);
-		void FreeTexture(Id id);
+		bool LoadTexture(ID id, const std::string& path);
+		void FreeTexture(ID id);
 
-		inline Texture& GetTexture(Id id);
+		inline Texture& GetTexture(ID id);
 
 	private:
 		TextureManager() = default;
@@ -34,7 +34,7 @@ export namespace solbit
 		static TextureManager* msInstance;
 		
 		SDL_Renderer* mTargetRenderer;
-		HashMap<Id, Texture, DoNothing> mTextureMap;
+		HashMap<ID, Texture, DoNothing> mTextureMap;
 	};
 }
 
@@ -65,7 +65,7 @@ namespace solbit
 		msInstance = nullptr;
 	}
 
-	bool TextureManager::LoadTexture(Id id, const std::string& path)
+	bool TextureManager::LoadTexture(ID id, const std::string& path)
 	{
 		ASSERT(mTextureMap.find(id) == mTextureMap.end());
 
@@ -82,7 +82,7 @@ namespace solbit
 		return true;
 	}
 
-	void TextureManager::FreeTexture(Id id)
+	void TextureManager::FreeTexture(ID id)
 	{
 		ASSERT(mTextureMap.find(id) != mTextureMap.end());
 
@@ -92,7 +92,7 @@ namespace solbit
 		mTextureMap.erase(id);
 	}
 
-	inline Texture& TextureManager::GetTexture(Id id)
+	inline Texture& TextureManager::GetTexture(ID id)
 	{
 		ASSERT(mTextureMap.find(id) != mTextureMap.end());
 		return mTextureMap[id];

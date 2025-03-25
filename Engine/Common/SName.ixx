@@ -2,15 +2,15 @@ module;
 
 import Common.Types;
 
-export module Common.HName;
+export module Common.SName;
 
 export namespace solbit
 {
 	// TODO: ¾ÈµÊ;;
 	template <typename STR = const char*>
-	constexpr Id HName(STR str)
+	constexpr ID SName(STR str)
 	{
-		Id hash = 0;
+		ID hash = 0;
 		for (size_t i = 0; i < str[i] != '\0'; ++i)
 		{
 			hash = 65599 * hash + str[i];
@@ -22,7 +22,7 @@ export namespace solbit
 	class DoNothing
 	{
 	public:
-		size_t operator() (const Id& id) const
+		size_t operator() (const ID& id) const
 		{
 			return static_cast<size_t>(id);
 		}

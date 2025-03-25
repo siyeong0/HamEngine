@@ -23,9 +23,9 @@ export namespace solbit
 		static void Regist();
 
 		static inline size_t NumComponents();
-		static inline size_t GetSizeOfComponent(const Id& componentTypeId);
+		static inline size_t GetSizeOfComponent(const ID& componentTypeId);
 		static inline size_t GetSizeOfArchetype(const Archetype& archetype);
-		static inline const Vector<Pair<Id, size_t>> GetSizeVectorOfArchetype(const Archetype& archetype);
+		static inline const Vector<Pair<ID, size_t>> GetSizeVectorOfArchetype(const Archetype& archetype);
 
 	private:
 		static ComponentManager* sInstance;
@@ -72,14 +72,14 @@ namespace solbit
 		return sInstance->mComponentTypeCount;
 	}
 
-	inline size_t ComponentManager::GetSizeOfComponent(const Id& componentTypeId)
+	inline size_t ComponentManager::GetSizeOfComponent(const ID& componentTypeId)
 	{
 		return sInstance->mComponentTypeSizeMap[componentTypeId];
 	}
 
 	inline size_t ComponentManager::GetSizeOfArchetype(const Archetype& archetype)
 	{
-		const HashSet<Id>& componentTypeIdSet = archetype.GetComponentTypeIdSet();
+		const HashSet<ID>& componentTypeIdSet = archetype.GetComponentTypeIdSet();
 
 		size_t totalSize = 0;
 		for (auto iter = componentTypeIdSet.begin(); iter != componentTypeIdSet.end(); ++iter)
@@ -90,11 +90,11 @@ namespace solbit
 		return totalSize;
 	}
 
-	inline const Vector<Pair<Id, size_t>> ComponentManager::GetSizeVectorOfArchetype(const Archetype& archetype)
+	inline const Vector<Pair<ID, size_t>> ComponentManager::GetSizeVectorOfArchetype(const Archetype& archetype)
 	{
-		const HashSet<Id>& componentTypeIdSet = archetype.GetComponentTypeIdSet();
+		const HashSet<ID>& componentTypeIdSet = archetype.GetComponentTypeIdSet();
 
-		Vector<Pair<Id, size_t>> sizeVector;
+		Vector<Pair<ID, size_t>> sizeVector;
 		sizeVector.reserve(componentTypeIdSet.size());
 
 		for (auto iter = componentTypeIdSet.begin(); iter != componentTypeIdSet.end(); ++iter)

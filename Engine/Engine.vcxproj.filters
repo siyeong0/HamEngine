@@ -35,7 +35,7 @@
     <ClCompile Include="Support\ECS\ComponentPack.ixx" />
     <ClCompile Include="Support\Math\Rect.ixx" />
     <ClCompile Include="SolbitEngine\Resource\TextureManager.ixx" />
-    <ClCompile Include="Common\HName.ixx" />
+    <ClCompile Include="Common\SName.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Texture.ixx" />
     <ClCompile Include="Support\Math\Vec2i.ixx" />
     <ClCompile Include="Support\Math\Basic.ixx" />

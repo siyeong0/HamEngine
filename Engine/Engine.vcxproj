@@ -161,7 +161,7 @@
     <ClCompile Include="Support\Memory\Memory.ixx" />
     <ClCompile Include="Common\RTTI.ixx" />
     <ClCompile Include="Common\Types.ixx" />
-    <ClCompile Include="Common\HName.ixx" />
+    <ClCompile Include="Common\SName.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\BoxCollider2D.ixx" />
     <ClCompile Include="SolbitEngine\Component\Component.ixx" />
     <ClCompile Include="Support\ECS\ComponentPack.ixx" />

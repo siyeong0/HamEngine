@@ -8,7 +8,7 @@ export namespace solbit
 {
 	struct SpriteRenderer
 	{
-		Id SpriteTexId;
+		ID SpriteTexId;
 
 		SpriteRenderer()
 			: SpriteTexId(INVALID_ID)

@@ -13,17 +13,17 @@ export namespace solbit
 	{
 	public:
 		static void Regist();
-		static Id GetId();
+		static ID GetId();
 	private:
-		static Id mId;
+		static ID mId;
 	};
 
 }
 
 namespace solbit
 {
-	static Id sIdCount;
-	static constexpr Id INVALID_TYPE_ID = std::numeric_limits<Id>::max();
+	static ID sIdCount;
+	static constexpr ID INVALID_TYPE_ID = std::numeric_limits<ID>::max();
 
 	template <typename T>
 	uint32 RTTI<T>::mId = INVALID_TYPE_ID;
