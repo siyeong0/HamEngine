@@ -19,6 +19,7 @@ export namespace ham
 		EBodyType BodyType;
 		Vec2 Velocity;
 		Vec2 Acceleration;
+		Id PhysicMaterialId;
 		FLOAT Mass;
 		FLOAT GravityScale;
 
@@ -26,6 +27,7 @@ export namespace ham
 			: BodyType(EBodyType::Dynamic)
 			, Velocity({ 0.f, 0.f })
 			, Acceleration({ 0.f, 0.f })
+			, PhysicMaterialId(INVALID_ID)
 			, Mass(1.f)
 			, GravityScale(1.f)
 		{

@@ -23,6 +23,7 @@ export namespace ham
 	using String = ham::String;
 
 	using Id = uint32;
+	constexpr Id INVALID_ID = 0;
 
 	// Smart pointer
 	template <typename T>

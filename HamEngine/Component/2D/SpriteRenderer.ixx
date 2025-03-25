@@ -11,7 +11,7 @@ export namespace ham
 		Id SpriteTexId;
 
 		SpriteRenderer()
-			: SpriteTexId(0)
+			: SpriteTexId(INVALID_ID)
 		{
 
 		}

@@ -52,5 +52,6 @@
     <ClCompile Include="System\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="Component\2D\BoxCollider2D.ixx" />
     <ClCompile Include="System\CollisionSystem.ixx" />
+    <ClCompile Include="ResourceManager\PhysicMaterial.ixx" />
   </ItemGroup>
 </Project>

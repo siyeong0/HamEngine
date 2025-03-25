@@ -93,7 +93,7 @@ int main(void)
 		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
 		playerTransform.Position.X = 10.f;
-		playerRigidBody.Mass = 2.f;
+		playerRigidBody.Mass = 1.5f;
 		playerRigidBody.GravityScale = 1.f;
 		playerRigidBody.Acceleration += {-500.f, 0.f};
 		playerSpriteRenderer.SpriteTexId = HName("glorp");

@@ -54,32 +54,52 @@ namespace ham
 		if (!intersection.IsValid())
 			return;
 
-		Vec2 v1 = ((rigidBody1.Mass - rigidBody2.Mass) * rigidBody1.Velocity + (rigidBody1.Mass + rigidBody2.Mass) * rigidBody2.Velocity) / (rigidBody1.Mass + rigidBody2.Mass);
-		Vec2 v2 = ((rigidBody1.Mass + rigidBody2.Mass) * rigidBody1.Velocity + (rigidBody2.Mass - rigidBody1.Mass) * rigidBody2.Velocity) / (rigidBody1.Mass + rigidBody2.Mass);
-
+		const FLOAT epsilon = 0.5f;
+		const FLOAT friction = 0.95f;
 		if (rigidBody1.BodyType == EBodyType::Dynamic && rigidBody2.BodyType == EBodyType::Dynamic)
 		{
+			const Vec2 velRel = rigidBody1.Velocity - rigidBody2.Velocity;	// Relative velocity
+			const Vec2 normal = -(transform2.Position - transform1.Position).Normalize();
+			const Vec2 impulse = normal * -(1.0f + epsilon) * velRel.Dot(normal) / ((1.f / rigidBody1.Mass) + (1.f / rigidBody2.Mass));
+
 			transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
-			rigidBody1.Velocity = v1;
-
 			transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
-			rigidBody2.Velocity = v2;
+
+			rigidBody1.Velocity += impulse / rigidBody1.Mass;
+			rigidBody2.Velocity -= impulse / rigidBody2.Mass;
 
 			return;
 		}
-
-		if (rigidBody1.BodyType == EBodyType::Dynamic)
+		else
 		{
-			transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
-			rigidBody1.Velocity = v1;
-
-			return;
-		}
-
-		if (rigidBody2.BodyType == EBodyType::Dynamic)
-		{
-			transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
-			rigidBody2.Velocity = v2;
+			if (rigidBody1.BodyType == EBodyType::Dynamic) // && (rigidBody2.BodyType == EBodyType::Static)
+			{
+				transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
+				if (intersection.W > intersection.H)
+				{
+					rigidBody1.Velocity.X *= friction;
+					rigidBody1.Velocity.Y *= -1.f * epsilon;
+				}
+				else
+				{
+					rigidBody1.Velocity.X *= -1.f * epsilon;
+					rigidBody1.Velocity.Y *= friction;
+				}
+			}
+			else //(rigidBody2.BodyType == EBodyType::Dynamic) // && (rigidBody1.BodyType == EBodyType::Static)
+			{
+				transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
+				if (intersection.W > intersection.H)
+				{
+					rigidBody2.Velocity.X *= friction;
+					rigidBody2.Velocity.Y *= -1.f * epsilon;
+				}
+				else
+				{
+					rigidBody2.Velocity.X *= -1.f * epsilon;
+					rigidBody2.Velocity.Y *= friction;
+				}
+			}
 
 			return;
 		}
