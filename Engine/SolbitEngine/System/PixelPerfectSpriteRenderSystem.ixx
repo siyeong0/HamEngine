@@ -34,38 +34,38 @@ namespace solbit
 		Transform2D& cameraTransform = cameraCompPack.GetComponent<Transform2D>();
 		PixelPerfectCamera& pixelPerfect = cameraCompPack.GetComponent<PixelPerfectCamera>();
 		const int32 ppu = pixelPerfect.PixelPerUnit;
-		const Vec2i& refRes = pixelPerfect.RefResoulution;
+		const IVector2& refRes = pixelPerfect.RefResoulution;
 		// Texture
 		Texture& texture = TextureManager::GetInstance()->GetTexture(spriteRenderer.SpriteTexId);
-		const Vec2i texRes = texture.GetResoulution();
-		const Vec2 texResF = static_cast<Vec2>(texture.GetResoulution());
+		const IVector2 texRes = texture.GetResoulution();
+		const IVector2 texResF = static_cast<IVector2>(texture.GetResoulution());
 		FLOAT scaleY = texResF.Y / texResF.X;
 
-		Rect spriteRect;
+		FRectangle spriteRect;
 		spriteRect.X = (transform.Position.X - 0.5f * transform.Scale.X) * ppu;
 		spriteRect.Y = (transform.Position.Y - 0.5f * scaleY * transform.Scale.Y) * ppu;
 		spriteRect.W = 1.f * transform.Scale.X * ppu;
 		spriteRect.H = 1.f * scaleY * transform.Scale.Y * ppu;
 
 		Renderer* renderer = Renderer::GetInstance();
-		const Vec2i rtSize = renderer->GetRTSize();
-		const Vec2 rtSizeF = static_cast<Vec2>(renderer->GetRTSize());
-		Rect rtRect;
+		const IVector2 rtSize = renderer->GetRTSize();
+		const FVector2 rtSizeF = static_cast<FVector2>(renderer->GetRTSize());
+		FRectangle rtRect;
 		rtRect.X = cameraTransform.Position.X - rtSizeF.X / 2.f;
 		rtRect.Y = cameraTransform.Position.Y - rtSizeF.Y / 2.f;
 		rtRect.W = rtSizeF.X;
 		rtRect.H = rtSizeF.Y;
 
-		Rect intersection = rtRect.Intersect(spriteRect);
+		FRectangle intersection = rtRect.Intersect(spriteRect);
 		if (!intersection.IsValid())
 			return;
 		
-		Recti srcRect;
+		IRectangle srcRect;
 		srcRect.X = intersection.X == spriteRect.X ? 0 : static_cast<int32>(spriteRect.W - intersection.W);
 		srcRect.Y = intersection.Y != spriteRect.Y ? 0 : static_cast<int32>(spriteRect.H - intersection.H);
 		srcRect.W = static_cast<int32>(Round(intersection.W * texRes.X / transform.Scale.X));
 		srcRect.H = static_cast<int32>(Round(intersection.H * texRes.Y / transform.Scale.Y));
-		Recti dstRect;
+		IRectangle dstRect;
 		dstRect.X = static_cast<int32>(Round(intersection.X - rtRect.X));
 		dstRect.Y = static_cast<int32>(Round(intersection.Y - rtRect.Y));
 		dstRect.W = static_cast<int32>(Round(intersection.W));

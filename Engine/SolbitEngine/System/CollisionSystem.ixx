@@ -35,14 +35,14 @@ namespace solbit
 		RigidBody2D& rigidBody2 = object2.GetComponent<RigidBody2D>();
 		BoxCollider2D& boxCollider2 = object2.GetComponent<BoxCollider2D>();
 
-		Rect rect1 =
+		FRectangle rect1 =
 		{
 			transform1.Position.X + boxCollider1.Offset.X - boxCollider1.Size.X / 2.f * transform1.Scale.X,
 			transform1.Position.Y + boxCollider1.Offset.Y - boxCollider1.Size.Y / 2.f * transform1.Scale.Y,
 			boxCollider1.Size.X * transform1.Scale.X,
 			boxCollider1.Size.Y * transform1.Scale.Y,
 		};
-		Rect rect2 =
+		FRectangle rect2 =
 		{
 			transform2.Position.X + boxCollider2.Offset.X - boxCollider2.Size.X / 2.f * transform2.Scale.X,
 			transform2.Position.Y + boxCollider2.Offset.Y - boxCollider2.Size.Y / 2.f * transform2.Scale.Y,
@@ -50,7 +50,7 @@ namespace solbit
 			boxCollider2.Size.Y * transform2.Scale.Y,
 		};
 
-		Rect intersection = rect1.Intersect(rect2);
+		FRectangle intersection = rect1.Intersect(rect2);
 		ASSERT(rect1.DoIntersect(rect2) == intersection.IsValid());
 		if (!intersection.IsValid())
 			return;
@@ -59,9 +59,9 @@ namespace solbit
 		const FLOAT friction = 0.95f;
 		if (rigidBody1.BodyType == EBodyType::Dynamic && rigidBody2.BodyType == EBodyType::Dynamic)
 		{
-			const Vec2 velRel = rigidBody1.Velocity - rigidBody2.Velocity;	// Relative velocity
-			const Vec2 normal = -(transform2.Position - transform1.Position).Normalize();
-			const Vec2 impulse = normal * -(1.0f + epsilon) * velRel.Dot(normal) / ((1.f / rigidBody1.Mass) + (1.f / rigidBody2.Mass));
+			const FVector2 velRel = rigidBody1.Velocity - rigidBody2.Velocity;	// Relative velocity
+			const FVector2 normal = -(transform2.Position - transform1.Position).Normalize();
+			const FVector2 impulse = normal * -(1.0f + epsilon) * velRel.Dot(normal) / ((1.f / rigidBody1.Mass) + (1.f / rigidBody2.Mass));
 
 			transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;
 			transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H) * 0.5f;

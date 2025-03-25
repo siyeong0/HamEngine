@@ -9,8 +9,8 @@ export namespace solbit
 {
 	struct BoxCollider2D
 	{
-		Vec2 Size;
-		Vec2 Offset;
+		FVector2 Size;
+		FVector2 Offset;
 
 		BoxCollider2D()
 			: Size({ 1.f, 1.f })

@@ -9,9 +9,9 @@ export namespace solbit
 {
 	struct Transform2D
 	{
-		Vec2 Position;
+		FVector2 Position;
 		FLOAT Rotation;
-		Vec2 Scale;
+		FVector2 Scale;
 
 		Transform2D()
 			: Position({ 0.f, 0.f })

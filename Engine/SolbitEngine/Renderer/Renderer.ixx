@@ -23,17 +23,17 @@ export namespace solbit
 		void Update(float dt);
 		void Render();
 
-		void RenderSprite(Texture& texture, const Recti& srcRect, const Recti& dstRect, FLOAT angle) const;
+		void RenderSprite(Texture& texture, const IRectangle& srcRect, const IRectangle& dstRect, FLOAT angle) const;
 
 		inline SDL_Renderer* GetRenderer();
 
-		void AddRTTexture(const String& name, const Vec2i& resolution);
+		void AddRTTexture(const String& name, const IVector2& resolution);
 		void ClearRTTexture();
 		void SetRTTexture(const String& name);
 		void RenderRTTexture(const String& name);
 
-		inline Vec2i GetAspectRatio() const;
-		inline Vec2i GetRTSize() const;	// RT: Render Target
+		inline IVector2 GetAspectRatio() const;
+		inline IVector2 GetRTSize() const;	// RT: Render Target
 
 	private:
 		Renderer() = default;
@@ -46,9 +46,9 @@ export namespace solbit
 
 		SDL_Window* mWindow;
 		SDL_Renderer* mSDLRenderer;
-		HashMap<String, Pair<SDL_Texture*, Vec2i>> mRTTextures;
-		Vec2i mCurrRTResolution;
-		Vec2i mResolution;
+		HashMap<String, Pair<SDL_Texture*, IVector2>> mRTTextures;
+		IVector2 mCurrRTResolution;
+		IVector2 mResolution;
 	};
 }
 
@@ -134,7 +134,7 @@ namespace solbit
 		mCurrRTResolution = mResolution;
 	}
 
-	void Renderer::RenderSprite(Texture& texture, const Recti& srcRect, const Recti& dstRect, FLOAT angle) const
+	void Renderer::RenderSprite(Texture& texture, const IRectangle& srcRect, const IRectangle& dstRect, FLOAT angle) const
 	{
 		TextureManager* texManager = TextureManager::GetInstance();
 		SDL_Texture* sdlTexture = texture.Get();
@@ -157,7 +157,7 @@ namespace solbit
 		return mSDLRenderer;
 	}
 
-	void Renderer::AddRTTexture(const String& name, const Vec2i& resolution)
+	void Renderer::AddRTTexture(const String& name, const IVector2& resolution)
 	{
 		ASSERT(mRTTextures.find(name) == mRTTextures.end());
 
@@ -188,14 +188,14 @@ namespace solbit
 		SDL_RenderCopy(mSDLRenderer, mRTTextures[name].first, nullptr, nullptr);
 	}
 
-	inline Vec2i Renderer::GetAspectRatio() const
+	inline IVector2 Renderer::GetAspectRatio() const
 	{
 		int gcd = std::gcd(mResolution.X, mResolution.Y);
 		ASSERT(gcd > 1);
 		return mResolution / gcd;
 	}
 
-	inline Vec2i Renderer::GetRTSize() const
+	inline IVector2 Renderer::GetRTSize() const
 	{
 		return mCurrRTResolution;
 	}

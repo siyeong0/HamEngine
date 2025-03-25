@@ -22,7 +22,7 @@ export namespace solbit
 
 		inline uint32 GetWidth() const;
 		inline uint32 GetHeight() const;
-		inline Vec2i GetResoulution() const;
+		inline IVector2 GetResoulution() const;
 		inline uint32 GetPPU() const;
 		inline void SetPPU(uint32 v);
 
@@ -77,9 +77,9 @@ namespace solbit
 		return mSurface->h;
 	}
 
-	inline Vec2i Texture::GetResoulution() const
+	inline IVector2 Texture::GetResoulution() const
 	{
-		return Vec2i{ mSurface->w, mSurface->h };
+		return IVector2{ mSurface->w, mSurface->h };
 	}
 
 	inline uint32 Texture::GetPPU() const

@@ -17,8 +17,8 @@ export namespace solbit
 	struct RigidBody2D
 	{
 		EBodyType BodyType;
-		Vec2 Velocity;
-		Vec2 Acceleration;
+		FVector2 Velocity;
+		FVector2 Acceleration;
 		ID PhysicMaterialId;
 		FLOAT Mass;
 		FLOAT GravityScale;

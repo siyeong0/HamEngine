@@ -1,20 +1,20 @@
 export module Math;
 
 export import Math.Basic;
-export import Math.Vec2;
-export import Math.Vec2i;
-export import Math.Rect;
-export import Math.Recti;
+export import Math.FVector2;
+export import Math.FRectangle;
+export import Math.IVector2;
+export import Math.IRectangle;
 
 export namespace solbit
 {
-	Vec2::operator Vec2i()
+	FVector2::operator IVector2()
 	{
-		return Vec2i{ static_cast<int32>(X), static_cast<int32>(Y) };
+		return IVector2{ static_cast<int32>(X), static_cast<int32>(Y) };
 	}
 
-	Vec2i::operator Vec2()
+	IVector2::operator FVector2()
 	{
-		return Vec2{ static_cast<FLOAT>(X), static_cast<FLOAT>(Y) };
+		return FVector2{ static_cast<FLOAT>(X), static_cast<FLOAT>(Y) };
 	}
 }

@@ -10,7 +10,7 @@ export namespace solbit
 	struct PixelPerfectCamera
 	{
 		int32 PixelPerUnit;	// Number of pixels per Unit(1m)
-		Vec2i RefResoulution;
+		IVector2 RefResoulution;
 
 		PixelPerfectCamera()
 			: PixelPerUnit(16)

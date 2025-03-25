@@ -194,10 +194,10 @@
     <ClCompile Include="Support\ECS\EntityManager.ixx" />
     <ClCompile Include="Support\Math\Basic.ixx" />
     <ClCompile Include="Support\Math\Math.ixx" />
-    <ClCompile Include="Support\Math\Rect.ixx" />
-    <ClCompile Include="Support\Math\Recti.ixx" />
-    <ClCompile Include="Support\Math\Vec2.ixx" />
-    <ClCompile Include="Support\Math\Vec2i.ixx" />
+    <ClCompile Include="Support\Math\FRectangle.ixx" />
+    <ClCompile Include="Support\Math\IRectangle.ixx" />
+    <ClCompile Include="Support\Math\FVector2.ixx" />
+    <ClCompile Include="Support\Math\IVector2.ixx" />
     <ClCompile Include="Support\Memory\Page.ixx" />
     <ClCompile Include="SolbitEngine\Renderer\Renderer.ixx" />
     <ClCompile Include="Support\ECS\Archetype.ixx" />
