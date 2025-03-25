@@ -80,7 +80,7 @@ namespace solbit
 		{
 			if (rigidBody1.BodyType == EBodyType::Dynamic) // && (rigidBody2.BodyType == EBodyType::Static)
 			{
-				transform1.Position -= rigidBody1.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
+				transform1.Position -= rigidBody1.Acceleration.Normalize() * std::fminf(intersection.W, intersection.H);
 				if (intersection.W > intersection.H)
 				{
 					rigidBody1.Velocity.X *= (1.f - FRICTION);
@@ -94,7 +94,7 @@ namespace solbit
 			}
 			else //(rigidBody2.BodyType == EBodyType::Dynamic) // && (rigidBody1.BodyType == EBodyType::Static)
 			{
-				transform2.Position -= rigidBody2.Velocity.Normalize() * std::fminf(intersection.W, intersection.H);
+				transform2.Position -= rigidBody2.Acceleration.Normalize() * std::fminf(intersection.W, intersection.H);
 				if (intersection.W > intersection.H)
 				{
 					rigidBody2.Velocity.X *= (1.f - FRICTION);

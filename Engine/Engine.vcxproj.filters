@@ -45,9 +45,9 @@
     <ClCompile Include="SolbitEngine\Scene\Scene.ixx" />
     <ClCompile Include="SolbitEngine\System\PixelPerfectSpriteRenderSystem.ixx" />
     <ClCompile Include="SolbitEngine\Component\Component.ixx" />
-    <ClCompile Include="SolbitEngine\System\RigidbodyPhysicsSystem.ixx" />
+    <ClCompile Include="SolbitEngine\System\Physics\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\BoxCollider2D.ixx" />
-    <ClCompile Include="SolbitEngine\System\CollisionSystem.ixx" />
+    <ClCompile Include="SolbitEngine\System\Physics\CollisionSystem.ixx" />
     <ClCompile Include="SolbitEngine\Resource\PhysicalMaterial.ixx" />
     <ClCompile Include="Support\STL\SolbitSTL.ixx" />
     <ClCompile Include="Support\Memory\Alloc.ixx" />
@@ -55,5 +55,7 @@
     <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Input\Input.ixx" />
     <ClCompile Include="SolbitEngine\Input\EInputCode.ixx" />
+    <ClCompile Include="SolbitEngine\GameObject\Player.ixx" />
+    <ClCompile Include="SolbitEngine\System\Physics\Collision2D.ixx" />
   </ItemGroup>
 </Project>

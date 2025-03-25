@@ -156,10 +156,12 @@
   <ItemGroup>
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
+    <ClCompile Include="SolbitEngine\GameObject\Player.ixx" />
     <ClCompile Include="SolbitEngine\Input\EInputCode.ixx" />
     <ClCompile Include="SolbitEngine\Input\Input.ixx" />
     <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Resource.ixx" />
+    <ClCompile Include="SolbitEngine\System\Physics\Collision2D.ixx" />
     <ClCompile Include="Support\Memory\Alloc.ixx" />
     <ClCompile Include="Support\Memory\Memory.ixx" />
     <ClCompile Include="Common\RTTI.ixx" />
@@ -177,9 +179,9 @@
     <ClCompile Include="SolbitEngine\Scene\Scene.ixx" />
     <ClCompile Include="SolbitEngine\Scene\SceneManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\PhysicalMaterial.ixx" />
-    <ClCompile Include="SolbitEngine\System\CollisionSystem.ixx" />
+    <ClCompile Include="SolbitEngine\System\Physics\CollisionSystem.ixx" />
     <ClCompile Include="SolbitEngine\System\PixelPerfectSpriteRenderSystem.ixx" />
-    <ClCompile Include="SolbitEngine\System\RigidbodyPhysicsSystem.ixx" />
+    <ClCompile Include="SolbitEngine\System\Physics\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="SolbitEngine\System\SpriteRenderSystem.ixx" />
     <ClCompile Include="Support\STL\Array.ixx" />
     <ClCompile Include="Support\STL\SolbitSTL.ixx" />

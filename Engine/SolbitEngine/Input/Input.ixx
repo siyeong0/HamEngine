@@ -13,10 +13,12 @@ export module SolbitEngine.Input;
 
 export namespace solbit
 {
-	enum class EButtonState
+	enum EButtonState : uint8
 	{
-		Pressed,
-		Released
+		Released,
+		Pressed	,
+		JustReleased,
+		JustPressed,
 	};
 
 	enum class EInputType
@@ -38,8 +40,9 @@ export namespace solbit
 		void Update(FLOAT dt);
 
 		inline const FVector2& GetVectorState(ID id) const;
-		inline const EButtonState& GetButtonState(ID id) const;
-
+		inline bool GetButtonState(ID id) const;
+		inline bool GetButtonPressed(ID id) const;
+		inline bool GetButtonReleased(ID id) const;
 	private:
 		Input() = default;
 		~Input() = default;
@@ -107,28 +110,65 @@ namespace solbit
 		SDL_Event event;
 		SDL_PollEvent(&event);
 
-		ID inputId;
+		for (auto iter = mButtonInputStateMap.begin(); iter != mButtonInputStateMap.end(); ++iter)
+		{
+			switch (iter->second)
+			{
+			case EButtonState::JustPressed:
+				iter->second = EButtonState::Pressed;
+				break;
+			case EButtonState::JustReleased:
+				iter->second = EButtonState::Released;
+				break;
+			}
+		}
+
+		EButtonState* state;
 		const FVector2 halfScreenSize = static_cast<FVector2>(Renderer::GetInstance()->GetRTSize()) / 2.f;
 		switch (event.type)
 		{
 		case SDL_KEYDOWN:
-			inputId = mInputMap[static_cast<EInputCode>(event.key.keysym.sym)];
-			mButtonInputStateMap[inputId] = EButtonState::Pressed;
+			state = &mButtonInputStateMap[mInputMap[static_cast<EInputCode>(event.key.keysym.sym)]];
+			switch (*state)
+			{
+			case Released:
+			case JustReleased:
+				*state = JustPressed;
+				break;
+			}
 			break;
 		case SDL_KEYUP:
-			inputId = mInputMap[static_cast<EInputCode>(event.key.keysym.sym)];
-			mButtonInputStateMap[inputId] = EButtonState::Released;
+			state = &mButtonInputStateMap[mInputMap[static_cast<EInputCode>(event.key.keysym.sym)]];
+			switch (*state)
+			{
+			case Pressed:
+			case JustPressed:
+				*state = JustReleased;
+				break;
+			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			switch (event.button.button)
 			{
 			case 1:	// SDL MOUSE LEFT
-				inputId = mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_LEFTBUTTON)];
-				mButtonInputStateMap[inputId] = EButtonState::Pressed;
+				state = &mButtonInputStateMap[mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_LEFTBUTTON)]];
+				switch (*state)
+				{
+				case Released:
+				case JustReleased:
+					*state = JustPressed;
+					break;
+				}
 				break;
 			case 3:	// SDL MOUSE RIGHT
-				inputId = mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_RIGHTBUTTON)];
-				mButtonInputStateMap[inputId] = EButtonState::Pressed;
+				state = &mButtonInputStateMap[mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_RIGHTBUTTON)]];
+				switch (*state)
+				{
+				case Released:
+				case JustReleased:
+					*state = JustPressed;
+					break;
+				}
 				break;
 			default:
 				ASSERT(false);
@@ -138,19 +178,30 @@ namespace solbit
 			switch (event.button.button)
 			{
 			case 1:	// SDL MOUSE LEFT
-				inputId = mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_LEFTBUTTON)];
-				mButtonInputStateMap[inputId] = EButtonState::Released;
+				state = &mButtonInputStateMap[mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_LEFTBUTTON)]];
+				switch (*state)
+				{
+				case Pressed:
+				case JustPressed:
+					*state = JustReleased;
+					break;
+				}
 				break;
 			case 3:	// SDL MOUSE RIGHT
-				inputId = mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_RIGHTBUTTON)];
-				mButtonInputStateMap[inputId] = EButtonState::Released;
+				state = &mButtonInputStateMap[mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_RIGHTBUTTON)]];
+				switch (*state)
+				{
+				case Pressed:
+				case JustPressed:
+					*state = JustReleased;
+					break;
+				}
 				break;
 			default:
 				ASSERT(false);
 			}
 		case SDL_MOUSEMOTION:
-			inputId = mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_MOVE)];
-			mVectorInputStateMap[inputId] = FVector2{ 
+			mVectorInputStateMap[mInputMap[static_cast<EInputCode>(EInputCode::MOUSE_MOVE)]] = FVector2{
 				(event.motion.x - halfScreenSize.X) / halfScreenSize.X  ,
 				(event.motion.y - halfScreenSize.Y) / halfScreenSize.Y };
 			break;
@@ -163,9 +214,21 @@ namespace solbit
 		return mVectorInputStateMap.at(id);
 	}
 
-	inline const EButtonState& Input::GetButtonState(ID id) const
+	inline bool Input::GetButtonState(ID id) const
 	{
 		ASSERT(mButtonInputStateMap.find(id) != mButtonInputStateMap.end());
-		return mButtonInputStateMap.at(id);
+		return mButtonInputStateMap.at(id) == EButtonState::JustPressed || mButtonInputStateMap.at(id) == EButtonState::Pressed;
+	}
+
+	inline bool Input::GetButtonPressed(ID id) const
+	{
+		ASSERT(mButtonInputStateMap.find(id) != mButtonInputStateMap.end());
+		return mButtonInputStateMap.at(id) == EButtonState::JustPressed;
+	}
+
+	inline bool Input::GetButtonReleased(ID id) const
+	{
+		ASSERT(mButtonInputStateMap.find(id) != mButtonInputStateMap.end());
+		return mButtonInputStateMap.at(id) == EButtonState::JustReleased;
 	}
 }

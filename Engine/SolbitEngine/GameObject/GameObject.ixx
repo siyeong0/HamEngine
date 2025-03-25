@@ -3,6 +3,7 @@ module;
 import Common;
 import Memory;
 import ECS;
+import SolbitEngine.Collision2D;
 
 export module SolbitEngine.GameObject;
 
@@ -13,7 +14,14 @@ export namespace solbit
 	public:
 		GameObject();
 		GameObject(const String& name);
-		~GameObject() = default;
+		virtual ~GameObject() = default;
+
+		virtual void Start();
+		virtual void FixedUpdate();
+		virtual void Update(FLOAT dt);
+		virtual void LateUpdate(FLOAT dt);
+		virtual void OnCollision(Collision2D& collision);
+		virtual void OnDestroy();
 
 		template <typename T>
 		void AddComponent() const;
@@ -23,8 +31,9 @@ export namespace solbit
 
 		ComponentPack GetComponentPack() const;
 
-		const String& GetName() const;
-		void SetName(const String& name);
+		inline const String& GetName() const;
+		inline void SetName(const String& name);
+		inline const Entity GetEntity() const;
 
 	private:
 		String mName;
@@ -45,6 +54,36 @@ namespace solbit
 	GameObject::GameObject(const String& name)
 		: mName(name)
 		, mEntity(EntityManager::GetInstance()->CreateEntity())
+	{
+
+	}
+
+	void GameObject::Start()
+	{
+
+	}
+
+	void GameObject::FixedUpdate()
+	{
+
+	}
+
+	void GameObject::Update(FLOAT dt)
+	{
+
+	}
+
+	void GameObject::LateUpdate(FLOAT dt)
+	{
+
+	}
+
+	void GameObject::OnCollision(Collision2D& collision)
+	{
+
+	}
+
+	void GameObject::OnDestroy()
 	{
 
 	}
@@ -74,13 +113,18 @@ namespace solbit
 		return componentPack;
 	}
 
-	const String& GameObject::GetName() const
+	inline const String& GameObject::GetName() const
 	{
 		return mName;
 	}
 
-	void GameObject::SetName(const String& name)
+	inline void GameObject::SetName(const String& name)
 	{
 		mName = name;
+	}
+
+	inline const Entity GameObject::GetEntity() const
+	{
+		return mEntity;
 	}
 }

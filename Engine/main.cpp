@@ -3,6 +3,7 @@ import Common;
 import Memory;
 import Math;
 import ECS;
+import SolbitSTL;
 import SolbitEngine.Renderer;
 import SolbitEngine.Resource;
 import SolbitEngine.Input;
@@ -11,6 +12,8 @@ import SolbitEngine.Component;
 import SolbitEngine.System.PixelPerfectSpriteRenderSystem;
 import SolbitEngine.System.RigidbodyPhysicsSystem;
 import SolbitEngine.System.CollisionSystem;
+
+import SolbitEngine.GameObject.Player;
 
 using namespace solbit;
 
@@ -65,13 +68,15 @@ int main(void)
 	Input::Initialize();
 	Input::GetInstance()->Regist(SName("MoveLeft"), EInputType::Button);
 	Input::GetInstance()->Regist(SName("MoveRight"), EInputType::Button);
-	Input::GetInstance()->Regist(SName("MouseLeftClick"), EInputType::Button);
+	Input::GetInstance()->Regist(SName("Jump"), EInputType::Button);
 	Input::GetInstance()->Regist(SName("MouseMove"), EInputType::Vector2);
 	Input::GetInstance()->Map(EInputCode::KEY_A, SName("MoveLeft"));
-	Input::GetInstance()->Map(EInputCode::KEY_D, SName("MoveLeft"));
-	Input::GetInstance()->Map(EInputCode::MOUSE_LEFTBUTTON, SName("MouseLeftClick"));
+	Input::GetInstance()->Map(EInputCode::KEY_D, SName("MoveRight"));
+	Input::GetInstance()->Map(EInputCode::KEY_SPACE, SName("Jump"));
 	Input::GetInstance()->Map(EInputCode::MOUSE_MOVE, SName("MouseMove"));
 
+	// Game Objects
+	Vector<GameObject*> gameObjects;
 
 	// Create Camera
 	GameObject mainCamera("MainCamera");
@@ -82,6 +87,7 @@ int main(void)
 		Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
 		PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
 	}
+	gameObjects.push_back(&mainCamera);
 	// Create Floor
 	GameObject floor("Floor");
 	{
@@ -100,8 +106,9 @@ int main(void)
 		floorRigidBody.PhysicMaterialId = SName("stone");
 		floorSpriteRenderer.SpriteTexId = SName("stone");
 	}
+	gameObjects.push_back(&floor);
 	// Create Player
-	GameObject player("Player");
+	Player player("Player");
 	{
 		player.AddComponent<Transform2D>();
 		player.AddComponent<RigidBody2D>();
@@ -119,6 +126,7 @@ int main(void)
 		playerRigidBody.PhysicMaterialId = SName("player");
 		playerSpriteRenderer.SpriteTexId = SName("glorp");
 	}
+	gameObjects.push_back(&player);
 	// Create JongHoon
 	GameObject jong("JongHoon");
 	{
@@ -142,6 +150,12 @@ int main(void)
 
 	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
 	uint64 prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+	// Object Start
+	for (auto& obj : gameObjects)
+	{
+		obj->Start();
+	}
 	while (true)
 	{
 		// Update time
@@ -157,24 +171,35 @@ int main(void)
 
 		auto& jt = jong.GetComponent<Transform2D>();
 
-		// Input
-		Input::GetInstance()->Update(dt);
-		EButtonState moveLeft = Input::GetInstance()->GetButtonState(SName("MoveLeft"));
-		EButtonState moveRight = Input::GetInstance()->GetButtonState(SName("MoveRight"));
-		EButtonState leftClick = Input::GetInstance()->GetButtonState(SName("MouseLeftClick"));
-		FVector2 mousePos = Input::GetInstance()->GetVectorState(SName("MouseMove"));
-
-		String x = moveLeft == EButtonState::Pressed ? "A Pressed" : "A Released";
-		std::cout << x << std::endl;
+		// Object Fixed Update
+		for (auto& obj : gameObjects)
+		{
+			obj->FixedUpdate();
+		}
+		
+		// Physics
+		RigidBodyPhysicsSys.Execute(player.GetComponentPack());
+		RigidBodyPhysicsSys.Execute(jong.GetComponentPack());
 
 		// Collision
 		CollisionSys.Execute(floor.GetComponentPack(), jong.GetComponentPack());
 		CollisionSys.Execute(player.GetComponentPack(), floor.GetComponentPack());
 		CollisionSys.Execute(player.GetComponentPack(), jong.GetComponentPack());
 
-		// Physics
-		RigidBodyPhysicsSys.Execute(player.GetComponentPack());
-		RigidBodyPhysicsSys.Execute(jong.GetComponentPack());
+		// Input
+		Input::GetInstance()->Update(dt);
+
+		// Object Update
+		for (auto& obj : gameObjects)
+		{
+			obj->Update(dt);
+		}
+
+		// Object Late Update
+		for (auto& obj : gameObjects)
+		{
+			obj->LateUpdate(dt);
+		}
 
 		// Render
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
@@ -184,6 +209,11 @@ int main(void)
 
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
 		Renderer::GetInstance()->Render();
+	}
+	// Object OnDestroy
+	for (auto& obj : gameObjects)
+	{
+		obj->OnDestroy();
 	}
 
 	Input::Finalize();
