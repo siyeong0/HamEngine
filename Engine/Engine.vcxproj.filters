@@ -47,7 +47,6 @@
     <ClCompile Include="SolbitEngine\Component\Component.ixx" />
     <ClCompile Include="SolbitEngine\System\Physics\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\BoxCollider2D.ixx" />
-    <ClCompile Include="SolbitEngine\System\Physics\CollisionSystem.ixx" />
     <ClCompile Include="SolbitEngine\Resource\PhysicalMaterial.ixx" />
     <ClCompile Include="Support\STL\SolbitSTL.ixx" />
     <ClCompile Include="Support\Memory\Alloc.ixx" />
@@ -56,7 +55,8 @@
     <ClCompile Include="SolbitEngine\Input\Input.ixx" />
     <ClCompile Include="SolbitEngine\Input\EInputCode.ixx" />
     <ClCompile Include="SolbitEngine\GameObject\Player.ixx" />
-    <ClCompile Include="SolbitEngine\System\Physics\Collision2D.ixx" />
-    <ClCompile Include="SolbitEngine\Physics2D\Physics2D.ixx" />
+    <ClCompile Include="SolbitEngine\Physics\2D\Collision2D.ixx" />
+    <ClCompile Include="SolbitEngine\Physics\2D\Physics2D.ixx" />
+    <ClCompile Include="SolbitEngine\Physics\2D\CollisionListener2D.ixx" />
   </ItemGroup>
 </Project>

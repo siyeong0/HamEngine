@@ -1,7 +1,6 @@
 module;
 
 #include <box2d\box2d.h>
-#include <box2d\b2_body.h>
 
 import Common;
 import Math;
@@ -24,9 +23,12 @@ export namespace solbit
 
 		void Update(FLOAT dt);
 
-		void AddBody(const Entity entity, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
-		void ApplyToB2Body(const Entity entity, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
-		void ApplyToSBBody(const Entity entity, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
+		void AddBody(GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
+		void ApplyToB2Body(const GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
+		void ApplyToSBBody(const GameObject& gameObject, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
+
+		void RegistContactListener(b2ContactListener* contactListener);
+		inline GameObject* GetGameObject(b2Body* body);
 
 	private:
 		Physics2D() = default;
@@ -38,6 +40,7 @@ export namespace solbit
 		static Physics2D* msInstance;
 
 		HashMap<Entity, b2Body*, EntityHash> mB2BodyMap;
+		HashMap<b2Body*, GameObject*> mGameObjectMap;
 
 		b2World* mWorld;
 		uint32 mVelocityIterations;
@@ -81,13 +84,13 @@ namespace solbit
 		mWorld->Step(dt, mVelocityIterations, mPositionIterations);
 	}
 
-	void Physics2D::AddBody(const Entity entity, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
+	void Physics2D::AddBody(GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
 	{
 		b2BodyDef bodyDef;
 		b2Body* b2Body = mWorld->CreateBody(&bodyDef);
 
-		mB2BodyMap.insert({ entity, b2Body });
-		ASSERT(mB2BodyMap.find(entity) != mB2BodyMap.end());
+		mB2BodyMap.insert({ gameObject.GetEntity(), b2Body });
+		mGameObjectMap.insert({ b2Body, &gameObject });
 
 		ASSERT(transform != nullptr);
 		b2Body->SetTransform(b2Vec2{ transform->Position.X, transform->Position.Y }, transform->Rotation);
@@ -158,10 +161,10 @@ namespace solbit
 		}
 	}
 
-	void Physics2D::ApplyToB2Body(const Entity entity, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
+	void Physics2D::ApplyToB2Body(const GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
 	{
-		ASSERT(mB2BodyMap.find(entity) != mB2BodyMap.end());
-		b2Body* b2Body = mB2BodyMap[entity];
+		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
+		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
 
 		ASSERT(transform != nullptr);
 		b2Body->SetTransform(b2Vec2{ transform->Position.X, transform->Position.Y }, transform->Rotation);
@@ -170,12 +173,12 @@ namespace solbit
 		b2Body->SetLinearDamping(rigidbodyOrNull->LinearDamping);
 	}
 
-	void Physics2D::ApplyToSBBody(const Entity entity, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
+	void Physics2D::ApplyToSBBody(const GameObject& gameObject, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
 	{
-		ASSERT(mB2BodyMap.find(entity) != mB2BodyMap.end());
+		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
 		ASSERT(transform != nullptr);
 
-		b2Body* b2Body = mB2BodyMap[entity];
+		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
 
 		transform->Position.X = b2Body->GetTransform().p.x;
 		transform->Position.Y = b2Body->GetTransform().p.y;
@@ -187,5 +190,15 @@ namespace solbit
 			rigidbodyOrNull->AngularVelocity = b2Body->GetAngularVelocity();
 			rigidbodyOrNull->Mass = b2Body->GetMass();
 		}
+	}
+
+	void Physics2D::RegistContactListener(b2ContactListener* contactListener)
+	{
+		mWorld->SetContactListener(contactListener);
+	}
+
+	inline GameObject* Physics2D::GetGameObject(b2Body* body)
+	{
+		return mGameObjectMap[body];
 	}
 }

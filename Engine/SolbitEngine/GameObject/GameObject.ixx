@@ -3,7 +3,7 @@ module;
 import Common;
 import Memory;
 import ECS;
-import SolbitEngine.Collision2D;
+import SolbitEngine.Physics2D.Collision2D;
 
 export module SolbitEngine.GameObject;
 
@@ -20,7 +20,8 @@ export namespace solbit
 		virtual void FixedUpdate();
 		virtual void Update(FLOAT dt);
 		virtual void LateUpdate(FLOAT dt);
-		virtual void OnCollision(Collision2D& collision);
+		virtual void OnCollisionEnter(Collision2D& collision);
+		virtual void OnCollisionExit(Collision2D& collision);
 		virtual void OnDestroy();
 
 		template <typename T>
@@ -78,7 +79,12 @@ namespace solbit
 
 	}
 
-	void GameObject::OnCollision(Collision2D& collision)
+	void GameObject::OnCollisionEnter(Collision2D& collision)
+	{
+
+	}
+
+	void GameObject::OnCollisionExit(Collision2D& collision)
 	{
 
 	}

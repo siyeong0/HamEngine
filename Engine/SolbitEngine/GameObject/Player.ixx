@@ -20,8 +20,11 @@ export namespace solbit
 		virtual void FixedUpdate() override;
 		virtual void Update(FLOAT dt) override;
 		virtual void LateUpdate(FLOAT dt) override;
-		virtual void OnCollision(Collision2D& collision) override;
+		virtual void OnCollisionEnter(Collision2D& collision) override;
+		virtual void OnCollisionExit(Collision2D& collision) override;
 		virtual void OnDestroy() override;
+	private:
+		bool mbOnGround;
 	};
 }
 
@@ -40,7 +43,7 @@ namespace solbit
 
 	void Player::Start()
 	{
-		std::cout << "Player Start" << std::endl;
+		mbOnGround = false;
 	}
 
 	void Player::FixedUpdate()
@@ -53,6 +56,19 @@ namespace solbit
 		Transform2D& transform = GetComponent<Transform2D>();
 		RigidBody2D& rigidbody = GetComponent<RigidBody2D>();
 		SpriteRenderer& sprite = GetComponent<SpriteRenderer>();
+
+		if (Input::GetInstance()->GetButtonState(SName("MoveLeft")))
+		{
+			rigidbody.Velocity.X = -5.0f;
+		}
+		if (Input::GetInstance()->GetButtonState(SName("MoveRight")))
+		{
+			rigidbody.Velocity.X = 5.0f;
+		}
+		if (mbOnGround && Input::GetInstance()->GetButtonPressed(SName("Jump")))
+		{
+			rigidbody.Velocity.Y += 10.0f;
+		}
 	}
 
 	void Player::LateUpdate(FLOAT dt)
@@ -60,9 +76,17 @@ namespace solbit
 		
 	}
 
-	void Player::OnCollision(Collision2D& collision)
+	void Player::OnCollisionEnter(Collision2D& collision)
 	{
-		std::cout << "Player On Collision" << std::endl;
+		if (std::fabs(collision.ContactNormal.Dot(FVector2{ 0.0f, 1.0f })) < std::cosf(PI / 4.f));
+		{
+			mbOnGround = true;
+		}
+	}
+
+	void Player::OnCollisionExit(Collision2D& collision)
+	{
+		mbOnGround = false;
 	}
 
 	void Player::OnDestroy()

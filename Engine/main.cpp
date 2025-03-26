@@ -6,13 +6,13 @@ import ECS;
 import SolbitSTL;
 import SolbitEngine.Renderer;
 import SolbitEngine.Physics2D;
+import SolbitEngine.Physics2D.CollisionListener2D;
 import SolbitEngine.Resource;
 import SolbitEngine.Input;
 import SolbitEngine.GameObject;
 import SolbitEngine.Component;
 import SolbitEngine.System.PixelPerfectSpriteRenderSystem;
 import SolbitEngine.System.RigidbodyPhysicsSystem;
-import SolbitEngine.System.CollisionSystem;
 
 import SolbitEngine.GameObject.Player;
 
@@ -121,6 +121,7 @@ int main(void)
 		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
 		playerTransform.Position.X = 10.f;
+		playerRigidBody.FreezeRotation = true;
 		playerRigidBody.Mass = 2.f;
 		playerRigidBody.GravityScale = 1.f;
 		playerRigidBody.PhysicMaterialId = SName("player");
@@ -145,14 +146,15 @@ int main(void)
 
 	// Initialize Phyiscs
 	Physics2D::Initialize();
-	Physics2D::GetInstance()->AddBody(floor.GetEntity(), &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
-	Physics2D::GetInstance()->AddBody(player.GetEntity(), &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
-	Physics2D::GetInstance()->AddBody(jong.GetEntity(), &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
+	CollisionListener2D* collisionListener = new CollisionListener2D;
+	Physics2D::GetInstance()->RegistContactListener(collisionListener);
+	Physics2D::GetInstance()->AddBody(floor, &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
+	Physics2D::GetInstance()->AddBody(player, &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
+	Physics2D::GetInstance()->AddBody(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
 
 	// System set up
 	PixelPerfectSpriteRenderSystem spriteRenderSys;
 	RigidbodyPhysicsSystem RigidBodyPhysicsSys;
-	// CollisionSystem CollisionSys;
 
 	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
 	uint64 prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -184,20 +186,13 @@ int main(void)
 		}
 		
 		// Physics
-		Physics2D::GetInstance()->ApplyToB2Body(floor.GetEntity(), &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToB2Body(player.GetEntity(), &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToB2Body(jong.GetEntity(), &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
+		Physics2D::GetInstance()->ApplyToB2Body(floor, &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
+		Physics2D::GetInstance()->ApplyToB2Body(player, &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
+		Physics2D::GetInstance()->ApplyToB2Body(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
 		Physics2D::GetInstance()->Update(1.f / 60.f);
-		Physics2D::GetInstance()->ApplyToSBBody(floor.GetEntity(), &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToSBBody(player.GetEntity(), &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToSBBody(jong.GetEntity(), &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
-
-		std::cout << dt << std::endl;
-
-		// Collision
-		//CollisionSys.Execute(floor.GetComponentPack(), jong.GetComponentPack());
-		//CollisionSys.Execute(player.GetComponentPack(), floor.GetComponentPack());
-		//CollisionSys.Execute(player.GetComponentPack(), jong.GetComponentPack());
+		Physics2D::GetInstance()->ApplyToSBBody(floor, &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
+		Physics2D::GetInstance()->ApplyToSBBody(player, &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
+		Physics2D::GetInstance()->ApplyToSBBody(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
 
 		// Input
 		Input::GetInstance()->Update(dt);

@@ -27,8 +27,6 @@ namespace solbit
 {
 	void RigidbodyPhysicsSystem::Execute(const Entity entity, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
 	{
-		Physics2D::GetInstance()->ApplyToSBBody(entity, transform, rigidbodyOrNull, colliderOrNull);
-		Physics2D::GetInstance()->Update(FIXED_DELTA_TIME);
-		Physics2D::GetInstance()->ApplyToSBBody(entity, transform, rigidbodyOrNull, colliderOrNull);
+
 	}
 }
