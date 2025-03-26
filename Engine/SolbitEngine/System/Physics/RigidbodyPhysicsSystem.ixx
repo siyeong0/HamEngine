@@ -5,6 +5,7 @@ import Memory;
 import ECS;
 import SolbitEngine.Resource;
 import SolbitEngine.Component;
+import SolbitEngine.Physics2D;
 
 export module SolbitEngine.System.RigidbodyPhysicsSystem;
 
@@ -18,23 +19,16 @@ export namespace solbit
 		RigidbodyPhysicsSystem() = default;
 		virtual ~RigidbodyPhysicsSystem() = default;
 
-		void Execute(const ComponentPack& entityComponentPack);
+		void Execute(const Entity entity, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
 	};
 }
 
 namespace solbit
 {
-	void RigidbodyPhysicsSystem::Execute(const ComponentPack& entityComponentPack)
+	void RigidbodyPhysicsSystem::Execute(const Entity entity, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
 	{
-		// Unpack sprite components
-		Transform2D& transform = entityComponentPack.GetComponent<Transform2D>();
-		RigidBody2D& rigidBody = entityComponentPack.GetComponent<RigidBody2D>();
-
-		if (rigidBody.BodyType == EBodyType::Dynamic)
-		{
-			rigidBody.Velocity += rigidBody.Acceleration * FIXED_DELTA_TIME;
-			transform.Position += rigidBody.Velocity * FIXED_DELTA_TIME;
-		}
-		rigidBody.Acceleration = { 0.f, -GRAVITY * rigidBody.GravityScale };
+		Physics2D::GetInstance()->ApplyToSBBody(entity, transform, rigidbodyOrNull, colliderOrNull);
+		Physics2D::GetInstance()->Update(FIXED_DELTA_TIME);
+		Physics2D::GetInstance()->ApplyToSBBody(entity, transform, rigidbodyOrNull, colliderOrNull);
 	}
 }

@@ -12,12 +12,11 @@ export namespace solbit
 	{
 	public:
 		FLOAT Density;
-		FLOAT DynamicFriction;
-		FLOAT StaticFriction;
+		FLOAT Friction;
 		FLOAT Bounciness;
 	public:
 		PhysicalMaterial();
-		PhysicalMaterial(FLOAT density, FLOAT dynamicFriction, FLOAT staticFriction, FLOAT Bounciness);
+		PhysicalMaterial(FLOAT density, FLOAT friction, FLOAT Bounciness);
 		~PhysicalMaterial() = default;
 
 		PhysicalMaterial(const PhysicalMaterial& other);
@@ -29,17 +28,15 @@ namespace solbit
 {
 	PhysicalMaterial::PhysicalMaterial()
 		: Density(1.f)
-		, DynamicFriction(0.5f)
-		, StaticFriction(0.5f)
+		,Friction(0.5f)
 		, Bounciness(0.5f)
 	{
 
 	}
 
-	PhysicalMaterial::PhysicalMaterial(FLOAT density, FLOAT dynamicFriction, FLOAT staticFriction, FLOAT Bounciness)
+	PhysicalMaterial::PhysicalMaterial(FLOAT density, FLOAT friction, FLOAT Bounciness)
 		: Density(density)
-		, DynamicFriction(dynamicFriction)
-		, StaticFriction(staticFriction)
+		, Friction(friction)
 		, Bounciness(Bounciness)
 	{
 
@@ -47,8 +44,7 @@ namespace solbit
 
 	PhysicalMaterial::PhysicalMaterial(const PhysicalMaterial& other)
 		: Density(other.Density)
-		, DynamicFriction(other.DynamicFriction)
-		, StaticFriction(other.StaticFriction)
+		, Friction(other.Friction)
 		, Bounciness(other.Bounciness)
 	{
 
@@ -56,8 +52,7 @@ namespace solbit
 
 	PhysicalMaterial::PhysicalMaterial(const PhysicalMaterial&& other)
 		: Density(other.Density)
-		, DynamicFriction(other.DynamicFriction)
-		, StaticFriction(other.StaticFriction)
+		, Friction(other.Friction)
 		, Bounciness(other.Bounciness)
 	{
 

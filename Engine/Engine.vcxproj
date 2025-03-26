@@ -159,6 +159,7 @@
     <ClCompile Include="SolbitEngine\GameObject\Player.ixx" />
     <ClCompile Include="SolbitEngine\Input\EInputCode.ixx" />
     <ClCompile Include="SolbitEngine\Input\Input.ixx" />
+    <ClCompile Include="SolbitEngine\Physics2D\Physics2D.ixx" />
     <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Resource.ixx" />
     <ClCompile Include="SolbitEngine\System\Physics\Collision2D.ixx" />

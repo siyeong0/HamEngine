@@ -18,7 +18,6 @@ export namespace solbit
 		return hash ^ (hash >> 16);
 	}
 
-
 	class DoNothing
 	{
 	public:

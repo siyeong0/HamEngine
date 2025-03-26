@@ -57,5 +57,6 @@
     <ClCompile Include="SolbitEngine\Input\EInputCode.ixx" />
     <ClCompile Include="SolbitEngine\GameObject\Player.ixx" />
     <ClCompile Include="SolbitEngine\System\Physics\Collision2D.ixx" />
+    <ClCompile Include="SolbitEngine\Physics2D\Physics2D.ixx" />
   </ItemGroup>
 </Project>
