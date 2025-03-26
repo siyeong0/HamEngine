@@ -78,7 +78,7 @@ namespace solbit
 
 	void Player::OnCollisionEnter(Collision2D& collision)
 	{
-		if (std::fabs(collision.ContactNormal.Dot(FVector2{ 0.0f, 1.0f })) < std::cosf(PI / 4.f));
+		if (std::fabs(collision.ContactNormal.Dot(FVector2{ 0.0f, 1.0f })) > std::cosf(PI / 4.f))
 		{
 			mbOnGround = true;
 		}

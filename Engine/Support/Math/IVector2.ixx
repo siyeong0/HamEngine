@@ -34,6 +34,7 @@ export namespace solbit
 		inline IVector2 operator/=(int32 v);
 
 		operator FVector2();
+		operator const FVector2() const;
 	};
 
 	inline IVector2 operator-(const IVector2& vec);

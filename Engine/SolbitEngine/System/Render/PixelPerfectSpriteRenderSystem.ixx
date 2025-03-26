@@ -1,7 +1,6 @@
 module;
 
 import Common;
-import Memory;
 import Math;
 import ECS;
 import SolbitEngine.Renderer;
@@ -63,8 +62,8 @@ namespace solbit
 		IRectangle srcRect;
 		srcRect.X = intersection.X == spriteRect.X ? 0 : static_cast<int32>(spriteRect.W - intersection.W);
 		srcRect.Y = intersection.Y != spriteRect.Y ? 0 : static_cast<int32>(spriteRect.H - intersection.H);
-		srcRect.W = static_cast<int32>(Round(intersection.W * texRes.X / transform.Scale.X));
-		srcRect.H = static_cast<int32>(Round(intersection.H * texRes.Y / transform.Scale.Y));
+		srcRect.W = texRes.X;
+		srcRect.H = texRes.Y;
 		IRectangle dstRect;
 		dstRect.X = static_cast<int32>(Round(intersection.X - rtRect.X));
 		dstRect.Y = static_cast<int32>(Round(intersection.Y - rtRect.Y));

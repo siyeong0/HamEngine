@@ -13,6 +13,7 @@ import SolbitEngine.GameObject;
 import SolbitEngine.Component;
 import SolbitEngine.System.PixelPerfectSpriteRenderSystem;
 import SolbitEngine.System.RigidbodyPhysicsSystem;
+import SolbitEngine.System.PixelPerfectTilemapRenderSystem;
 
 import SolbitEngine.GameObject.Player;
 
@@ -29,6 +30,8 @@ int main(void)
 	ComponentManager::Regist<BoxCollider2D>();
 	ComponentManager::Regist<PixelPerfectCamera>();
 	ComponentManager::Regist<SpriteRenderer>();
+	ComponentManager::Regist<Tilemap>();
+	ComponentManager::Regist<TilemapRenderer>();
 
 	// Initialize Renderer
 	Renderer::Initialize();
@@ -59,11 +62,20 @@ int main(void)
 		ASSERT(false);
 		return 1;
 	}
+	if (!TextureManager::GetInstance()->Load(SName("dirt"), "../Resource/Image/Tile/dirt.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
 
 	PhysicalMaterailManager::Initialize();
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
 	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.0f));
 	PhysicalMaterailManager::GetInstance()->Add(SName("player"), PhysicalMaterial(0.5f, 1.0f, 0.0f));
+
+	TilesetManager::Initialize();
+	TilesetManager::GetInstance()->Add(SName("dirt"), Tileset(SName("dirt"), DEFAULT_ID, IVector2{ 8,8 }));
 
 	// Initialize Input
 	Input::Initialize();
@@ -143,6 +155,29 @@ int main(void)
 		jongRigidBody.PhysicMaterialId = SName("player");
 		jongSpriteRenderer.SpriteTexId = SName("jonghoon");
 	}
+	gameObjects.push_back(&jong);
+	// Create Tilemap
+	GameObject tilemap("Tilemap");
+	{
+		tilemap.AddComponent<Transform2D>();
+		tilemap.AddComponent<Tilemap>();
+		// tilemap.AddComponent<TilemapCollider>();
+		tilemap.AddComponent<TilemapRenderer>();
+
+		Transform2D& tilemapTransform = tilemap.GetComponent<Transform2D>();
+		Tilemap& tilemapMap = tilemap.GetComponent<Tilemap>();
+		// TilemapCollider& tilemapRigidBody = tilemap.GetComponent<TilemapCollider>();
+		TilemapRenderer& tilemapSpriteRenderer = tilemap.GetComponent<TilemapRenderer>();
+
+		for (int y = 0; y < 8; ++y)
+		{
+			for (int x = 0; x < 32; ++x)
+			{
+				tilemapMap[IVector2(x, y)] = Tile(SName("dirt"));
+			}
+		}
+	}
+	gameObjects.push_back(&tilemap);
 
 	// Initialize Phyiscs
 	Physics2D::Initialize();
@@ -153,8 +188,9 @@ int main(void)
 	Physics2D::GetInstance()->AddBody(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
 
 	// System set up
-	PixelPerfectSpriteRenderSystem spriteRenderSys;
+	PixelPerfectSpriteRenderSystem SpriteRenderSys;
 	RigidbodyPhysicsSystem RigidBodyPhysicsSys;
+	PixelPerfectTilemapRenderSystem TilemapRenderSys;
 
 	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
 	uint64 prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -211,9 +247,11 @@ int main(void)
 
 		// Render
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
-		spriteRenderSys.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
-		spriteRenderSys.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
-		spriteRenderSys.Execute(floor.GetComponentPack(), mainCamera.GetComponentPack());
+		SpriteRenderSys.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
+		SpriteRenderSys.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
+		SpriteRenderSys.Execute(floor.GetComponentPack(), mainCamera.GetComponentPack());
+
+		TilemapRenderSys.Execute(tilemap.GetComponentPack(), mainCamera.GetComponentPack());
 
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
 		Renderer::GetInstance()->Render();

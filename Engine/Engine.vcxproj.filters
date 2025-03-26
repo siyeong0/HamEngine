@@ -31,7 +31,7 @@
     <ClCompile Include="SolbitEngine\Component\2D\RigidBody2D.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\Transform2D.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\SpriteRenderer.ixx" />
-    <ClCompile Include="SolbitEngine\System\SpriteRenderSystem.ixx" />
+    <ClCompile Include="SolbitEngine\System\Render\SpriteRenderSystem.ixx" />
     <ClCompile Include="Support\ECS\ComponentPack.ixx" />
     <ClCompile Include="Support\Math\FRectangle.ixx" />
     <ClCompile Include="SolbitEngine\Resource\TextureManager.ixx" />
@@ -43,7 +43,7 @@
     <ClCompile Include="Support\Math\IRectangle.ixx" />
     <ClCompile Include="SolbitEngine\Scene\SceneManager.ixx" />
     <ClCompile Include="SolbitEngine\Scene\Scene.ixx" />
-    <ClCompile Include="SolbitEngine\System\PixelPerfectSpriteRenderSystem.ixx" />
+    <ClCompile Include="SolbitEngine\System\Render\PixelPerfectSpriteRenderSystem.ixx" />
     <ClCompile Include="SolbitEngine\Component\Component.ixx" />
     <ClCompile Include="SolbitEngine\System\Physics\RigidbodyPhysicsSystem.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\BoxCollider2D.ixx" />
@@ -58,5 +58,10 @@
     <ClCompile Include="SolbitEngine\Physics\2D\Collision2D.ixx" />
     <ClCompile Include="SolbitEngine\Physics\2D\Physics2D.ixx" />
     <ClCompile Include="SolbitEngine\Physics\2D\CollisionListener2D.ixx" />
+    <ClCompile Include="SolbitEngine\Component\2D\Tilemap.ixx" />
+    <ClCompile Include="SolbitEngine\Component\2D\TilemapRenderer.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\Tileset.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\TilesetManager.ixx" />
+    <ClCompile Include="SolbitEngine\System\Render\PixelPerfectTilemapRenderSystem.ixx" />
   </ItemGroup>
 </Project>

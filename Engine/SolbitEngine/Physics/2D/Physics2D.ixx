@@ -23,7 +23,8 @@ export namespace solbit
 
 		void Update(FLOAT dt);
 
-		void AddBody(GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
+		void AddBody(GameObject& gameObject, const Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
+		void RemoveBody(GameObject& gameObject, BoxCollider2D* colliderOrNull);
 		void ApplyToB2Body(const GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
 		void ApplyToSBBody(const GameObject& gameObject, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
 
@@ -84,7 +85,7 @@ namespace solbit
 		mWorld->Step(dt, mVelocityIterations, mPositionIterations);
 	}
 
-	void Physics2D::AddBody(GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
+	void Physics2D::AddBody(GameObject& gameObject, const Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
 	{
 		b2BodyDef bodyDef;
 		b2Body* b2Body = mWorld->CreateBody(&bodyDef);
@@ -101,7 +102,7 @@ namespace solbit
 
 			b2Body->SetType(b2_staticBody);
 
-			const BoxCollider2D& collider = *colliderOrNull;
+			BoxCollider2D& collider = *colliderOrNull;
 			b2PolygonShape boxShape;
 			boxShape.SetAsBox(collider.Size.X * transform->Scale.X, collider.Size.Y * transform->Scale.Y, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
 			b2FixtureDef fixtureDef;
@@ -109,10 +110,11 @@ namespace solbit
 			fixtureDef.isSensor = true;
 
 			b2Body->CreateFixture(&fixtureDef);
+			collider.B2Body = b2Body;
 		}
 		else
 		{
-			const RigidBody2D& rigidbody = *rigidbodyOrNull;
+			RigidBody2D& rigidbody = *rigidbodyOrNull;
 			switch (rigidbody.BodyType)
 			{
 			case EBodyType::Dynamic:
@@ -138,7 +140,7 @@ namespace solbit
 
 			if (colliderOrNull != nullptr)
 			{
-				const BoxCollider2D& collider = *colliderOrNull;
+				BoxCollider2D& collider = *colliderOrNull;
 				const PhysicalMaterial& pm = PhysicalMaterailManager::GetInstance()->Get(rigidbody.PhysicMaterialId);
 				b2PolygonShape boxShape;
 				boxShape.SetAsBox(collider.Size.X * transform->Scale.X * 0.5f, collider.Size.Y * transform->Scale.Y * 0.5f, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
@@ -150,15 +152,29 @@ namespace solbit
 				fixtureDef.isSensor = false;
 
 				b2Body->CreateFixture(&fixtureDef);
+				collider.B2Body = b2Body;
 			}
 
 			if (rigidbody.UseAutoMass)
 			{
 				b2Body->ResetMassData();
 				// Consta cast for update mass
-				const_cast<RigidBody2D&>(rigidbody).Mass = b2Body->GetMass();
+				rigidbody.Mass = b2Body->GetMass();
 			}
 		}
+	}
+
+	void Physics2D::RemoveBody(GameObject& gameObject, BoxCollider2D* colliderOrNull)
+	{
+		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
+		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
+		mWorld->DestroyBody(b2Body);
+		if (colliderOrNull != nullptr)
+		{
+			colliderOrNull->B2Body = nullptr;
+		}
+		mB2BodyMap.erase(gameObject.GetEntity());
+		
 	}
 
 	void Physics2D::ApplyToB2Body(const GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
