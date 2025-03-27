@@ -63,5 +63,7 @@
     <ClCompile Include="SolbitEngine\Resource\Tileset.ixx" />
     <ClCompile Include="SolbitEngine\Resource\TilesetManager.ixx" />
     <ClCompile Include="SolbitEngine\System\Render\PixelPerfectTilemapRenderSystem.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\Sprite.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\SpriteManager.ixx" />
   </ItemGroup>
 </Project>

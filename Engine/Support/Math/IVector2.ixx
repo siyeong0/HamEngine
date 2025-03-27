@@ -157,12 +157,12 @@ namespace solbit
 
 	inline bool operator==(const IVector2& lhs, const IVector2& rhs)
 	{
-		return (lhs.X == rhs.Y) && (lhs.X == rhs.Y);
+		return (lhs.X == rhs.X) && (lhs.Y == rhs.Y);
 	}
 
 	inline bool operator!=(const IVector2& lhs, const IVector2& rhs)
 	{
-		return (lhs.X != rhs.Y) || (lhs.X != rhs.Y);
+		return (lhs.X != rhs.X) || (lhs.Y != rhs.Y);
 	}
 
 }

@@ -24,6 +24,8 @@ export namespace solbit
 		void Render();
 
 		void RenderSprite(Texture& texture, const IRectangle& srcRect, const IRectangle& dstRect, FLOAT angle) const;
+		void RenderFixedSprite(Texture& texture, const IRectangle& srcRect, const IRectangle& dstRect) const;
+		void DrawPoint(int x, int y);
 
 		inline SDL_Renderer* GetRenderer();
 
@@ -136,20 +138,32 @@ namespace solbit
 
 	void Renderer::RenderSprite(Texture& texture, const IRectangle& srcRect, const IRectangle& dstRect, FLOAT angle) const
 	{
-		TextureManager* texManager = TextureManager::GetInstance();
-		SDL_Texture* sdlTexture = texture.Get();
-		SDL_Surface* sdlSurface = texture.GetSurface();
-
 		SDL_Rect sdlSrcRect = { srcRect.X, srcRect.Y, srcRect.W, srcRect.H };
 		SDL_Rect dstSrcRect = { dstRect.X, dstRect.Y, dstRect.W, dstRect.H };
 
-		SDL_RenderCopyEx(mSDLRenderer,
+ 		SDL_RenderCopyEx(mSDLRenderer,
 			texture.Get(),
 			&sdlSrcRect,
 			&dstSrcRect,
 			ToDegree(angle),
 			nullptr,
 			SDL_FLIP_NONE);
+	}
+
+	void Renderer::RenderFixedSprite(Texture& texture, const IRectangle& srcRect, const IRectangle& dstRect) const
+	{
+		SDL_Rect sdlSrcRect = { srcRect.X, srcRect.Y, srcRect.W, srcRect.H };
+		SDL_Rect dstSrcRect = { dstRect.X, dstRect.Y, dstRect.W, dstRect.H };
+
+		SDL_RenderCopy(mSDLRenderer,
+			texture.Get(),
+			&sdlSrcRect,
+			&dstSrcRect);
+	}
+
+	void Renderer::DrawPoint(int x, int y)
+	{
+		SDL_RenderDrawPoint(mSDLRenderer, x, y);
 	}
 
 	inline SDL_Renderer* Renderer::GetRenderer()

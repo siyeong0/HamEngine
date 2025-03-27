@@ -104,7 +104,7 @@ namespace solbit
 
 			BoxCollider2D& collider = *colliderOrNull;
 			b2PolygonShape boxShape;
-			boxShape.SetAsBox(collider.Size.X * transform->Scale.X, collider.Size.Y * transform->Scale.Y, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
+			boxShape.SetAsBox(collider.Size.X * transform->Scale.X * 0.5f, collider.Size.Y * transform->Scale.Y * 0.5f, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
 			b2FixtureDef fixtureDef;
 			fixtureDef.shape = &boxShape;
 			fixtureDef.isSensor = true;
@@ -183,7 +183,7 @@ namespace solbit
 		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
 
 		ASSERT(transform != nullptr);
-		b2Body->SetTransform(b2Vec2{ transform->Position.X, transform->Position.Y }, transform->Rotation);
+		b2Body->SetTransform(b2Vec2{ transform->Position.X, transform->Position.Y }, -transform->Rotation);	// Box2d는 반시계방향
 		b2Body->SetLinearVelocity(b2Vec2{ rigidbodyOrNull->Velocity.X, rigidbodyOrNull->Velocity.Y });
 		b2Body->SetAngularVelocity(rigidbodyOrNull->AngularVelocity);
 		b2Body->SetLinearDamping(rigidbodyOrNull->LinearDamping);
@@ -198,7 +198,7 @@ namespace solbit
 
 		transform->Position.X = b2Body->GetTransform().p.x;
 		transform->Position.Y = b2Body->GetTransform().p.y;
-		transform->Rotation = b2Body->GetAngle();
+		transform->Rotation = -b2Body->GetAngle();	// Box2d는 반시계방향
 
 		if (rigidbodyOrNull != nullptr)
 		{

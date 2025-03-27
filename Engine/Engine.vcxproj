@@ -166,6 +166,8 @@
     <ClCompile Include="SolbitEngine\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Resource.ixx" />
     <ClCompile Include="SolbitEngine\Physics\2D\Collision2D.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\Sprite.ixx" />
+    <ClCompile Include="SolbitEngine\Resource\SpriteManager.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Tileset.ixx" />
     <ClCompile Include="SolbitEngine\Resource\TilesetManager.ixx" />
     <ClCompile Include="SolbitEngine\System\Render\PixelPerfectTilemapRenderSystem.ixx" />

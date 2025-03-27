@@ -5,6 +5,7 @@ module;
 import std.core;
 import Common;
 import Math;
+import SolbitEngine.Renderer;
 import SolbitEngine.GameObject;
 import SolbitEngine.Physics2D;
 import SolbitEngine.Physics2D.Collision2D;

@@ -4,6 +4,7 @@ module;
 
 import Common;
 import Math;
+import SolbitEngine.Resource.Sprite;
 
 export module SolbitEngine.Component.BoxCollider2D;
 
@@ -21,6 +22,12 @@ export namespace solbit
 			, B2Body(nullptr)
 		{
 
+		}
+
+		void MatchSprite(const Sprite& sprite)
+		{
+			// TODO: Alpha값 고려해서
+			Size = static_cast<FVector2>(sprite.GetResoulution()) / static_cast<FLOAT>(sprite.PixelPerUnit);
 		}
 	};
 }

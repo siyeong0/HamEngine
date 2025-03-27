@@ -167,11 +167,11 @@ namespace solbit
 
 	inline bool operator==(const FVector2& lhs, const FVector2& rhs)
 	{
-		return (lhs.X == rhs.Y) && (lhs.X == rhs.Y);
+		return (lhs.X == rhs.X) && (lhs.Y == rhs.Y);
 	}
 
 	inline bool operator!=(const FVector2& lhs, const FVector2& rhs)
 	{
-		return (lhs.X != rhs.Y) || (lhs.X != rhs.Y);
+		return (lhs.X != rhs.X) || (lhs.Y != rhs.Y);
 	}
 }

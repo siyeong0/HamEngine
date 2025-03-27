@@ -3,7 +3,6 @@ module;
 #include <SDL2/SDL.h>
 
 import Common;
-import Memory;
 import Math;
 
 export module SolbitEngine.Resource.Texture;
@@ -23,14 +22,10 @@ export namespace solbit
 		inline uint32 GetWidth() const;
 		inline uint32 GetHeight() const;
 		inline IVector2 GetResoulution() const;
-		inline uint32 GetPPU() const;
-		inline void SetPPU(uint32 v);
 
 	private:
 		SDL_Surface* mSurface;
 		SDL_Texture* mTexture;
-
-		uint32 mPixelPerUnit;	// Default to texture width;
 	};
 }
 
@@ -45,7 +40,6 @@ namespace solbit
 	Texture::Texture(SDL_Surface* surface, SDL_Texture* texture)
 		: mSurface(surface)
 		, mTexture(texture)
-		, mPixelPerUnit(surface->w)
 	{
 
 	}
@@ -80,15 +74,5 @@ namespace solbit
 	inline IVector2 Texture::GetResoulution() const
 	{
 		return IVector2{ mSurface->w, mSurface->h };
-	}
-
-	inline uint32 Texture::GetPPU() const
-	{
-		return mPixelPerUnit;
-	}
-
-	inline void Texture::SetPPU(uint32 v)
-	{
-		mPixelPerUnit = v;
 	}
 }

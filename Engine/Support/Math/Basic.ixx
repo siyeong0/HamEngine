@@ -9,9 +9,9 @@ export namespace solbit
 {
 	extern float PI = 3.141592f;
 
-	extern inline FLOAT Round(FLOAT v)
+	extern inline int32 Round(FLOAT v)
 	{
-		return std::roundf(v);
+		return static_cast<int32>(std::roundf(v));
 	}
 
 	extern inline FLOAT ToRadian(FLOAT deg)

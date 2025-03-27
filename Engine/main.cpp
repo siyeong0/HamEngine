@@ -68,14 +68,30 @@ int main(void)
 		ASSERT(false);
 		return 1;
 	}
+	if (!TextureManager::GetInstance()->Load(SName("tile_map"), "../Resource/Image/Tile/tile_map.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
+
+	const uint32 PPU = 16;
+
+	SpriteManager::Initialize();
+	SpriteManager::GetInstance()->Add(SName("glorp"), Sprite(SName("glorp"), PPU));
+	SpriteManager::GetInstance()->Add(SName("jonghoon"), Sprite(SName("jonghoon"), PPU));
+	SpriteManager::GetInstance()->Add(SName("stone"), Sprite(SName("stone"), PPU));
+	SpriteManager::GetInstance()->Add(SName("dirt"), Sprite(SName("dirt"), PPU));
+	SpriteManager::GetInstance()->Add(SName("tile_map"), Sprite(SName("tile_map"), PPU));
+
+	TilesetManager::Initialize();
+	TilesetManager::GetInstance()->Add(SName("dirt"), Tileset(SName("dirt"), DEFAULT_ID, IVector2{ PPU, PPU }));
+	TilesetManager::GetInstance()->Add(SName("tile_map"), Tileset(SName("tile_map"), DEFAULT_ID, IVector2{ PPU, PPU }));
 
 	PhysicalMaterailManager::Initialize();
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
 	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.0f));
 	PhysicalMaterailManager::GetInstance()->Add(SName("player"), PhysicalMaterial(0.5f, 1.0f, 0.0f));
-
-	TilesetManager::Initialize();
-	TilesetManager::GetInstance()->Add(SName("dirt"), Tileset(SName("dirt"), DEFAULT_ID, IVector2{ 8,8 }));
 
 	// Initialize Input
 	Input::Initialize();
@@ -99,6 +115,8 @@ int main(void)
 
 		Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
 		PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+		pixelPerfectCamera.PixelPerUnit = PPU;
+		pixelPerfectCamera.RefResoulution = IVector2{ 64 * 4, 36 * 4 };
 	}
 	gameObjects.push_back(&mainCamera);
 	// Create Floor
@@ -111,13 +129,16 @@ int main(void)
 
 		Transform2D& floorTransform = floor.GetComponent<Transform2D>();
 		RigidBody2D& floorRigidBody = floor.GetComponent<RigidBody2D>();
+		BoxCollider2D& floorBoxCollider = floor.GetComponent<BoxCollider2D>();
 		SpriteRenderer& floorSpriteRenderer = floor.GetComponent<SpriteRenderer>();
 
-		floorTransform.Position.Y = -8.f;
-		floorTransform.Scale.X = 32.f;
+		floorTransform.Position.Y = -10.f;
+		floorTransform.Scale.X = 1.f;
+		floorTransform.Scale.Y = 0.1f;
 		floorRigidBody.BodyType = EBodyType::Static;
 		floorRigidBody.PhysicMaterialId = SName("stone");
 		floorSpriteRenderer.SpriteTexId = SName("stone");
+		floorBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("stone")));
 	}
 	gameObjects.push_back(&floor);
 	// Create Player
@@ -130,14 +151,16 @@ int main(void)
 
 		Transform2D& playerTransform = player.GetComponent<Transform2D>();
 		RigidBody2D& playerRigidBody = player.GetComponent<RigidBody2D>();
+		BoxCollider2D& palyerBoxCollider = player.GetComponent<BoxCollider2D>();
 		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
 
 		playerTransform.Position.X = 10.f;
-		playerRigidBody.FreezeRotation = true;
+		playerRigidBody.FreezeRotation = false;
 		playerRigidBody.Mass = 2.f;
 		playerRigidBody.GravityScale = 1.f;
 		playerRigidBody.PhysicMaterialId = SName("player");
 		playerSpriteRenderer.SpriteTexId = SName("glorp");
+		palyerBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("glorp")));
 	}
 	gameObjects.push_back(&player);
 	// Create JongHoon
@@ -150,10 +173,12 @@ int main(void)
 
 		Transform2D& jongTransform = jong.GetComponent<Transform2D>();
 		RigidBody2D& jongRigidBody = jong.GetComponent<RigidBody2D>();
+		BoxCollider2D& jongBoxCollider = jong.GetComponent<BoxCollider2D>();
 		SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
 
 		jongRigidBody.PhysicMaterialId = SName("player");
 		jongSpriteRenderer.SpriteTexId = SName("jonghoon");
+		jongBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("jonghoon")));
 	}
 	gameObjects.push_back(&jong);
 	// Create Tilemap
@@ -169,11 +194,16 @@ int main(void)
 		// TilemapCollider& tilemapRigidBody = tilemap.GetComponent<TilemapCollider>();
 		TilemapRenderer& tilemapSpriteRenderer = tilemap.GetComponent<TilemapRenderer>();
 
-		for (int y = 0; y < 8; ++y)
+		tilemapTransform.Position.X;
+		for (int y = 0; y < 32; ++y)
 		{
 			for (int x = 0; x < 32; ++x)
 			{
-				tilemapMap[IVector2(x, y)] = Tile(SName("dirt"));
+				int k = std::rand();
+				if (k % 2 == 1)
+				{
+					tilemapMap[IVector2(x, y)] = Tile(SName("tile_map"));
+				}
 			}
 		}
 	}
