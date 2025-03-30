@@ -27,7 +27,7 @@ export namespace solbit
 		void MatchSprite(const Sprite& sprite)
 		{
 			// TODO: Alpha값 고려해서
-			Size = static_cast<FVector2>(sprite.GetResoulution()) / static_cast<FLOAT>(sprite.PixelPerUnit);
+			Size = FVector2{ static_cast<FLOAT>(sprite.Rectangle.W),static_cast<FLOAT>(sprite.Rectangle.H) } / static_cast<FLOAT>(sprite.PixelPerUnit);
 		}
 	};
 }

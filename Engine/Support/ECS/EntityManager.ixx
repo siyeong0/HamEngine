@@ -130,8 +130,12 @@ namespace solbit
 		{
 			List<ArchetypeChunk> chunkList;
 			chunkList.push_back(ArchetypeChunk(dstArchVal));
-			uint32 idxInChunk = chunkList.back().Add(entity);
 			mArchetypeChunkMap.insert({ dstArchVal.GetId(), { dstArchVal, std::move(chunkList) } });
+		}
+		// or tail chunk is full
+		else if (mArchetypeChunkMap[dstArchVal.GetId()].second.back().IsFull())
+		{
+			mArchetypeChunkMap[dstArchVal.GetId()].second.push_back(ArchetypeChunk(dstArchVal));
 		}
 		// Copy component datas
 		Archetype& dstArch = mArchetypeChunkMap[dstArchVal.GetId()].first;

@@ -36,13 +36,13 @@ namespace solbit
 		Sprite& sprite = SpriteManager::GetInstance()->Get(spriteRenderer.SpriteTexId);
 		const uint32 ppu = sprite.PixelPerUnit;
 		const FVector2 spriteResolution = static_cast<FVector2>(sprite.GetResoulution());
-		FVector2 spriteSize = transform.Scale * static_cast<FVector2>(spriteResolution) / static_cast<FLOAT>(ppu);
+		FVector2 spriteSize = transform.Scale * FVector2{static_cast<FLOAT>(sprite.Rectangle.W), static_cast<FLOAT>(sprite.Rectangle.H) } / static_cast<FLOAT>(ppu);
 
-		FRectangle spriteRect;
-		spriteRect.X = transform.Position.X - 0.5f * spriteSize.X;
-		spriteRect.Y = transform.Position.Y - 0.5f * spriteSize.Y;
-		spriteRect.W = spriteSize.X;
-		spriteRect.H = spriteSize.Y;
+		FRectangle entityRect;
+		entityRect.X = transform.Position.X - 0.5f * spriteSize.X;
+		entityRect.Y = transform.Position.Y - 0.5f * spriteSize.Y;
+		entityRect.W = spriteSize.X;
+		entityRect.H = spriteSize.Y;
 
 		Renderer* renderer = Renderer::GetInstance();
 		const IVector2 rtSize = renderer->GetRTSize();
@@ -56,20 +56,20 @@ namespace solbit
 		ASSERT(rtSize == pixelPerfect.RefResoulution);
 		ASSERT(ppu == pixelPerfect.PixelPerUnit);
 
-		FRectangle intersection = rtRect.Intersect(spriteRect);
+		FRectangle intersection = rtRect.Intersect(entityRect);
 		if (!intersection.IsValid())
 			return;
 
 		IRectangle srcRect;
-		srcRect.X = 0;
-		srcRect.Y = 0;
-		srcRect.W = static_cast<int>(spriteResolution.X);
-		srcRect.H = static_cast<int>(spriteResolution.Y);
+		srcRect.X = sprite.Rectangle.X;
+		srcRect.Y = sprite.Rectangle.Y;
+		srcRect.W = sprite.Rectangle.W;
+		srcRect.H = sprite.Rectangle.H;
 		IRectangle dstRect;
-		dstRect.X = static_cast<int32>((spriteRect.X - rtRect.X) * ppu);
-		dstRect.Y = static_cast<int32>((spriteRect.Y - rtRect.Y) * ppu);
-		dstRect.W = static_cast<int32>(spriteRect.W * ppu);
-		dstRect.H = static_cast<int32>(spriteRect.H * ppu);
+		dstRect.X = static_cast<int32>((entityRect.X - rtRect.X) * ppu);
+		dstRect.Y = static_cast<int32>((entityRect.Y - rtRect.Y) * ppu);
+		dstRect.W = static_cast<int32>(entityRect.W * ppu);
+		dstRect.H = static_cast<int32>(entityRect.H * ppu);
 		dstRect.Y = rtSize.Y - dstRect.Y - dstRect.H;	// To screen space 
 
 		renderer->RenderSprite(sprite.GetTexture(), srcRect, dstRect, transform.Rotation);

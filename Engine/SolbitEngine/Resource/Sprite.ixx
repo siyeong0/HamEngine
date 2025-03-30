@@ -15,10 +15,11 @@ export namespace solbit
 	{
 	public:
 		ID TexId;
+		IRectangle Rectangle;
 		uint32 PixelPerUnit;
 	public:
 		Sprite();
-		Sprite(ID texId, uint32 ppu);
+		Sprite(ID texId, const IRectangle& rect, uint32 ppu);
 
 		inline Texture& GetTexture();
 
@@ -32,13 +33,15 @@ namespace solbit
 {
 	Sprite::Sprite()
 		: TexId(0)
+		, Rectangle(0,0,0,0)
 		, PixelPerUnit(0)
 	{
 
 	}
 
-	Sprite::Sprite(ID texId, uint32 ppu)
+	Sprite::Sprite(ID texId, const IRectangle& rect, uint32 ppu)
 		: TexId(texId)
+		, Rectangle(rect)
 		, PixelPerUnit(ppu)
 	{
 

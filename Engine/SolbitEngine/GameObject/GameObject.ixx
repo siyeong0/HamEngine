@@ -46,6 +46,7 @@ namespace solbit
 
 	GameObject::GameObject()
 		: mName("GameObject_" + std::to_string(sDefaultNameCount++))
+		, mEntity(EntityManager::GetActive()->CreateEntity())
 	{
 
 	}
