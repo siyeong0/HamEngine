@@ -30,7 +30,7 @@ export namespace solbit
 	private:
 		static TilesetManager* msInstance;
 
-		HashMap<ID, Tileset, DoNothing> mTilesetMap;
+		HashMap<ID, Tileset> mTilesetMap;
 	};
 }
 

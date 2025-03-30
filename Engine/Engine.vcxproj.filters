@@ -32,7 +32,6 @@
     <ClCompile Include="SolbitEngine\Component\2D\Transform2D.ixx" />
     <ClCompile Include="SolbitEngine\Component\2D\SpriteRenderer.ixx" />
     <ClCompile Include="SolbitEngine\System\Render\SpriteRenderSystem.ixx" />
-    <ClCompile Include="Support\ECS\ComponentPack.ixx" />
     <ClCompile Include="Support\Math\FRectangle.ixx" />
     <ClCompile Include="SolbitEngine\Resource\TextureManager.ixx" />
     <ClCompile Include="Common\SName.ixx" />
@@ -65,5 +64,6 @@
     <ClCompile Include="SolbitEngine\System\Render\PixelPerfectTilemapRenderSystem.ixx" />
     <ClCompile Include="SolbitEngine\Resource\Sprite.ixx" />
     <ClCompile Include="SolbitEngine\Resource\SpriteManager.ixx" />
+    <ClCompile Include="Support\ECS\EntityDataArray.ixx" />
   </ItemGroup>
 </Project>

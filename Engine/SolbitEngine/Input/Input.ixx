@@ -53,8 +53,8 @@ export namespace solbit
 		static Input* msInstance;
 
 		HashMap<EInputCode, ID> mInputMap;
-		HashMap<ID, FVector2, DoNothing> mVectorInputStateMap;
-		HashMap<ID, EButtonState, DoNothing> mButtonInputStateMap;
+		HashMap<ID, FVector2> mVectorInputStateMap;
+		HashMap<ID, EButtonState> mButtonInputStateMap;
 	};
 }
 

@@ -18,21 +18,21 @@ export namespace solbit
 		PixelPerfectTilemapRenderSystem() = default;
 		virtual ~PixelPerfectTilemapRenderSystem() = default;
 
-		void Execute(const ComponentPack& tilemapComponentPack, const ComponentPack& cameraCompPack);
+		void Execute(const Entity tilemapEntity, const Entity cameraEntity);
 	};
 }
 
 namespace solbit
 {
-	void PixelPerfectTilemapRenderSystem::Execute(const ComponentPack& tilemapComponentPack, const ComponentPack& cameraCompPack)
+	void PixelPerfectTilemapRenderSystem::Execute(const Entity tilemapEntity, const Entity cameraEntity)
 	{
 		// Unpack sprite components
-		const Transform2D& transform = tilemapComponentPack.GetComponent<Transform2D>();
-		const Tilemap& tilemap = tilemapComponentPack.GetComponent<Tilemap>();
-		const TilemapRenderer& tilemapRenderer = tilemapComponentPack.GetComponent<TilemapRenderer>();
+		const Transform2D& transform = EntityManager::GetActive()->GetComponent<Transform2D>(tilemapEntity);
+		const Tilemap& tilemap = EntityManager::GetActive()->GetComponent<Tilemap>(tilemapEntity);
+		const TilemapRenderer& tilemapRenderer = EntityManager::GetActive()->GetComponent<TilemapRenderer>(tilemapEntity);
 		// Unpack Camera components
-		Transform2D& cameraTransform = cameraCompPack.GetComponent<Transform2D>();
-		PixelPerfectCamera& pixelPerfect = cameraCompPack.GetComponent<PixelPerfectCamera>();
+		Transform2D& cameraTransform = EntityManager::GetActive()->GetComponent<Transform2D>(cameraEntity);
+		PixelPerfectCamera& pixelPerfect = EntityManager::GetActive()->GetComponent<PixelPerfectCamera>(cameraEntity);
 		const int32 ppu = pixelPerfect.PixelPerUnit;
 		const IVector2& refRes = pixelPerfect.RefResoulution;
 

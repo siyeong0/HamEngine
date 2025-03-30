@@ -18,20 +18,20 @@ export namespace solbit
 		PixelPerfectSpriteRenderSystem() = default;
 		virtual ~PixelPerfectSpriteRenderSystem() = default;
 
-		void Execute(const ComponentPack& entityComponentPack, const ComponentPack& cameraCompPack);
+		void Execute(const Entity entity, const Entity cameraEntity);
 	};
 }
 
 namespace solbit
 {
-	void PixelPerfectSpriteRenderSystem::Execute(const ComponentPack& entityComponentPack, const ComponentPack& cameraCompPack)
+	void PixelPerfectSpriteRenderSystem::Execute(const Entity entity, const Entity cameraEntity)
 	{
 		// Unpack sprite components
-		const Transform2D& transform = entityComponentPack.GetComponent<Transform2D>();
-		const SpriteRenderer& spriteRenderer = entityComponentPack.GetComponent<SpriteRenderer>();
+		const Transform2D& transform = EntityManager::GetActive()->GetComponent<Transform2D>(entity);
+		const SpriteRenderer& spriteRenderer = EntityManager::GetActive()->GetComponent<SpriteRenderer>(entity);
 		// Unpack Camera components
-		Transform2D& cameraTransform = cameraCompPack.GetComponent<Transform2D>();
-		PixelPerfectCamera& pixelPerfect = cameraCompPack.GetComponent<PixelPerfectCamera>();
+		Transform2D& cameraTransform = EntityManager::GetActive()->GetComponent<Transform2D>(cameraEntity);
+		PixelPerfectCamera& pixelPerfect = EntityManager::GetActive()->GetComponent<PixelPerfectCamera>(cameraEntity);
 		// Sprite
 		Sprite& sprite = SpriteManager::GetInstance()->Get(spriteRenderer.SpriteTexId);
 		const uint32 ppu = sprite.PixelPerUnit;
@@ -63,8 +63,8 @@ namespace solbit
 		IRectangle srcRect;
 		srcRect.X = 0;
 		srcRect.Y = 0;
-		srcRect.W = spriteResolution.X;
-		srcRect.H = spriteResolution.Y;
+		srcRect.W = static_cast<int>(spriteResolution.X);
+		srcRect.H = static_cast<int>(spriteResolution.Y);
 		IRectangle dstRect;
 		dstRect.X = static_cast<int32>((spriteRect.X - rtRect.X) * ppu);
 		dstRect.Y = static_cast<int32>((spriteRect.Y - rtRect.Y) * ppu);

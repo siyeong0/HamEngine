@@ -5,7 +5,7 @@ import Common;
 import Memory;
 import SolbitSTL;
 import ECS.Entity;
-import ECS.ComponentPack;
+import ECS.EntityDataArray;
 import ECS.ComponentManager;
 import ECS.Archetype;
 import ECS.ArchetypeChunk;
@@ -17,269 +17,203 @@ export namespace solbit
 	class EntityManager
 	{
 	public:
-		static EntityManager* GetInstance();
-		static bool Initialize();
-		static void Finalize();
-
-		const Entity CreateEntity();
-		void DestroyEntity();
-
-		template <typename ComponentType>
-		ComponentType& AddComponent(const Entity entity);
-		template <typename ComponentType>
-		void RemoveComponent(const Entity entity);
-
-		ComponentPack GetComponentPack(const Entity entity);
-
-
-
-	private:
 		EntityManager() = default;
 		~EntityManager() = default;
+
+		static EntityManager* GetActive();
+		static void SetActive(EntityManager* em);
+
+		const Entity CreateEntity();
+		void DestroyEntity(const Entity entity);
+
+		template <typename ComponentType>
+		void AddComponent(const Entity entity);
+		template <typename ComponentType>
+		void RemoveComponent(const Entity entity);
+		template <typename ComponentType>
+		ComponentType& GetComponent(const Entity entity);
+
+	private:
 		EntityManager(const EntityManager&) = delete;
 		EntityManager(const EntityManager&&) = delete;
 	private:
-		static EntityManager* msInstance;
+		static EntityManager* msActiveEM;
 
-		Vector<Entity> mEntities;
-		HashMap<Entity, Archetype, EntityHash> mEntitiyToArchetypeMap;
-		HashMap<Archetype, List<ArchetypeChunk>, ArchetypeHash> mArchetypeChunkMap;
+		List<EntityDataArray> mEntityDataArrayList;
+		HashMap<Entity, Pair<uint32, uint32>, EntityHash> mEntityIdxMap;
+		HashMap<ID, Pair<Archetype, List<ArchetypeChunk>>> mArchetypeChunkMap;
 	};
 }
 
 namespace solbit
 {
-	EntityManager* EntityManager::msInstance = nullptr;
+	EntityManager* EntityManager::msActiveEM = nullptr;
 
-	EntityManager* EntityManager::GetInstance()
+	EntityManager* EntityManager::GetActive()
 	{
-		ASSERT(msInstance != nullptr);
-		return msInstance;
+		return msActiveEM;
 	}
 
-	bool EntityManager::Initialize()
+	void EntityManager::SetActive(EntityManager* em)
 	{
-		ASSERT(msInstance == nullptr);
-		msInstance = new EntityManager;
-
-		// msInstance->mEntities.reserve(4096);
-		return msInstance != nullptr;
-	}
-
-	void EntityManager::Finalize()
-	{
-		ASSERT(msInstance != nullptr);
-		delete msInstance;
-		msInstance = nullptr;
+		msActiveEM = em;
 	}
 
 	const Entity EntityManager::CreateEntity()
 	{
 		// TODO: 아이디 생성
 		static uint32 entityId = 0;
-		mEntities.push_back(Entity(entityId++));
+		Entity entity(entityId++);
 
-		return mEntities[mEntities.size() - 1];
+		uint32 listIdx = 0;
+		uint32 arrIdx;
+		for (auto listIter = mEntityDataArrayList.begin(); listIter != mEntityDataArrayList.end(); ++listIter)
+		{
+			if (!listIter->IsFull())
+			{
+				goto LIST_LOOP_EXIT;
+			}
+			++listIdx;
+		}
+		// Insert new entity data array
+		mEntityDataArrayList.push_back(EntityDataArray());
+	LIST_LOOP_EXIT:
+
+		auto dstIter = mEntityDataArrayList.begin();
+		std::advance(dstIter, listIdx);
+
+		EntityData ed;
+		ed.Archetype = nullptr;
+		ed.Chunk = nullptr;
+		ed.IndexInChunk = 0;
+		arrIdx = dstIter->Add(ed);
+
+		mEntityIdxMap.insert({ entity, { listIdx, arrIdx } });
+
+		return entity;
 	}
 
-	void EntityManager::DestroyEntity()
+	void EntityManager::DestroyEntity(const Entity entity)
 	{
+		ASSERT(mEntityIdxMap.find(entity) != mEntityIdxMap.end());
 
+		auto& idxPair = mEntityIdxMap[entity];
+		auto dstIter = mEntityDataArrayList.begin();
+		std::advance(dstIter, idxPair.first);
+
+		dstIter->Remove(idxPair.second);
 	}
 
 	template <typename ComponentType>
-	ComponentType& EntityManager::AddComponent(const Entity entity)
+	void EntityManager::AddComponent(const Entity entity)
 	{
-		if (mEntitiyToArchetypeMap.find(entity) == mEntitiyToArchetypeMap.end()) // Without components
+		ASSERT(mEntityIdxMap.find(entity) != mEntityIdxMap.end());
+
+		auto& idxPair = mEntityIdxMap[entity];
+		auto dstIter = mEntityDataArrayList.begin();
+		std::advance(dstIter, idxPair.first);
+		EntityData& ed = dstIter->Get(idxPair.second);
+
+		// Build destination archetype
+		Archetype dstArchVal;
+		if (ed.Archetype == nullptr)
 		{
-			// Build an archetype
-			Archetype archetype;
-			archetype.Insert(RTTI<ComponentType>::GetId());
-			mEntitiyToArchetypeMap.insert({ entity, archetype });
-
-			// Build chunk list for archetype if not exist;
-			if (mArchetypeChunkMap.find(archetype) == mArchetypeChunkMap.end())
-			{
-				List<ArchetypeChunk> chunkList;
-				chunkList.push_back(ArchetypeChunk(archetype));
-				mArchetypeChunkMap.insert({ archetype, std::move(chunkList) });
-			}
-
-			// Find or allocate dst chunk;
-			ArchetypeChunk* dstChunk = nullptr;
-			List<ArchetypeChunk>& chunkList = mArchetypeChunkMap[archetype];
-			for (ArchetypeChunk& chunk : chunkList)
-			{
-				if (!chunk.IsFull())
-				{
-					dstChunk = &chunk;
-					goto EXIT;
-				}
-			}
-			chunkList.push_back(ArchetypeChunk(archetype)); // All chunks are full
-			dstChunk = &chunkList.back();
-		EXIT:
-			dstChunk->Add(entity);
-			return *dstChunk->GetComponentOrNull<ComponentType>(entity);
+			dstArchVal.Insert(RTTI<ComponentType>::GetId());
 		}
-		else // With components
+		else
 		{
-			const Archetype& srcArchetype = mEntitiyToArchetypeMap[entity];
-			Archetype dstArchetype;
-			dstArchetype.Insert(srcArchetype).Insert(RTTI<ComponentType>::GetId());
-
-			// Find src/dst chunk list
-			List<ArchetypeChunk>& srcChunkList = mArchetypeChunkMap[srcArchetype];
-			if (mArchetypeChunkMap.find(dstArchetype) == mArchetypeChunkMap.end()) // Chunk for archetype not exist;
-			{
-				List<ArchetypeChunk> chunkList;
-				chunkList.push_back(ArchetypeChunk(dstArchetype));
-				mArchetypeChunkMap.insert({ dstArchetype, std::move(chunkList) });
-			}
-			List<ArchetypeChunk>& dstChunkList = mArchetypeChunkMap[dstArchetype];
-
-			// Find src/dst chunk
-			ArchetypeChunk* srcChunk = nullptr;
-			for (ArchetypeChunk& chunk : srcChunkList)
-			{
-				if (chunk.Has(entity))
-				{
-					srcChunk = &chunk;
-					break;
-				}
-			}
-			ASSERT(srcChunk != nullptr);
-			ArchetypeChunk* dstChunk = nullptr;
-			for (ArchetypeChunk& chunk : dstChunkList)
-			{
-				if (!chunk.IsFull())
-				{
-					dstChunk = &chunk;
-					goto MOVE_ENTITY_EXIT;
-				}
-			}
-			dstChunkList.push_back(ArchetypeChunk(dstArchetype)); // All chunks are full
-			dstChunk = &dstChunkList.back();
-		MOVE_ENTITY_EXIT:
-
-			// Add an entity to dst chunk and copy component data from src
-			dstChunk->Add(entity);
-			const Archetype& subset = srcArchetype;
-			for (auto& componentTypeId : subset.GetComponentTypeIdSet())
-			{
-				std::memcpy(
-					dstChunk->GetComponentOrNull(entity, componentTypeId),
-					srcChunk->GetComponentOrNull(entity, componentTypeId),
-					ComponentManager::GetSizeOfComponent(componentTypeId));
-			}
-
-			// Remove an entity from src chunk
-			srcChunk->Remove(entity);
-
-			// Update EntityToArchetypeMap
-			mEntitiyToArchetypeMap.erase(entity);
-			mEntitiyToArchetypeMap.insert({ entity, dstArchetype });
-
-			return *dstChunk->GetComponentOrNull<ComponentType>(entity);
+			dstArchVal = *ed.Archetype;
+			dstArchVal.Insert(RTTI<ComponentType>::GetId());
 		}
+		// Add a chunkmap if dst archetype is a new one
+		if (mArchetypeChunkMap.find(dstArchVal.GetId()) == mArchetypeChunkMap.end())
+		{
+			List<ArchetypeChunk> chunkList;
+			chunkList.push_back(ArchetypeChunk(dstArchVal));
+			uint32 idxInChunk = chunkList.back().Add(entity);
+			mArchetypeChunkMap.insert({ dstArchVal.GetId(), { dstArchVal, std::move(chunkList) } });
+		}
+		// Copy component datas
+		Archetype& dstArch = mArchetypeChunkMap[dstArchVal.GetId()].first;
+		ArchetypeChunk& dstChunk = mArchetypeChunkMap[dstArch.GetId()].second.back();
+		uint32 dstIdxInChunk = dstChunk.Add(entity);
+
+		if (ed.Archetype != nullptr)
+		{
+			Archetype& srcArch = *ed.Archetype;
+			ArchetypeChunk& srcChunk = *ed.Chunk;
+			uint32 srcIdxInChunk = ed.IndexInChunk;
+			for (auto compId : srcArch.GetComponentTypeIdSet())
+			{
+				std::memcpy(dstChunk.GetComponent(compId, dstIdxInChunk), srcChunk.GetComponent(compId, srcIdxInChunk), ComponentManager::GetSizeOfComponent(compId));
+			}
+			// Remove source data
+			srcChunk.Remove(srcIdxInChunk, mArchetypeChunkMap[srcArch.GetId()].second.back());
+		}
+		// Update entity data
+		ed.Archetype = &dstArch;
+		ed.Chunk = &dstChunk;
+		ed.IndexInChunk = dstIdxInChunk;
+
+		new (&(this->GetComponent<ComponentType>(entity))) (ComponentType);
 	}
 
 	template <typename ComponentType>
 	void EntityManager::RemoveComponent(const Entity entity)
 	{
-		ASSERT(mEntitiyToArchetypeMap.find(entity) != mEntitiyToArchetypeMap.end());	// Entity has a component
+		ASSERT(mEntityIdxMap.find(entity) != mEntityIdxMap.end());
 
-		const Archetype& srcArchetype = mEntitiyToArchetypeMap[entity];
-		Archetype dstArchetype;
-		dstArchetype.Insert(srcArchetype).Erase(RTTI<ComponentType>::GetId());
+		auto& idxPair = mEntityIdxMap[entity];
+		auto dstIter = mEntityDataArrayList.begin();
+		std::advance(dstIter, idxPair.first);
+		EntityData& ed = dstIter->Get(idxPair.second);
 
-		if (dstArchetype.GetSize() == 0)
+		// Build destination archetype
+		ASSERT(ed.Archetype != nullptr);
+		Archetype dstArchVal;
+		dstArchVal = *ed.Archetype;
+		dstArchVal.Erase(RTTI<ComponentType>::GetId());
+		// Add a chunkmap if dst archetype is a new one
+		if (mArchetypeChunkMap.find(dstArchVal.GetId()) == mArchetypeChunkMap.end())
 		{
-			List<ArchetypeChunk>& srcChunkList = mArchetypeChunkMap[srcArchetype];
-			ArchetypeChunk* srcChunk = nullptr;
-			for (ArchetypeChunk& chunk : srcChunkList)
-			{
-				if (chunk.Has(entity))
-				{
-					srcChunk = &chunk;
-					break;
-				}
-			}
-			ASSERT(srcChunk != nullptr);
-
-			srcChunk->Remove(entity);
-			mEntitiyToArchetypeMap.erase(entity);
+			List<ArchetypeChunk> chunkList;
+			chunkList.push_back(ArchetypeChunk(dstArchVal));
+			uint32 idxInChunk = chunkList.back().Add(entity);
+			mArchetypeChunkMap.insert(dstArchVal.GetId(), { dstArchVal, std::move(chunkList) });
 		}
-		else
+		// Copy component datas
+		Archetype& dstArch = mArchetypeChunkMap[dstArch.GetId()].first;
+		ArchetypeChunk& dstChunk = mArchetypeChunkMap[dstArch.GetId()].second.back();
+		uint32 dstIdxInChunk = dstChunk.Add(entity);
+		Archetype& srcArch = *ed.Archetype;
+		ArchetypeChunk& srcChunk = *ed.Chunk;
+		uint32 srcIdxInChunk = ed.IndexInChunk;
+		for (auto compId : srcArch.GetComponentTypeIdSet)
 		{
-			// Find src/dst chunk list
-			List<ArchetypeChunk>& srcChunkList = mArchetypeChunkMap[srcArchetype];
-			if (mArchetypeChunkMap.find(dstArchetype) == mArchetypeChunkMap.end()) // Chunk for archetype not exist;
-			{
-				List<ArchetypeChunk> chunkList;
-				chunkList.push_back(ArchetypeChunk(dstArchetype));
-				mArchetypeChunkMap.insert({ dstArchetype, std::move(chunkList) });
-			}
-			List<ArchetypeChunk>& dstChunkList = mArchetypeChunkMap[dstArchetype];
-
-			// Find src/dst chunk
-			ArchetypeChunk* srcChunk = nullptr;
-			for (ArchetypeChunk& chunk : srcChunkList)
-			{
-				if (chunk.Has(entity))
-				{
-					srcChunk = &chunk;
-					break;
-				}
-			}
-			ASSERT(srcChunk != nullptr);
-			ArchetypeChunk* dstChunk = nullptr;
-			for (ArchetypeChunk& chunk : dstChunkList)
-			{
-				if (!chunk.IsFull())
-				{
-					dstChunk = &chunk;
-					goto MOVE_ENTITY_EXIT;
-				}
-			}
-			dstChunkList.push_back(ArchetypeChunk(dstArchetype)); // All chunks are full
-			dstChunk = &dstChunkList.back();
-		MOVE_ENTITY_EXIT:
-
-			// Add an entity to dst chunk and copy component data from src
-			dstChunk->Add(entity);
-
-			const Archetype& subset = dstArchetype;
-			for (auto& componentTypeId : subset.GetComponentTypeIdSet())
-			{
-				std::memcpy(
-					dstChunk->GetComponentOrNull(entity, componentTypeId),
-					srcChunk->GetComponentOrNull(entity, componentTypeId),
-					ComponentManager::GetSizeOfComponent(componentTypeId));
-			}
-
-			// Remove an entity from src chunk
-			srcChunk->Remove(entity);
-
-			// Update EntityToArchetypeMap
-			mEntitiyToArchetypeMap.erase(entity);
-			mEntitiyToArchetypeMap.insert({ entity, dstArchetype });
+			std::memcpy(dstChunk.GetComponent(compId, dstIdxInChunk), dstChunk.GetComponent(compId, srcIdxInChunk), ComponentManager::GetSizeOfComponent(compId));
 		}
+		// Remove source datab
+		srcChunk.Remove(srcIdxInChunk, mArchetypeChunkMap[srcArch].second.back());
+
+		// Update entity data
+		ed.Archetype = dstArch;
+		ed.Chunk = dstChunk;
+		ed.IndexInChunk = dstIdxInChunk;
 	}
 
-	ComponentPack EntityManager::GetComponentPack(const Entity entity)
+	template <typename ComponentType>
+	ComponentType& EntityManager::GetComponent(const Entity entity)
 	{
-		const Archetype& archetype = mEntitiyToArchetypeMap[entity];
-		List<ArchetypeChunk>& chunkList = mArchetypeChunkMap[archetype];
+		ASSERT(mEntityIdxMap.find(entity) != mEntityIdxMap.end());
 
-		ComponentPack componentPack;
-		for (auto& chunk : chunkList)
-		{
-			if (chunk.GetComponentPack(entity, &componentPack))
-				break;
-		}
-		ASSERT(componentPack.mData != nullptr);
+		auto& idxPair = mEntityIdxMap[entity];
+		auto dstIter = mEntityDataArrayList.begin();
+		std::advance(dstIter, idxPair.first);
 
-		return componentPack;
+		EntityData ed = dstIter->Get(idxPair.second);
+		ArchetypeChunk* chunk = ed.Chunk;
+		const uint32 idxInChunk = ed.IndexInChunk;
+
+		return chunk->GetComponent<ComponentType>(idxInChunk);
 	}
 }

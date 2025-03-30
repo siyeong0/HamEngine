@@ -14,8 +14,6 @@ export namespace solbit
 	class Archetype
 	{
 	public:
-		static constexpr size_t CHUNK_MEM_SIZE = 16 * 1024;
-	public:
 		Archetype();
 		~Archetype() = default;
 
@@ -32,23 +30,11 @@ export namespace solbit
 		inline bool operator==(const Archetype& other) const;
 		inline bool operator!=(const Archetype& other) const;
 
+		inline ID GetId() const;
 		inline size_t GetSize() const;
 
 	private:
 		HashSet<uint32> mSet;
-	};
-
-	struct ArchetypeHash
-	{
-		size_t operator()(const Archetype& archetype) const
-		{
-			size_t hash = 0;
-			for (auto v : archetype.GetComponentTypeIdSet())
-			{
-				hash = 65599 * hash + v;
-			}
-			return hash;
-		}
 	};
 }
 
@@ -119,6 +105,16 @@ namespace solbit
 	inline bool Archetype::operator!=(const Archetype& other) const
 	{
 		return !(operator==(other));
+	}
+
+	inline ID Archetype::GetId() const
+	{
+		uint32 hash = 0;
+		for (auto v : mSet)
+		{
+			hash = 65599 * hash + v;
+		}
+		return hash;
 	}
 
 	inline size_t Archetype::GetSize() const

@@ -34,7 +34,7 @@ export namespace solbit
 		static TextureManager* msInstance;
 		
 		SDL_Renderer* mTargetRenderer;
-		HashMap<ID, Texture, DoNothing> mTextureMap;
+		HashMap<ID, Texture> mTextureMap;
 	};
 }
 

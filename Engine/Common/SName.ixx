@@ -17,13 +17,4 @@ export namespace solbit
 		}
 		return hash ^ (hash >> 16);
 	}
-
-	class DoNothing
-	{
-	public:
-		size_t operator() (const ID& id) const
-		{
-			return static_cast<size_t>(id);
-		}
-	};
 }

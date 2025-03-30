@@ -31,7 +31,7 @@ export namespace solbit
 	private:
 		static PhysicalMaterailManager* msInstance;
 
-		HashMap<ID, PhysicalMaterial, DoNothing> mPhysicalMaterialMap;
+		HashMap<ID, PhysicalMaterial> mPhysicalMaterialMap;
 	};
 }
 

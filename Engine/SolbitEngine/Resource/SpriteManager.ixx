@@ -30,7 +30,7 @@ export namespace solbit
 	private:
 		static SpriteManager* msInstance;
 
-		HashMap<ID, Sprite, DoNothing> mSpriteMap;
+		HashMap<ID, Sprite> mSpriteMap;
 	};
 }
 

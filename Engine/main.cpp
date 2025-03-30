@@ -22,16 +22,17 @@ using namespace solbit;
 int main(void)
 {
 	// Initialize ECS
-	EntityManager::Initialize();
-	ComponentManager::Initialize();
+	EntityManager entityManager;
+	EntityManager::SetActive(&entityManager);
 
-	ComponentManager::Regist<Transform2D>();
-	ComponentManager::Regist<RigidBody2D>();
-	ComponentManager::Regist<BoxCollider2D>();
-	ComponentManager::Regist<PixelPerfectCamera>();
-	ComponentManager::Regist<SpriteRenderer>();
-	ComponentManager::Regist<Tilemap>();
-	ComponentManager::Regist<TilemapRenderer>();
+	ComponentManager::Initialize();
+	ComponentManager::Regist<Transform2D>("Transform2D");
+	ComponentManager::Regist<RigidBody2D>("RigidBody2D");
+	ComponentManager::Regist<BoxCollider2D>("BoxCollider2D");
+	ComponentManager::Regist<PixelPerfectCamera>("PixelPerfectCamera");
+	ComponentManager::Regist<SpriteRenderer>("SpriteRenderer");
+	ComponentManager::Regist<Tilemap>("Tilemap");
+	ComponentManager::Regist<TilemapRenderer>("TilemapRenderer");
 
 	// Initialize Renderer
 	Renderer::Initialize();
@@ -116,7 +117,7 @@ int main(void)
 		Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
 		PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
 		pixelPerfectCamera.PixelPerUnit = PPU;
-		pixelPerfectCamera.RefResoulution = IVector2{ 64 * 4, 36 * 4 };
+		pixelPerfectCamera.RefResoulution = IVector2{ 640, 360 };
 	}
 	gameObjects.push_back(&mainCamera);
 	// Create Floor
@@ -277,11 +278,11 @@ int main(void)
 
 		// Render
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
-		SpriteRenderSys.Execute(player.GetComponentPack(), mainCamera.GetComponentPack());
-		SpriteRenderSys.Execute(jong.GetComponentPack(), mainCamera.GetComponentPack());
-		SpriteRenderSys.Execute(floor.GetComponentPack(), mainCamera.GetComponentPack());
+		SpriteRenderSys.Execute(player.GetEntity(), mainCamera.GetEntity());
+		SpriteRenderSys.Execute(jong.GetEntity(), mainCamera.GetEntity());
+		SpriteRenderSys.Execute(floor.GetEntity(), mainCamera.GetEntity());
 
-		TilemapRenderSys.Execute(tilemap.GetComponentPack(), mainCamera.GetComponentPack());
+		TilemapRenderSys.Execute(tilemap.GetEntity(), mainCamera.GetEntity());
 
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
 		Renderer::GetInstance()->Render();
@@ -296,7 +297,6 @@ int main(void)
 	Renderer::Finalize();
 	Physics2D::Finalize();
 	ComponentManager::Finalize();
-	EntityManager::Finalize();
 	return 0;
 }
 

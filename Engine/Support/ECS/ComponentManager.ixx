@@ -20,9 +20,8 @@ export namespace solbit
 		static void Finalize();
 
 		template<typename ComponentType>
-		static void Regist();
+		static void Regist(const String& name);
 
-		static inline size_t NumComponents();
 		static inline size_t GetSizeOfComponent(const ID& componentTypeId);
 		static inline size_t GetSizeOfArchetype(const Archetype& archetype);
 		static inline const Vector<Pair<ID, size_t>> GetSizeVectorOfArchetype(const Archetype& archetype);
@@ -60,16 +59,11 @@ namespace solbit
 	}
 
 	template<typename ComponentType>
-	void ComponentManager::Regist()
+	void ComponentManager::Regist(const String& name)
 	{
-		RTTI<ComponentType>::Regist();
+		RTTI<ComponentType>::Regist(name);
 		sInstance->mComponentTypeSizeMap[RTTI<ComponentType>::GetId()] = sizeof(ComponentType);
 		sInstance->mComponentTypeCount++;
-	}
-
-	inline size_t ComponentManager::NumComponents()
-	{
-		return sInstance->mComponentTypeCount;
 	}
 
 	inline size_t ComponentManager::GetSizeOfComponent(const ID& componentTypeId)

@@ -4,7 +4,6 @@ import Common;
 import Memory;
 import SolbitSTL;
 import ECS.Entity;
-import ECS.ComponentPack;
 import ECS.ComponentManager;
 import ECS.Archetype;
 
@@ -23,40 +22,38 @@ export namespace solbit
 		ArchetypeChunk(const ArchetypeChunk&) = delete;
 		ArchetypeChunk(ArchetypeChunk&& other);
 
-		void Add(const Entity entity);
-		void Remove(const Entity entity);
+		uint32 Add(const Entity entity);
+		void Remove(uint32 idx, ArchetypeChunk& tailChunk);
+
+		Entity& GetEntity(uint32 idx);
+
+		void* GetComponent(ID compId, uint32 idx);
 
 		template <typename ComponentType>
-		ComponentType* GetComponentOrNull(const Entity entity);
-		void* GetComponentOrNull(const Entity entity, uint32 componentTypeId);
-		bool GetComponentPack(const Entity entity, ComponentPack* outComponentPack);
+		ComponentType& GetComponent(uint32 idx);
 
-		inline int GetEntityIdx(const Entity entity) const;
-
-		inline bool Has(const Entity entity);
 		inline bool IsFull() const;
 
 	private:
-		const Archetype mArchetype;
 		uint8* mBuffer;
-		size_t mSize;
+		uint32 mSize;
 		const size_t mCapacity;
-		const Vector<Pair<ID, size_t>> mArchetypeSizeVec;
-		size_t mBundleSize;
+		Vector<Pair<ID, uint8*>> mBaseAddressVec;
 	};
 
 	ArchetypeChunk::ArchetypeChunk(const Archetype& archetype)
-		: mArchetype(archetype)
-		, mBuffer(reinterpret_cast<uint8*>(Alloc(MEM_SIZE)))
+		: mBuffer(reinterpret_cast<uint8*>(Alloc(MEM_SIZE)))
 		, mSize(0)
-		, mCapacity(MEM_SIZE / (ComponentManager::GetSizeOfArchetype(mArchetype)))
-		, mArchetypeSizeVec(ComponentManager::GetSizeVectorOfArchetype(mArchetype))
-		, mBundleSize(sizeof(Entity))
+		, mCapacity(MEM_SIZE / (sizeof(Entity) + ComponentManager::GetSizeOfArchetype(archetype)))
+		, mBaseAddressVec()
 	{
 		std::memset(mBuffer, 0, MEM_SIZE);
-		for (auto& sizeInfo : mArchetypeSizeVec)
+		mBaseAddressVec.reserve(archetype.GetSize());
+		uint8* baseAddress = mBuffer + mCapacity * sizeof(Entity);
+		for (auto& sizeInfo : ComponentManager::GetSizeVectorOfArchetype(archetype))
 		{
-			mBundleSize += sizeInfo.second;
+			mBaseAddressVec.push_back({ sizeInfo.first, baseAddress });
+			baseAddress += sizeInfo.second * mCapacity;
 		}
 	}
 
@@ -66,118 +63,84 @@ export namespace solbit
 	}
 
 	ArchetypeChunk::ArchetypeChunk(ArchetypeChunk&& other)
-		: mArchetype(other.mArchetype)
-		, mBuffer(other.mBuffer)
+		: mBuffer(other.mBuffer)
 		, mSize(other.mSize)
 		, mCapacity(other.mCapacity)
-		, mArchetypeSizeVec(std::move(other.mArchetypeSizeVec))
-		, mBundleSize(other.mBundleSize)
+		, mBaseAddressVec(std::move(other.mBaseAddressVec))
 	{
 		other.mBuffer = nullptr;
 	}
 
-	void ArchetypeChunk::Add(const Entity entity)
+	uint32 ArchetypeChunk::Add(const Entity entity)
 	{
-		ASSERT(mSize < mCapacity);
-
-		uint8* baseAddress = mBuffer + mSize * mBundleSize;
-		std::memcpy(baseAddress, &entity, sizeof(Entity));
-
-		++mSize;
+		ASSERT(!IsFull());
+		std::memcpy(mBuffer + mSize * sizeof(Entity), &entity, sizeof(Entity));
+		return mSize++;
 	}
 
-	void ArchetypeChunk::Remove(const Entity entity)
+	void ArchetypeChunk::Remove(uint32 idx, ArchetypeChunk& tailChunk)
 	{
-		size_t entityIdx = GetEntityIdx(entity);
-		ASSERT(entityIdx != -1);	// Contains
+		ASSERT(idx < mSize);
 
-		if (entityIdx == mSize) // Remove the tail data
-		{
-			uint8* tailPtr = mBuffer + mSize * mBundleSize;
-			// remove entity/component data
-			std::memset(tailPtr, 0, mBundleSize);
-		}
-		else // Copy the tail data to space be removed
-		{
-			uint8* targetPtr = mBuffer + entityIdx * mBundleSize;
-			uint8* tailPtr = mBuffer + mSize * mBundleSize;
-			// copy entity/component data
-			std::memcpy(targetPtr, tailPtr, mBundleSize);
-			std::memset(tailPtr, 0, mBundleSize);
-		}
+		uint32 removedIdx = idx;
+		uint32 copiedIdx = tailChunk.mSize - 1;
 
-		--mSize;
-		return;
+		if (!(&tailChunk == this && removedIdx == copiedIdx))
+		{
+			uint8* dstPtr = mBuffer + idx * sizeof(Entity);
+			uint8* srcPtr = tailChunk.mBuffer + copiedIdx * sizeof(Entity);
+			std::memcpy(dstPtr, srcPtr, sizeof(Entity));
+			for (auto& pair : mBaseAddressVec)
+			{
+				uint8* baseAddress = pair.second;
+				size_t size = ComponentManager::GetSizeOfComponent(pair.first);
+				uint8* dstPtr = mBuffer + idx * size;
+				uint8* srcPtr = tailChunk.mBuffer + copiedIdx * size;
+				std::memcpy(dstPtr, srcPtr, size);
+			}
+		}
+		--tailChunk.mSize;;
+	}
+
+	Entity& ArchetypeChunk::GetEntity(uint32 idx)
+	{
+		ASSERT(idx < mSize);
+		return *reinterpret_cast<Entity*>(mBuffer + idx * sizeof(Entity));
+	}
+
+	void* ArchetypeChunk::GetComponent(ID compId, uint32 idx)
+	{
+		ASSERT(idx < mSize);
+
+		uint8* baseAddress = nullptr;
+		for (auto& pair : mBaseAddressVec)
+		{
+			if (pair.first == compId)
+			{
+				baseAddress = pair.second;
+			}
+		}
+		ASSERT(baseAddress != nullptr);
+
+		return reinterpret_cast<void*>(baseAddress + idx * ComponentManager::GetSizeOfComponent(compId));
 	}
 
 	template <typename ComponentType>
-	ComponentType* ArchetypeChunk::GetComponentOrNull(const Entity entity)
+	ComponentType& ArchetypeChunk::GetComponent(uint32 idx)
 	{
-		int entityIdx = GetEntityIdx(entity);
-		if (entityIdx == -1)
-			return nullptr;
+		ASSERT(idx < mSize);
 
-		uint8* baseAddress = mBuffer + entityIdx * mBundleSize;
-		size_t offset = sizeof(Entity);
-		for (auto& typeInfo : mArchetypeSizeVec)
+		uint8* baseAddress = nullptr;
+		for (auto& pair : mBaseAddressVec)
 		{
-			if (typeInfo.first == RTTI<ComponentType>::GetId())
-				break;
-			offset += typeInfo.second;
+			if (pair.first == RTTI<ComponentType>::GetId())
+			{
+				baseAddress = pair.second;
+			}
 		}
+		ASSERT(baseAddress != nullptr);
 
-		return reinterpret_cast<ComponentType*>(baseAddress + offset);
-	}
-
-	void* ArchetypeChunk::GetComponentOrNull(const Entity entity, uint32 componentTypeId)
-	{
-		int entityIdx = GetEntityIdx(entity);
-		if (entityIdx == -1)
-			return nullptr;
-
-		uint8* baseAddress = mBuffer + entityIdx * mBundleSize;
-		size_t offset = sizeof(Entity);
-		for (auto& typeInfo : mArchetypeSizeVec)
-		{
-			if (typeInfo.first == componentTypeId)
-				break;
-			offset += typeInfo.second;
-		}
-
-		return reinterpret_cast<void*>(baseAddress + offset);
-	}
-
-	bool ArchetypeChunk::GetComponentPack(const Entity entity, ComponentPack* outComponentPack)
-	{
-		int entityIdx = GetEntityIdx(entity);
-		if (entityIdx == -1)
-		{
-			outComponentPack = nullptr;
-			return false;
-		}
-		// TODO: placement new ¿¡·¯
-		outComponentPack->mData = mBuffer + entityIdx * mBundleSize;
-		outComponentPack->mArchetypeSizeVec = &mArchetypeSizeVec;
-
-		return true;
-	}
-
-	inline int ArchetypeChunk::GetEntityIdx(const Entity entity) const
-	{
-		uint8* iter = mBuffer;
-		for (int i = 0; i < mSize; i++)
-		{
-			if (*reinterpret_cast<Entity*>(iter) == entity)
-				return i;
-			iter += mBundleSize;
-		}
-		return -1;
-	}
-
-	inline bool ArchetypeChunk::Has(const Entity entity)
-	{
-		size_t entityIdx = GetEntityIdx(entity);
-		return entityIdx != -1;
+		return *reinterpret_cast<ComponentType*>(baseAddress + idx * sizeof(ComponentType));
 	}
 
 	inline bool ArchetypeChunk::IsFull() const
