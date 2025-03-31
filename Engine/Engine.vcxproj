@@ -156,10 +156,13 @@
   <ItemGroup>
     <ClCompile Include="Common\Assert.ixx" />
     <ClCompile Include="Common\Common.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Component\2D\ParallexBackground.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\PositionConstraint.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Tilemap.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\TilemapRenderer.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Constraint\PositionConstraintSystem.ixx" />
+    <ClCompile Include="SolbitEngine\Core\System\Render\ParallexBackgroundSys.ixx" />
+    <ClCompile Include="SolbitEngine\Game\Background.ixx" />
     <ClCompile Include="SolbitEngine\Game\Player.ixx" />
     <ClCompile Include="SolbitEngine\Core\Input\EInputCode.ixx" />
     <ClCompile Include="SolbitEngine\Core\Input\Input.ixx" />

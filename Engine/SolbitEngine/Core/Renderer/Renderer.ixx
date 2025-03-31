@@ -98,6 +98,9 @@ namespace solbit
 				std::cout << "SDL Renderer Initialization Fail:\n" << SDL_GetError();
 				return false;
 			}
+
+			// Alpha blending on
+			SDL_SetRenderDrawBlendMode(msInstance->mSDLRenderer, SDL_BLENDMODE_BLEND);
 		}
 
 		return msInstance != nullptr;
@@ -192,12 +195,12 @@ namespace solbit
 		ASSERT(mRTTextures.find(name) != mRTTextures.end());
 		SDL_SetRenderTarget(mSDLRenderer, mRTTextures[name].first);
 		mCurrRTResolution = mRTTextures[name].second;
-
 		SDL_RenderClear(mSDLRenderer);
 	}
 
 	void Renderer::RenderRTTexture(const String& name)
 	{
+		SDL_SetTextureBlendMode(mRTTextures[name].first, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderTarget(mSDLRenderer, nullptr);
 		SDL_RenderCopy(mSDLRenderer, mRTTextures[name].first, nullptr, nullptr);
 	}

@@ -9,3 +9,4 @@ export import SolbitEngine.Component.BoxCollider2D;
 export import SolbitEngine.Component.Tilemap;
 export import SolbitEngine.Component.TilemapRenderer;
 export import SolbitEngine.Component.PositionConstraint;
+export import SolbitEngine.Component.ParallexBackground;

@@ -16,9 +16,11 @@ import SolbitEngine.System.PixelPerfectSpriteRenderSystem;
 import SolbitEngine.System.RigidbodyPhysicsSystem;
 import SolbitEngine.System.PixelPerfectTilemapRenderSystem;
 import SolbitEngine.System.PositionConstraintSystem;
+import SolbitEngine.System.ParallexBackgroundSys;
 
 import Game.Player;
 import Game.Tile;
+import Game.Background;
 
 using namespace solbit;
 
@@ -36,6 +38,7 @@ int main(void)
 	ComponentManager::Regist<SpriteRenderer>("SpriteRenderer");
 	ComponentManager::Regist<TilemapRenderer>("TilemapRenderer");
 	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
+	ComponentManager::Regist<ParallexBackground>("ParallexBackground");
 
 	// Initialize Renderer
 	Renderer::Initialize();
@@ -78,9 +81,32 @@ int main(void)
 		ASSERT(false);
 		return 1;
 	}
+	if (!TextureManager::GetInstance()->Load(SName("bgr_natural_0"), "../Resource/Image/Background/Natural/0.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
+	if (!TextureManager::GetInstance()->Load(SName("bgr_natural_1"), "../Resource/Image/Background/Natural/1.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
+	if (!TextureManager::GetInstance()->Load(SName("bgr_natural_2"), "../Resource/Image/Background/Natural/2.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
+	if (!TextureManager::GetInstance()->Load(SName("bgr_natural_3"), "../Resource/Image/Background/Natural/3.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
 
 	const uint32 PPU = 16;
-
 	SpriteManager::Initialize();
 	SpriteManager::GetInstance()->Add(SName("glorp"), Sprite(SName("glorp"), IRectangle(0, 0, 32, 32), PPU));
 	SpriteManager::GetInstance()->Add(SName("jonghoon"), Sprite(SName("jonghoon"), IRectangle(0, 0, 128, 128), PPU));
@@ -129,19 +155,30 @@ int main(void)
 	gameObjects.push_back(&mainCamera);
 
 	// Create Tilemap
-	int NN = 64;
-	for (int y = 0; y < NN; ++y)
+	int XN = 512;
+	int YN = 6;
+	for (int y = 0; y < YN; ++y)
 	{
-		for (int x = 0; x < NN; ++x)
+		for (int x = 0; x < XN; ++x)
 		{
 			int k = std::rand();
-			if (k % 2 == 1)
+			if (k % 1 == 0)
 			{
-				Tile* tile = new Tile(IVector2{ x - (NN / 2), y - (NN + 3) });
+				Tile* tile = new Tile(IVector2{ x - (XN / 2), y - (YN + 3) });
 				gameObjects.push_back(tile);
 			}
 		}
 	}
+
+	// Create parallex background
+	Background bg0(SName("bgr_natural_0"), FVector2(0.1f, 0.1f));
+	Background bg1(SName("bgr_natural_1"), FVector2(0.2f, 0.2f));
+	Background bg2(SName("bgr_natural_2"), FVector2(0.3f, 0.3f));
+	Background bg3(SName("bgr_natural_3"), FVector2(0.8f, 0.8f));
+	gameObjects.push_back(&bg0);
+	gameObjects.push_back(&bg1);
+	gameObjects.push_back(&bg2);
+	gameObjects.push_back(&bg3);
 
 	// Initialize Phyiscs
 	Physics2D::Initialize();
@@ -154,11 +191,13 @@ int main(void)
 
 	// Set pixel perfect render target
 	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
+	Renderer::GetInstance()->AddRTTexture("ParallexBackground", {1920, 1080});
 
 	// System set up
 	PixelPerfectSpriteRenderSystem SpriteRenderSys;
 	RigidbodyPhysicsSystem RigidBodyPhysicsSys;
 	PositionConstraintSystem PosConstraintSys;
+	ParallexBackgroundSys BackgroundSys;
 
 	// Object Start
 	for (auto obj : gameObjects)
@@ -220,12 +259,20 @@ int main(void)
 
 
 		// Render
+		Renderer::GetInstance()->SetRTTexture("ParallexBackground");
+		for (auto obj : gameObjects)
+		{
+			BackgroundSys.Execute(obj->GetEntity(), mainCamera.GetEntity());
+		}
+		Renderer::GetInstance()->RenderRTTexture("ParallexBackground");
+
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
 		for (auto obj : gameObjects)
 		{
 			SpriteRenderSys.Execute(obj->GetEntity(), mainCamera.GetEntity());
 		}
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
+
 		Renderer::GetInstance()->Render();
 	}
 	// Object OnDestroy

@@ -67,5 +67,8 @@
     <ClCompile Include="SolbitEngine\Game\Tile.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\PositionConstraint.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Constraint\PositionConstraintSystem.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Component\2D\ParallexBackground.ixx" />
+    <ClCompile Include="SolbitEngine\Game\Background.ixx" />
+    <ClCompile Include="SolbitEngine\Core\System\Render\ParallexBackgroundSys.ixx" />
   </ItemGroup>
 </Project>

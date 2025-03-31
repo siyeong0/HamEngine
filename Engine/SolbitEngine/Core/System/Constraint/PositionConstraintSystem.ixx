@@ -49,5 +49,6 @@ namespace solbit
 		const Transform2D& sourceTransform = EntityManager::GetActive()->GetComponent<Transform2D>(posConstraint.Source);
 
 		transform.Position = sourceTransform.Position;
+		transform.Position.Y += 6.0f;
 	}
 }
