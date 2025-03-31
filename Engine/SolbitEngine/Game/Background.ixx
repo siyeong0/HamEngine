@@ -14,7 +14,7 @@ export namespace solbit
 	class Background final : public GameObject
 	{
 	public:
-		Background(ID texId, const FVector2& parallexEffect, bool bFreezeX = false , bool bFreezeY = true);
+		Background(ID texId, const FVector2& parallexEffect);
 
 		virtual void Start() override;
 		virtual void FixedUpdate() override;
@@ -29,7 +29,7 @@ export namespace solbit
 
 namespace solbit
 {
-	Background::Background(ID texId, const FVector2& parallexEffect, bool bFreezeX, bool bFreezeY)
+	Background::Background(ID texId, const FVector2& parallexEffect)
 		: GameObject()
 	{
 		AddComponent<ParallexBackground>();
@@ -37,8 +37,6 @@ namespace solbit
 
 		background.TexId = texId;
 		background.EffectValue = parallexEffect;
-		background.FreezeX = bFreezeX;
-		background.FreezeY = bFreezeY;
 	}
 
 	void Background::Start()

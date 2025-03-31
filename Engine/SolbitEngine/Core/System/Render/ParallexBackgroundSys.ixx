@@ -67,14 +67,8 @@ namespace solbit
 			};
 
 		FVector2 offset = { 0.0f, 0.0f };
-		if (!background.FreezeX)
-		{
-			offset.X = positiveMod(relativePosition.X, 40.0f) / 40.0f;
-		}
-		if (!background.FreezeY)
-		{
-			offset.Y = positiveMod(relativePosition.Y, 22.5f) / 22.5f;
-		}
+		offset.X = positiveMod(relativePosition.X, 40.0f) / 40.0f;
+		offset.Y = positiveMod(relativePosition.Y, 22.5f) / 22.5f;
 
 		int srcOffsetX = Round((1.0f - offset.X) * texture.GetWidth());
 		int srcOffsetY = Round((1.0f - offset.Y) * texture.GetHeight());
