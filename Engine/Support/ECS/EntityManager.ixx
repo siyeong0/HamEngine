@@ -9,6 +9,7 @@ import ECS.EntityDataArray;
 import ECS.ComponentManager;
 import ECS.Archetype;
 import ECS.ArchetypeChunk;
+import ECS.ISystem;
 
 export module ECS.EntityManager;
 
@@ -32,6 +33,10 @@ export namespace solbit
 		void RemoveComponent(const Entity entity);
 		template <typename ComponentType>
 		ComponentType& GetComponent(const Entity entity);
+		template <typename ComponentType>
+		bool HasComponent(const Entity entity);
+
+		void UpdateSystems(FLOAT dt);
 
 	private:
 		EntityManager(const EntityManager&) = delete;
@@ -42,6 +47,8 @@ export namespace solbit
 		List<EntityDataArray> mEntityDataArrayList;
 		HashMap<Entity, Pair<uint32, uint32>, EntityHash> mEntityIdxMap;
 		HashMap<ID, Pair<Archetype, List<ArchetypeChunk>>> mArchetypeChunkMap;
+
+		Vector<ISystem*> mSystems;
 	};
 }
 
@@ -214,10 +221,34 @@ namespace solbit
 		auto dstIter = mEntityDataArrayList.begin();
 		std::advance(dstIter, idxPair.first);
 
-		EntityData ed = dstIter->Get(idxPair.second);
+		EntityData& ed = dstIter->Get(idxPair.second);
 		ArchetypeChunk* chunk = ed.Chunk;
 		const uint32 idxInChunk = ed.IndexInChunk;
 
 		return chunk->GetComponent<ComponentType>(idxInChunk);
+	}
+
+	template <typename ComponentType>
+	bool EntityManager::HasComponent(const Entity entity)
+	{
+		ASSERT(mEntityIdxMap.find(entity) != mEntityIdxMap.end());
+
+		auto& idxPair = mEntityIdxMap[entity];
+		auto dstIter = mEntityDataArrayList.begin();
+		std::advance(dstIter, idxPair.first);
+		EntityData& ed = dstIter->Get(idxPair.second);
+
+		if (ed.Archetype == nullptr)
+		{
+			return false;
+		}
+
+		Archetype& arch = *ed.Archetype;
+		return arch.HasType(RTTI<ComponentType>::GetId());
+	}
+
+	void EntityManager::UpdateSystems(FLOAT dt)
+	{
+		
 	}
 }

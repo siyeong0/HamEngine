@@ -5,15 +5,15 @@ import Math;
 import SolbitEngine.Component;
 import SolbitEngine.Input;
 import SolbitEngine.GameObject;
+import SolbitEngine.Resource;
 
-export module SolbitEngine.GameObject.Player;
+export module Game.Player;
 
 export namespace solbit
 {
 	class Player final : public GameObject
 	{
 	public:
-		Player();
 		Player(const String& name);
 
 		virtual void Start() override;
@@ -30,15 +30,32 @@ export namespace solbit
 
 namespace solbit
 {
-	Player::Player()
-		: GameObject()
-	{
-
-	}
 	Player::Player(const String& name)
 		: GameObject(name)
 	{
+		AddComponent<Transform2D>();
+		AddComponent<RigidBody2D>();
+		AddComponent<BoxCollider2D>();
+		AddComponent<SpriteRenderer>();
 
+		Transform2D& transform = GetComponent<Transform2D>();
+		RigidBody2D& rigidBody = GetComponent<RigidBody2D>();
+		BoxCollider2D& boxCollider = GetComponent<BoxCollider2D>();
+		SpriteRenderer& spriteRenderer = GetComponent<SpriteRenderer>();
+
+		transform.Position = { 0.0f, 0.0f };
+		transform.Rotation = 0.f;
+		transform.Scale = { 1.0f, 1.0f };
+
+		rigidBody.FreezeRotation = true;
+		rigidBody.Mass = 2.f;
+		rigidBody.GravityScale = 1.f;
+		rigidBody.PhysicMaterialId = SName("player");
+
+		const Sprite& sprite = SpriteManager::GetInstance()->Get(SName("glorp"));
+		boxCollider.MatchSprite(sprite);
+
+		spriteRenderer.SpriteTexId = SName("glorp");
 	}
 
 	void Player::Start()

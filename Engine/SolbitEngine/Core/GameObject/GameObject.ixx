@@ -30,6 +30,9 @@ export namespace solbit
 		template <typename T>
 		T& GetComponent() const;
 
+		template <typename T>
+		bool HasComponent() const;
+
 		inline const String& GetName() const;
 		inline void SetName(const String& name);
 		inline const Entity GetEntity() const;
@@ -103,6 +106,12 @@ namespace solbit
 	T& GameObject::GetComponent() const
 	{
 		return EntityManager::GetActive()->GetComponent<T>(mEntity);
+	}
+
+	template <typename T>
+	bool GameObject::HasComponent() const
+	{
+		return EntityManager::GetActive()->HasComponent<T>(mEntity);
 	}
 
 	inline const String& GameObject::GetName() const

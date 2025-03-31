@@ -4,6 +4,7 @@ import Memory;
 import Math;
 import ECS;
 import SolbitSTL;
+import SolbitEngine.Time;
 import SolbitEngine.Renderer;
 import SolbitEngine.Physics2D;
 import SolbitEngine.Physics2D.CollisionListener2D;
@@ -14,8 +15,10 @@ import SolbitEngine.Component;
 import SolbitEngine.System.PixelPerfectSpriteRenderSystem;
 import SolbitEngine.System.RigidbodyPhysicsSystem;
 import SolbitEngine.System.PixelPerfectTilemapRenderSystem;
+import SolbitEngine.System.PositionConstraintSystem;
 
-import SolbitEngine.GameObject.Player;
+import Game.Player;
+import Game.Tile;
 
 using namespace solbit;
 
@@ -31,8 +34,8 @@ int main(void)
 	ComponentManager::Regist<BoxCollider2D>("BoxCollider2D");
 	ComponentManager::Regist<PixelPerfectCamera>("PixelPerfectCamera");
 	ComponentManager::Regist<SpriteRenderer>("SpriteRenderer");
-	ComponentManager::Regist<Tilemap>("Tilemap");
 	ComponentManager::Regist<TilemapRenderer>("TilemapRenderer");
+	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
 
 	// Initialize Renderer
 	Renderer::Initialize();
@@ -79,7 +82,7 @@ int main(void)
 	const uint32 PPU = 16;
 
 	SpriteManager::Initialize();
-	SpriteManager::GetInstance()->Add(SName("glorp"), Sprite(SName("glorp"), IRectangle(0,0,255,255), PPU));
+	SpriteManager::GetInstance()->Add(SName("glorp"), Sprite(SName("glorp"), IRectangle(0, 0, 32, 32), PPU));
 	SpriteManager::GetInstance()->Add(SName("jonghoon"), Sprite(SName("jonghoon"), IRectangle(0, 0, 128, 128), PPU));
 	SpriteManager::GetInstance()->Add(SName("stone"), Sprite(SName("stone"), IRectangle(0, 0, 16, 16), PPU));
 	SpriteManager::GetInstance()->Add(SName("dirt"), Sprite(SName("dirt"), IRectangle(0, 0, 16, 16), PPU));
@@ -108,242 +111,123 @@ int main(void)
 	// Game Objects
 	Vector<GameObject*> gameObjects;
 
+	// Create Player
+	Player player("Player");
+	gameObjects.push_back(&player);
+
 	// Create Camera
 	GameObject mainCamera("MainCamera");
 	{
 		mainCamera.AddComponent<Transform2D>();
 		mainCamera.AddComponent<PixelPerfectCamera>();
+		mainCamera.AddComponent<PositionConstraint>();
 
 		Transform2D& cameraTransform = mainCamera.GetComponent<Transform2D>();
 		PixelPerfectCamera& pixelPerfectCamera = mainCamera.GetComponent<PixelPerfectCamera>();
+		PositionConstraint& positionConstraint = mainCamera.GetComponent<PositionConstraint>();
+
 		pixelPerfectCamera.PixelPerUnit = PPU;
 		pixelPerfectCamera.RefResoulution = IVector2{ 640, 360 };
+		positionConstraint.Source = player.GetEntity();
 	}
 	gameObjects.push_back(&mainCamera);
-	// Create Floor
-	//GameObject floor("Floor");
-	//{
-	//	floor.AddComponent<Transform2D>();
-	//	floor.AddComponent<RigidBody2D>();
-	//	floor.AddComponent<BoxCollider2D>();
-	//	floor.AddComponent<SpriteRenderer>();
 
-	//	Transform2D& floorTransform = floor.GetComponent<Transform2D>();
-	//	RigidBody2D& floorRigidBody = floor.GetComponent<RigidBody2D>();
-	//	BoxCollider2D& floorBoxCollider = floor.GetComponent<BoxCollider2D>();
-	//	SpriteRenderer& floorSpriteRenderer = floor.GetComponent<SpriteRenderer>();
-
-	//	floorTransform.Position.Y = -10.f;
-	//	floorTransform.Scale.X = 32.f;
-	//	floorTransform.Scale.Y = 1.f;
-	//	floorRigidBody.BodyType = EBodyType::Static;
-	//	floorRigidBody.PhysicMaterialId = SName("stone");
-	//	floorSpriteRenderer.SpriteTexId = SName("stone");
-	//	floorBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("stone")));
-	//}
-	//gameObjects.push_back(&floor);
-	// Create Player
-	Player player("Player");
-	{
-		player.AddComponent<Transform2D>();
-		player.AddComponent<RigidBody2D>();
-		player.AddComponent<BoxCollider2D>();
-		player.AddComponent<SpriteRenderer>();
-
-		Transform2D& playerTransform = player.GetComponent<Transform2D>();
-		RigidBody2D& playerRigidBody = player.GetComponent<RigidBody2D>();
-		BoxCollider2D& palyerBoxCollider = player.GetComponent<BoxCollider2D>();
-		SpriteRenderer& playerSpriteRenderer = player.GetComponent<SpriteRenderer>();
-
-		playerTransform.Position.X = 10.f;
-		playerRigidBody.FreezeRotation = true;
-		playerRigidBody.Mass = 2.f;
-		playerRigidBody.GravityScale = 1.f;
-		playerRigidBody.PhysicMaterialId = SName("player");
-		playerSpriteRenderer.SpriteTexId = SName("glorp");
-		palyerBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("glorp")));
-	}
-	gameObjects.push_back(&player);
-	// Create JongHoon
-	GameObject jong("JongHoon");
-	{
-		jong.AddComponent<Transform2D>();
-		jong.AddComponent<RigidBody2D>();
-		jong.AddComponent<BoxCollider2D>();
-		jong.AddComponent<SpriteRenderer>();
-
-		Transform2D& jongTransform = jong.GetComponent<Transform2D>();
-		RigidBody2D& jongRigidBody = jong.GetComponent<RigidBody2D>();
-		BoxCollider2D& jongBoxCollider = jong.GetComponent<BoxCollider2D>();
-		SpriteRenderer& jongSpriteRenderer = jong.GetComponent<SpriteRenderer>();
-
-		jongRigidBody.PhysicMaterialId = SName("player");
-		jongSpriteRenderer.SpriteTexId = SName("jonghoon");
-		jongBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("jonghoon")));
-	}
-	gameObjects.push_back(&jong);
 	// Create Tilemap
-	Vector<GameObject*> tiles;
-	Transform2D* tt = nullptr;
-	for (int y = 0; y < 64; ++y)
+	int NN = 64;
+	for (int y = 0; y < NN; ++y)
 	{
-		for (int x = 0; x < 64; ++x)
+		for (int x = 0; x < NN; ++x)
 		{
 			int k = std::rand();
 			if (k % 2 == 1)
 			{
-				GameObject* tile = new GameObject;
-				tile->AddComponent<Transform2D>();
-				tile->AddComponent<RigidBody2D>();
-				tile->AddComponent<BoxCollider2D>();
-				tile->AddComponent<SpriteRenderer>();
-
-				Transform2D& tileTransform = tile->GetComponent<Transform2D>();
-				RigidBody2D& tileRigidBody = tile->GetComponent<RigidBody2D>();
-				BoxCollider2D& tileBoxCollider = tile->GetComponent<BoxCollider2D>();
-				SpriteRenderer& tileSpriteRenderer = tile->GetComponent<SpriteRenderer>();
-
-				tileTransform.Position.X = static_cast<float>(x - 32);
-				tileTransform.Position.Y = static_cast<float>(y - 66);
-				tileRigidBody.BodyType = EBodyType::Static;
-				tileRigidBody.PhysicMaterialId = SName("stone");
-				tileSpriteRenderer.SpriteTexId = SName("tile_map");
-				tileBoxCollider.MatchSprite(SpriteManager::GetInstance()->Get(SName("tile_map")));
-
+				Tile* tile = new Tile(IVector2{ x - (NN / 2), y - (NN + 3) });
 				gameObjects.push_back(tile);
-				tiles.push_back(tile);
-				tt = &tileTransform;
 			}
 		}
 	}
-
-	for (auto t : tiles)
-	{
-		Transform2D& tileTransform = t->GetComponent<Transform2D>();
-		int a = 3;
-	}
-
-	//GameObject tilemap("Tilemap");
-	//{
-	//	tilemap.AddComponent<Transform2D>();
-	//	tilemap.AddComponent<Tilemap>();
-	//	// tilemap.AddComponent<TilemapCollider>();
-	//	tilemap.AddComponent<TilemapRenderer>();
-
-	//	Transform2D& tilemapTransform = tilemap.GetComponent<Transform2D>();
-	//	Tilemap& tilemapMap = tilemap.GetComponent<Tilemap>();
-	//	// TilemapCollider& tilemapRigidBody = tilemap.GetComponent<TilemapCollider>();
-	//	TilemapRenderer& tilemapSpriteRenderer = tilemap.GetComponent<TilemapRenderer>();
-
-	//	tilemapTransform.Position.X;
-	//	for (int y = 0; y < 32; ++y)
-	//	{
-	//		for (int x = 0; x < 32; ++x)
-	//		{
-	//			int k = std::rand();
-	//			if (k % 2 == 1)
-	//			{
-	//				tilemapMap[IVector2(x, y)] = Tile(SName("tile_map"));
-	//			}
-	//		}
-	//	}
-	//}
-	//gameObjects.push_back(&tilemap);
 
 	// Initialize Phyiscs
 	Physics2D::Initialize();
 	CollisionListener2D* collisionListener = new CollisionListener2D;
 	Physics2D::GetInstance()->RegistContactListener(collisionListener);
-	//Physics2D::GetInstance()->AddBody(floor, &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
-	Physics2D::GetInstance()->AddBody(player, &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
-	Physics2D::GetInstance()->AddBody(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
-	for (auto tile : tiles)
+	for (auto obj : gameObjects)
 	{
-		Physics2D::GetInstance()->AddBody(*tile, &tile->GetComponent<Transform2D>(), &tile->GetComponent<RigidBody2D>(), &tile->GetComponent<BoxCollider2D>());
+		Physics2D::GetInstance()->AddBody(*obj);
 	}
+
+	// Set pixel perfect render target
+	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
 
 	// System set up
 	PixelPerfectSpriteRenderSystem SpriteRenderSys;
 	RigidbodyPhysicsSystem RigidBodyPhysicsSys;
-	PixelPerfectTilemapRenderSystem TilemapRenderSys;
-
-	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
-	uint64 prevTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+	PositionConstraintSystem PosConstraintSys;
 
 	// Object Start
-	for (auto& obj : gameObjects)
+	for (auto obj : gameObjects)
 	{
 		obj->Start();
 	}
+
+	DOUBLE prevTime = Time::GetCurrentTime();
 	while (true)
 	{
 		// Update time
-		uint64 currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-		FLOAT dt = (currTime - prevTime) / 1000.f;
-		if (dt < RigidbodyPhysicsSystem::FIXED_DELTA_TIME)
-		{
-			continue;
-		}
-		static int count = 0;
-		// std::cout << "f" << count++ << std::endl;
+		DOUBLE currTime = Time::GetCurrentTime();
+		FLOAT dt = static_cast<FLOAT>(currTime - prevTime);
 		prevTime = currTime;
 
-		auto& jt = jong.GetComponent<Transform2D>();
-
 		// Object Fixed Update
-		for (auto& obj : gameObjects)
+		for (auto obj : gameObjects)
 		{
 			obj->FixedUpdate();
 		}
-		
+
 		// Physics
-		//Physics2D::GetInstance()->ApplyToB2Body(floor, &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToB2Body(player, &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToB2Body(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
-		for (auto tile : tiles)
+		for (auto obj : gameObjects)
 		{
-			Physics2D::GetInstance()->ApplyToB2Body(*tile, &tile->GetComponent<Transform2D>(), &tile->GetComponent<RigidBody2D>(), &tile->GetComponent<BoxCollider2D>());
+			Physics2D::GetInstance()->ApplyToB2Body(*obj);
 		}
 		Physics2D::GetInstance()->Update(1.f / 60.f);
-		//Physics2D::GetInstance()->ApplyToSBBody(floor, &floor.GetComponent<Transform2D>(), &floor.GetComponent<RigidBody2D>(), &floor.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToSBBody(player, &player.GetComponent<Transform2D>(), &player.GetComponent<RigidBody2D>(), &player.GetComponent<BoxCollider2D>());
-		Physics2D::GetInstance()->ApplyToSBBody(jong, &jong.GetComponent<Transform2D>(), &jong.GetComponent<RigidBody2D>(), &jong.GetComponent<BoxCollider2D>());
-		for (auto tile : tiles)
+		for (auto obj : gameObjects)
 		{
-			Physics2D::GetInstance()->ApplyToSBBody(*tile, &tile->GetComponent<Transform2D>(), &tile->GetComponent<RigidBody2D>(), &tile->GetComponent<BoxCollider2D>());
+			Physics2D::GetInstance()->ApplyToSBBody(*obj);
 		}
 
 		// Input
 		Input::GetInstance()->Update(dt);
 
 		// Object Update
-		for (auto& obj : gameObjects)
+		for (auto obj : gameObjects)
 		{
 			obj->Update(dt);
 		}
 
 		// Object Late Update
-		for (auto& obj : gameObjects)
+		for (auto obj : gameObjects)
 		{
 			obj->LateUpdate(dt);
 		}
 
+		// Position constraint
+		for (auto obj : gameObjects)
+		{
+			PosConstraintSys.Execute(obj->GetEntity());
+		}
+
+
 		// Render
 		Renderer::GetInstance()->SetRTTexture("PixelPerfect");
-		SpriteRenderSys.Execute(player.GetEntity(), mainCamera.GetEntity());
-		SpriteRenderSys.Execute(jong.GetEntity(), mainCamera.GetEntity());
-		//SpriteRenderSys.Execute(floor.GetEntity(), mainCamera.GetEntity());
-		for (auto tile : tiles)
+		for (auto obj : gameObjects)
 		{
-			SpriteRenderSys.Execute(tile->GetEntity(), mainCamera.GetEntity());
+			SpriteRenderSys.Execute(obj->GetEntity(), mainCamera.GetEntity());
 		}
-		// TilemapRenderSys.Execute(tilemap.GetEntity(), mainCamera.GetEntity());
-
 		Renderer::GetInstance()->RenderRTTexture("PixelPerfect");
 		Renderer::GetInstance()->Render();
 	}
 	// Object OnDestroy
-	for (auto& obj : gameObjects)
+	for (auto obj : gameObjects)
 	{
 		obj->OnDestroy();
 	}

@@ -14,13 +14,14 @@ export namespace solbit
 		explicit Entity(uint32 id);
 		~Entity() = default;
 
-		Entity(const Entity& rhs);
-		Entity(const Entity&& rhs);
+		Entity(const Entity& other);
+		Entity(const Entity&& other);
+		Entity& operator=(const Entity& other);
 
 		inline operator uint32();
 
-		inline bool operator ==(const Entity& rhs) const;
-		inline bool operator !=(const Entity& rhs) const;
+		inline bool operator ==(const Entity& other) const;
+		inline bool operator !=(const Entity& other) const;
 
 		inline uint32 GetId() const;
 
@@ -45,14 +46,20 @@ namespace solbit
 	{
 	}
 
-	Entity::Entity(const Entity& rhs)
-		: mId(rhs.mId)
+	Entity::Entity(const Entity& other)
+		: mId(other.mId)
 	{
 	}
 
-	Entity::Entity(const Entity&& rhs)
-		: mId(rhs.mId)
+	Entity::Entity(const Entity&& other)
+		: mId(other.mId)
 	{
+	}
+
+	Entity& Entity::operator=(const Entity& other)
+	{
+		mId = other.mId;
+		return *this;
 	}
 
 	Entity::operator uint32()
@@ -60,14 +67,14 @@ namespace solbit
 		return mId;
 	}
 
-	bool Entity::operator ==(const Entity& rhs)  const
+	bool Entity::operator ==(const Entity& other)  const
 	{
-		return mId == rhs.mId;
+		return mId == other.mId;
 	}
 
-	bool Entity::operator !=(const Entity& rhs)  const
+	bool Entity::operator !=(const Entity& other)  const
 	{
-		return mId != rhs.mId;
+		return mId != other.mId;
 	}
 
 	inline uint32 Entity::GetId() const

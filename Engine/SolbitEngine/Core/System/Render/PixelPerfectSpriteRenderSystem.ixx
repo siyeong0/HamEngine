@@ -12,11 +12,12 @@ export module SolbitEngine.System.PixelPerfectSpriteRenderSystem;
 
 export namespace solbit
 {
-	class PixelPerfectSpriteRenderSystem
+	class PixelPerfectSpriteRenderSystem : public ISystem
 	{
 	public:
-		PixelPerfectSpriteRenderSystem() = default;
-		virtual ~PixelPerfectSpriteRenderSystem() = default;
+		virtual void OnCreate() override;
+		virtual void OnUpdate() override;
+		virtual void OnDestroy() override;
 
 		void Execute(const Entity entity, const Entity cameraEntity);
 	};
@@ -24,8 +25,28 @@ export namespace solbit
 
 namespace solbit
 {
+	void PixelPerfectSpriteRenderSystem::OnCreate()
+	{
+
+	}
+
+	void PixelPerfectSpriteRenderSystem::OnUpdate()
+	{
+		
+	}
+
+	void PixelPerfectSpriteRenderSystem::OnDestroy()
+	{
+
+	}
+
 	void PixelPerfectSpriteRenderSystem::Execute(const Entity entity, const Entity cameraEntity)
 	{
+		// TODO: 임시 코드
+		if (!EntityManager::GetActive()->HasComponent<Transform2D>(entity) || !EntityManager::GetActive()->HasComponent<SpriteRenderer>(entity))
+		{
+			return;
+		}
 		// Unpack sprite components
 		const Transform2D& transform = EntityManager::GetActive()->GetComponent<Transform2D>(entity);
 		const SpriteRenderer& spriteRenderer = EntityManager::GetActive()->GetComponent<SpriteRenderer>(entity);

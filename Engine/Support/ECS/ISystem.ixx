@@ -15,5 +15,8 @@ export namespace solbit
 		ISystem() {};
 		virtual ~ISystem() = default;
 
+		virtual void OnCreate() = 0;
+		virtual void OnUpdate() = 0;
+		virtual void OnDestroy() = 0;
 	};
 }

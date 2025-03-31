@@ -31,7 +31,8 @@ export namespace solbit
 		inline bool operator!=(const Archetype& other) const;
 
 		inline ID GetId() const;
-		inline size_t GetSize() const;
+		inline size_t GetNumTypes() const;
+		inline bool HasType(ID typeId) const;
 
 	private:
 		HashSet<uint32> mSet;
@@ -117,8 +118,20 @@ namespace solbit
 		return hash;
 	}
 
-	inline size_t Archetype::GetSize() const
+	inline size_t Archetype::GetNumTypes() const
 	{
 		return mSet.size();
+	}
+
+	inline bool Archetype::HasType(ID typeId) const
+	{
+		for (auto id : mSet)
+		{
+			if (typeId == id)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

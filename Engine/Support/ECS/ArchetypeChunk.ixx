@@ -48,7 +48,7 @@ export namespace solbit
 		, mBaseAddressVec()
 	{
 		std::memset(mBuffer, 0, MEM_SIZE);
-		mBaseAddressVec.reserve(archetype.GetSize());
+		mBaseAddressVec.reserve(archetype.GetNumTypes());
 		uint8* baseAddress = mBuffer + mCapacity * sizeof(Entity);
 		for (auto& sizeInfo : ComponentManager::GetSizeVectorOfArchetype(archetype))
 		{

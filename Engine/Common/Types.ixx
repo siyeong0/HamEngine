@@ -18,7 +18,7 @@ export namespace solbit
 	using uint64 = std::uint64_t;
 
 	using FLOAT = float;
-	using Double = double;
+	using DOUBLE = double;
 
 	using String = solbit::String;
 

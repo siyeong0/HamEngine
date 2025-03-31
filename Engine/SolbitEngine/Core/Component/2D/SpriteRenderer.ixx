@@ -1,6 +1,7 @@
 module;
 
 import Common;
+import Math;
 
 export module SolbitEngine.Component.SpriteRenderer;
 

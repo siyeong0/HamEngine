@@ -23,10 +23,10 @@ export namespace solbit
 
 		void Update(FLOAT dt);
 
-		void AddBody(GameObject& gameObject, const Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
-		void RemoveBody(GameObject& gameObject, BoxCollider2D* colliderOrNull);
-		void ApplyToB2Body(const GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull);
-		void ApplyToSBBody(const GameObject& gameObject, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull);
+		void AddBody(GameObject& gameObject);
+		void RemoveBody(GameObject& gameObject);
+		void ApplyToB2Body(const GameObject& gameObject);
+		void ApplyToSBBody(const GameObject& gameObject);
 
 		void RegistContactListener(b2ContactListener* contactListener);
 		inline GameObject* GetGameObject(b2Body* body);
@@ -85,36 +85,26 @@ namespace solbit
 		mWorld->Step(dt, mVelocityIterations, mPositionIterations);
 	}
 
-	void Physics2D::AddBody(GameObject& gameObject, const Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
+	void Physics2D::AddBody(GameObject& gameObject)
 	{
+		if (!gameObject.HasComponent<Transform2D>())
+		{
+			return;
+		}
+
 		b2BodyDef bodyDef;
 		b2Body* b2Body = mWorld->CreateBody(&bodyDef);
 
 		mB2BodyMap.insert({ gameObject.GetEntity(), b2Body });
 		mGameObjectMap.insert({ b2Body, &gameObject });
 
-		ASSERT(transform != nullptr);
-		b2Body->SetTransform(b2Vec2{ transform->Position.X, transform->Position.Y }, transform->Rotation);
+		Transform2D& transform = gameObject.GetComponent<Transform2D>();
+		b2Body->SetTransform(b2Vec2{ transform.Position.X, transform.Position.Y }, transform.Rotation);
 
-		if (rigidbodyOrNull == nullptr)
+		bool bHasRigidBody = gameObject.HasComponent<RigidBody2D>();
+		if (bHasRigidBody)
 		{
-			ASSERT(colliderOrNull != nullptr);
-
-			b2Body->SetType(b2_staticBody);
-
-			BoxCollider2D& collider = *colliderOrNull;
-			b2PolygonShape boxShape;
-			boxShape.SetAsBox(collider.Size.X * transform->Scale.X * 0.5f, collider.Size.Y * transform->Scale.Y * 0.5f, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
-			b2FixtureDef fixtureDef;
-			fixtureDef.shape = &boxShape;
-			fixtureDef.isSensor = true;
-
-			b2Body->CreateFixture(&fixtureDef);
-			collider.B2Body = b2Body;
-		}
-		else
-		{
-			RigidBody2D& rigidbody = *rigidbodyOrNull;
+			RigidBody2D& rigidbody = gameObject.GetComponent<RigidBody2D>();
 			switch (rigidbody.BodyType)
 			{
 			case EBodyType::Dynamic:
@@ -137,75 +127,105 @@ namespace solbit
 			b2Body->SetBullet(rigidbody.CollisionDetection == ECollisionDetection::Continuous);
 			b2Body->SetEnabled(true);
 			b2Body->SetGravityScale(rigidbody.GravityScale);
+		}
+		else
+		{
+			b2Body->SetType(b2_staticBody);
+			b2Body->SetLinearDamping(0.0f);
+			b2Body->SetAngularDamping(0.0f);
+			b2Body->SetFixedRotation(true);
+			b2Body->SetBullet(false);
+			b2Body->SetEnabled(true);
+		}
 
-			if (colliderOrNull != nullptr)
+		bool bHasCollider = gameObject.HasComponent<BoxCollider2D>();
+		if (bHasCollider)
+		{
+			BoxCollider2D& collider = gameObject.GetComponent<BoxCollider2D>();
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(collider.Size.X * transform.Scale.X * 0.5f, collider.Size.Y * transform.Scale.Y * 0.5f, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
+			b2FixtureDef fixtureDef;
+			fixtureDef.shape = &boxShape;
+			if (bHasRigidBody)
 			{
-				BoxCollider2D& collider = *colliderOrNull;
-				const PhysicalMaterial& pm = PhysicalMaterailManager::GetInstance()->Get(rigidbody.PhysicMaterialId);
-				b2PolygonShape boxShape;
-				boxShape.SetAsBox(collider.Size.X * transform->Scale.X * 0.5f, collider.Size.Y * transform->Scale.Y * 0.5f, b2Vec2{ collider.Offset.X, collider.Offset.Y }, 0.0f);
-				b2FixtureDef fixtureDef;
-				fixtureDef.shape = &boxShape;
+				const PhysicalMaterial& pm = PhysicalMaterailManager::GetInstance()->Get(gameObject.GetComponent<RigidBody2D>().PhysicMaterialId);
 				fixtureDef.density = pm.Density;
 				fixtureDef.friction = pm.Friction;
 				fixtureDef.restitution = pm.Bounciness;
 				fixtureDef.isSensor = false;
-
-				b2Body->CreateFixture(&fixtureDef);
-				collider.B2Body = b2Body;
+			}
+			else
+			{
+				fixtureDef.isSensor = true;
 			}
 
+			b2Body->CreateFixture(&fixtureDef);
+		}
+
+		if (bHasRigidBody)
+		{
+			RigidBody2D& rigidbody = gameObject.GetComponent<RigidBody2D>();
 			if (rigidbody.UseAutoMass)
 			{
 				b2Body->ResetMassData();
-				// Consta cast for update mass
 				rigidbody.Mass = b2Body->GetMass();
 			}
 		}
 	}
 
-	void Physics2D::RemoveBody(GameObject& gameObject, BoxCollider2D* colliderOrNull)
+	void Physics2D::RemoveBody(GameObject& gameObject)
 	{
 		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
 		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
 		mWorld->DestroyBody(b2Body);
-		if (colliderOrNull != nullptr)
-		{
-			colliderOrNull->B2Body = nullptr;
-		}
 		mB2BodyMap.erase(gameObject.GetEntity());
 		
 	}
 
-	void Physics2D::ApplyToB2Body(const GameObject& gameObject, const Transform2D* transform, const RigidBody2D* rigidbodyOrNull, const BoxCollider2D* colliderOrNull)
+	void Physics2D::ApplyToB2Body(const GameObject& gameObject)
 	{
+		if (!gameObject.HasComponent<RigidBody2D>())
+		{
+			return;
+		}
+		RigidBody2D& rigidbody = gameObject.GetComponent<RigidBody2D>();
+		if (rigidbody.BodyType == EBodyType::Static)
+		{
+			return;
+		}
+		Transform2D& transform = gameObject.GetComponent<Transform2D>();
+
 		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
 		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
 
-		ASSERT(transform != nullptr);
-		b2Body->SetTransform(b2Vec2{ transform->Position.X, transform->Position.Y }, -transform->Rotation);	// Box2d는 반시계방향
-		b2Body->SetLinearVelocity(b2Vec2{ rigidbodyOrNull->Velocity.X, rigidbodyOrNull->Velocity.Y });
-		b2Body->SetAngularVelocity(rigidbodyOrNull->AngularVelocity);
-		b2Body->SetLinearDamping(rigidbodyOrNull->LinearDamping);
+		b2Body->SetTransform(b2Vec2{ transform.Position.X, transform.Position.Y }, -transform.Rotation);	// Box2d는 반시계방향
+		b2Body->SetLinearVelocity(b2Vec2{ rigidbody.Velocity.X, rigidbody.Velocity.Y });
+		b2Body->SetAngularVelocity(rigidbody.AngularVelocity);
+		b2Body->SetLinearDamping(rigidbody.LinearDamping);
 	}
 
-	void Physics2D::ApplyToSBBody(const GameObject& gameObject, Transform2D* transform, RigidBody2D* rigidbodyOrNull, BoxCollider2D* colliderOrNull)
+	void Physics2D::ApplyToSBBody(const GameObject& gameObject)
 	{
-		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
-		ASSERT(transform != nullptr);
+		if (!gameObject.HasComponent<RigidBody2D>())
+		{
+			return;
+		}
+		RigidBody2D& rigidbody = gameObject.GetComponent<RigidBody2D>();
+		if (rigidbody.BodyType == EBodyType::Static)
+		{
+			return;
+		}
+		Transform2D& transform = gameObject.GetComponent<Transform2D>();
 
+		ASSERT(mB2BodyMap.find(gameObject.GetEntity()) != mB2BodyMap.end());
 		b2Body* b2Body = mB2BodyMap[gameObject.GetEntity()];
 
-		transform->Position.X = b2Body->GetTransform().p.x;
-		transform->Position.Y = b2Body->GetTransform().p.y;
-		transform->Rotation = -b2Body->GetAngle();	// Box2d는 반시계방향
+		transform.Position.X = b2Body->GetTransform().p.x;
+		transform.Position.Y = b2Body->GetTransform().p.y;
+		transform.Rotation = -b2Body->GetAngle();	// Box2d는 반시계방향
 
-		if (rigidbodyOrNull != nullptr)
-		{
-			rigidbodyOrNull->Velocity = FVector2{ b2Body->GetLinearVelocity().x, b2Body->GetLinearVelocity().y };
-			rigidbodyOrNull->AngularVelocity = b2Body->GetAngularVelocity();
-			rigidbodyOrNull->Mass = b2Body->GetMass();
-		}
+		rigidbody.Velocity = FVector2{ b2Body->GetLinearVelocity().x, b2Body->GetLinearVelocity().y };
+		rigidbody.AngularVelocity = b2Body->GetAngularVelocity();
 	}
 
 	void Physics2D::RegistContactListener(b2ContactListener* contactListener)
