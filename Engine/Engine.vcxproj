@@ -162,7 +162,6 @@
     <ClCompile Include="SolbitEngine\Core\Component\2D\PositionConstraint.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Tilemap.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\TilemapRenderer.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Component\Sound\AudioSource.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AnimationData.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AnimtationManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AudioData.ixx" />

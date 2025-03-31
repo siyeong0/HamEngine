@@ -2,6 +2,7 @@ module;
 
 import Common;
 import Math;
+import SolbitEngine.Audio;
 import SolbitEngine.Component;
 import SolbitEngine.Input;
 import SolbitEngine.GameObject;
@@ -38,14 +39,12 @@ namespace solbit
 		AddComponent<BoxCollider2D>();
 		AddComponent<SpriteRenderer>();
 		AddComponent<Animation>();
-		AddComponent<AudioSource>();
 
 		Transform2D& transform = GetComponent<Transform2D>();
 		RigidBody2D& rigidBody = GetComponent<RigidBody2D>();
 		BoxCollider2D& boxCollider = GetComponent<BoxCollider2D>();
 		SpriteRenderer& spriteRenderer = GetComponent<SpriteRenderer>();
 		Animation& animation = GetComponent<Animation>();
-		AudioSource& audio = GetComponent<AudioSource>();
 
 		transform.Position = { 0.0f, 0.0f };
 		transform.Rotation = 0.f;
@@ -61,10 +60,6 @@ namespace solbit
 
 		spriteRenderer.SpriteTexId = SName("dancing_rat_0");
 		animation.AnimId = SName("dancing_rat");
-
-		audio.Channel = 0;
-		audio.ClipId = SName("jump");
-		audio.Loop = 0;
 	}
 
 	void Player::Start()
@@ -74,7 +69,7 @@ namespace solbit
 
 	void Player::FixedUpdate()
 	{
-		
+
 	}
 
 	void Player::Update(FLOAT dt)
@@ -82,6 +77,19 @@ namespace solbit
 		Transform2D& transform = GetComponent<Transform2D>();
 		RigidBody2D& rigidbody = GetComponent<RigidBody2D>();
 		SpriteRenderer& sprite = GetComponent<SpriteRenderer>();
+
+		if (Input::GetInstance()->GetButtonPressed(SName("MouseLeft")))
+		{
+			Audio::GetInstance()->PlayChannel(SName("rat"), 8);
+		}
+		if (Input::GetInstance()->GetButtonReleased(SName("MouseLeft")))
+		{
+			// Audio::GetInstance()->PauseChannel(8);
+		}
+		if (Input::GetInstance()->GetButtonPressed(SName("MouseRight")))
+		{
+			
+		}
 
 		if (Input::GetInstance()->GetButtonState(SName("MoveLeft")))
 		{
@@ -94,14 +102,13 @@ namespace solbit
 		if (mbOnGround && Input::GetInstance()->GetButtonPressed(SName("Jump")))
 		{
 			rigidbody.Velocity.Y += 10.0f;
-			AudioSource& audio = GetComponent<AudioSource>();
-			audio.Play();
+			Audio::GetInstance()->Play(SName("jump"));
 		}
 	}
 
 	void Player::LateUpdate(FLOAT dt)
 	{
-		
+
 	}
 
 	void Player::OnCollisionEnter(Collision2D& collision)

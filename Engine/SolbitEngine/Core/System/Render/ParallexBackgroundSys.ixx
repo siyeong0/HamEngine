@@ -57,7 +57,7 @@ namespace solbit
 		const PixelPerfectCamera& pixelPerfect = EntityManager::GetActive()->GetComponent<PixelPerfectCamera>(cameraEntity);
 
 		const uint32 ppu = pixelPerfect.PixelPerUnit;
-		const FVector2 renderTargetSize = static_cast<FVector2>(pixelPerfect.RefResoulution) / ppu;
+		const FVector2 renderTargetSize = static_cast<FVector2>(pixelPerfect.RefResoulution) / static_cast<FLOAT>(ppu);
 		FVector2 relativePosition = -cameraTransform.Position * background.EffectValue;
 		auto positiveMod = [](FLOAT x, FLOAT y) -> FLOAT
 			{

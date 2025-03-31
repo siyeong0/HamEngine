@@ -22,11 +22,14 @@ export namespace solbit
 		void PauseMusic();
 		void HaltMusic();
 
-		void PlayChannel(AudioData& audio, uint32 channel, int loops);
-		void PauseChannel(uint32 channel);
-		void HaltChannel(uint32 channel);
+		void Play(ID id);
+		void Play(AudioData& audio);
+		void PlayChannel(ID id, int32 channel, int loops = 0);
+		void PlayChannel(AudioData& audio, int32 channel, int loops = 0);
+		void PauseChannel(int32 channel);
+		void HaltChannel(int32 channel);
 
-		void SetPosition(uint32 channel, FLOAT angle, FLOAT distance);
+		void SetPosition(int32 channel, FLOAT angle, FLOAT distance);
 		
 	private:
 		Audio() = default;
@@ -58,9 +61,11 @@ namespace solbit
 
 		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) 
 		{
-			fprintf(stderr, "Failed to initialize SDL_mixer: %s\n", Mix_GetError());
+			std::cout << "Failed to initialize SDL_mixer: " << Mix_GetError() << std::endl;
 			return false;
 		}
+
+		Mix_AllocateChannels(32);
 
 		return true;
 	}
@@ -77,7 +82,7 @@ namespace solbit
 	void Audio::PlayMusic(MusicData& music)
 	{
 		int r = Mix_PlayMusic(music.Get(), -1);
-		ASSERT(r == 0);
+		//ASSERT(r == 0);
 	}
 
 	void Audio::PauseMusic()
@@ -90,27 +95,45 @@ namespace solbit
 		Mix_HaltMusic();
 	}
 
-	void Audio::PlayChannel(AudioData& audio, uint32 channel, int loops)
+	void Audio::Play(ID id)
+	{
+		Play(AudioDataManager::GetInstance()->Get(id));
+		//ASSERT(r == 0);
+	}
+
+	void Audio::Play(AudioData& audio)
+	{
+		int r = Mix_PlayChannel(-1, audio.Get(), 0);
+		//ASSERT(r == 0);
+	}
+
+	void Audio::PlayChannel(ID id, int32 channel, int loops)
+	{
+		PlayChannel(AudioDataManager::GetInstance()->Get(id), channel, loops);
+		//ASSERT(r == 0);
+	}
+
+	void Audio::PlayChannel(AudioData& audio, int32 channel, int loops)
 	{
 		int r = Mix_PlayChannel(channel, audio.Get(), loops);
-		ASSERT(r == 0);
+		//ASSERT(r == 0);
 	}
 
-	void Audio::PauseChannel(uint32 channel)
+	void Audio::PauseChannel(int32 channel)
 	{
-		Mix_PauseAudio(channel);
+		Mix_Pause(channel);
 	}
 
-	void Audio::HaltChannel(uint32 channel)
+	void Audio::HaltChannel(int32 channel)
 	{
 		Mix_HaltChannel(channel);
 	}
 
-	void Audio::SetPosition(uint32 channel, FLOAT angle, FLOAT distance)
+	void Audio::SetPosition(int32 channel, FLOAT angle, FLOAT distance)
 	{
 		ASSERT(distance > 0.0f && distance <= 1.0f);
 
 		int r = Mix_SetPosition(channel, static_cast<int16>(ToDegree(angle)), static_cast<uint8>(distance * 255));
-		ASSERT(r == 0);
+		//ASSERT(r == 0);
 	}
 }

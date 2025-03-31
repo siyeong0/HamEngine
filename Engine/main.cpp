@@ -42,7 +42,6 @@ int main(void)
 	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
 	ComponentManager::Regist<ParallexBackground>("ParallexBackground");
 	ComponentManager::Regist<Animation>("Animation");
-	ComponentManager::Regist<AudioSource>("AudioSource");
 
 	// Initialize Renderer
 	Renderer::Initialize();
@@ -135,21 +134,27 @@ int main(void)
 
 	AudioDataManager::Initialize();
 	AudioDataManager::GetInstance()->Load(SName("jump"), "../Resource/Audio/jump.wav");
+	AudioDataManager::GetInstance()->Load(SName("rat"), "../Resource/Audio/rat.wav");
 
+	// Initialize physics materials
 	PhysicalMaterailManager::Initialize();
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
 	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.0f));
-	PhysicalMaterailManager::GetInstance()->Add(SName("player"), PhysicalMaterial(0.5f, 1.0f, 0.0f));
+	PhysicalMaterailManager::GetInstance()->Add(SName("player"), PhysicalMaterial(0.5f, 0.1f, 0.0f));
 
 	// Initialize Input
 	Input::Initialize();
 	Input::GetInstance()->Regist(SName("MoveLeft"), EInputType::Button);
 	Input::GetInstance()->Regist(SName("MoveRight"), EInputType::Button);
 	Input::GetInstance()->Regist(SName("Jump"), EInputType::Button);
+	Input::GetInstance()->Regist(SName("MouseLeft"), EInputType::Button);
+	Input::GetInstance()->Regist(SName("MouseRight"), EInputType::Button);
 	Input::GetInstance()->Regist(SName("MouseMove"), EInputType::Vector2);
 	Input::GetInstance()->Map(EInputCode::KEY_A, SName("MoveLeft"));
 	Input::GetInstance()->Map(EInputCode::KEY_D, SName("MoveRight"));
 	Input::GetInstance()->Map(EInputCode::KEY_SPACE, SName("Jump"));
+	Input::GetInstance()->Map(EInputCode::MOUSE_LEFTBUTTON, SName("MouseLeft"));
+	Input::GetInstance()->Map(EInputCode::MOUSE_RIGHTBUTTON, SName("MouseRight"));
 	Input::GetInstance()->Map(EInputCode::MOUSE_MOVE, SName("MouseMove"));
 
 	// Game Objects
