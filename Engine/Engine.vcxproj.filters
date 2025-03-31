@@ -59,8 +59,6 @@
     <ClCompile Include="SolbitEngine\Core\Physics\2D\CollisionListener2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Tilemap.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\TilemapRenderer.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Resource\Tileset.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Resource\TilesetManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Render\PixelPerfectTilemapRenderSystem.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\Sprite.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\SpriteManager.ixx" />

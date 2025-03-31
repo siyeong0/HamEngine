@@ -170,8 +170,6 @@
     <ClCompile Include="SolbitEngine\Core\Physics\2D\Collision2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\Sprite.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\SpriteManager.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Resource\Tileset.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Resource\TilesetManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Render\PixelPerfectTilemapRenderSystem.ixx" />
     <ClCompile Include="SolbitEngine\Core\Time\Time.ixx" />
     <ClCompile Include="SolbitEngine\Game\Tile.ixx" />

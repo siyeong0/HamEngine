@@ -88,10 +88,6 @@ int main(void)
 	SpriteManager::GetInstance()->Add(SName("dirt"), Sprite(SName("dirt"), IRectangle(0, 0, 16, 16), PPU));
 	SpriteManager::GetInstance()->Add(SName("tile_map"), Sprite(SName("tile_map"), IRectangle(16, 16, 16, 16), PPU));
 
-	TilesetManager::Initialize();
-	TilesetManager::GetInstance()->Add(SName("dirt"), Tileset(SName("dirt"), DEFAULT_ID, IVector2{ PPU, PPU }));
-	TilesetManager::GetInstance()->Add(SName("tile_map"), Tileset(SName("tile_map"), DEFAULT_ID, IVector2{ PPU, PPU }));
-
 	PhysicalMaterailManager::Initialize();
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
 	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.0f));
@@ -171,6 +167,7 @@ int main(void)
 	}
 
 	DOUBLE prevTime = Time::GetCurrentTime();
+	FLOAT fixedUpdateTime = 0.0f;
 	while (true)
 	{
 		// Update time
@@ -185,14 +182,19 @@ int main(void)
 		}
 
 		// Physics
-		for (auto obj : gameObjects)
+		fixedUpdateTime += dt;
+		if (fixedUpdateTime >= 1.0f / 120.0f)
 		{
-			Physics2D::GetInstance()->ApplyToB2Body(*obj);
-		}
-		Physics2D::GetInstance()->Update(1.f / 60.f);
-		for (auto obj : gameObjects)
-		{
-			Physics2D::GetInstance()->ApplyToSBBody(*obj);
+			for (auto obj : gameObjects)
+			{
+				Physics2D::GetInstance()->ApplyToB2Body(*obj);
+			}
+			Physics2D::GetInstance()->Update(dt);
+			for (auto obj : gameObjects)
+			{
+				Physics2D::GetInstance()->ApplyToSBBody(*obj);
+			}
+			fixedUpdateTime -= 1.0f / 120.0f;
 		}
 
 		// Input
