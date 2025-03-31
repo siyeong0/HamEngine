@@ -25,7 +25,8 @@ export namespace solbit
 		inline FLOAT Magnitude() const;
 		inline FLOAT SqrMagnitude() const;
 		inline FLOAT Length() const;
-		inline FVector2 Normalize() const;
+		inline FVector2 Norm() const;
+		inline void Normalize();
 		inline void Rotate(FLOAT rad);
 
 		inline FVector2 operator+=(const FVector2& other);
@@ -91,13 +92,22 @@ namespace solbit
 		return SqrMagnitude();
 	}
 
-	inline FVector2 FVector2::Normalize() const
+	inline FVector2 FVector2::Norm() const
 	{
 		FLOAT l = Length();
 		if (l == 0)
 			return FVector2{ 0.f, 0.f };
 		else
 			return *this / l;
+	}
+
+	inline void FVector2::Normalize()
+	{
+		FLOAT l = Length();
+		if (l != 0)
+		{
+			*this /= l;
+		}
 	}
 
 	inline void FVector2::Rotate(FLOAT rad)

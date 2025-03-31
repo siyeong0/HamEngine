@@ -56,7 +56,6 @@
     <ClCompile Include="SolbitEngine\Game\Player.ixx" />
     <ClCompile Include="SolbitEngine\Core\Physics\2D\Collision2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Physics\2D\Physics2D.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Physics\2D\CollisionListener2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Tilemap.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\TilemapRenderer.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Render\PixelPerfectTilemapRenderSystem.ixx" />
@@ -79,5 +78,6 @@
     <ClCompile Include="SolbitEngine\Core\Audio\Audio.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\MusicData.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\MusicDataManager.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Component\2D\CapsuleCollider2D.ixx" />
   </ItemGroup>
 </Project>

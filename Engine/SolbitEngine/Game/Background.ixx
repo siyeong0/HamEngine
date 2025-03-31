@@ -21,7 +21,7 @@ export namespace solbit
 		virtual void Update(FLOAT dt) override;
 		virtual void LateUpdate(FLOAT dt) override;
 		virtual void OnCollisionEnter(Collision2D& collision) override;
-		virtual void OnCollisionExit(Collision2D& collision) override;
+		virtual void OnCollisionExit(GameObject* other) override;
 		virtual void OnDestroy() override;
 
 	};
@@ -63,7 +63,7 @@ namespace solbit
 	{
 	}
 
-	void Background::OnCollisionExit(Collision2D& collision)
+	void Background::OnCollisionExit(GameObject* other)
 	{
 
 	}

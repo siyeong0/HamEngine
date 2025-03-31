@@ -121,11 +121,13 @@
       <EnableModules>true</EnableModules>
       <CompileAs>CompileAsCppModule</CompileAs>
       <DisableSpecificWarnings>5050;5202;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>C:\Dev\SolbitEngine\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Dev\SolbitEngine\box2d;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,13 +146,15 @@
       <EnableModules>true</EnableModules>
       <CompileAs>CompileAsCppModule</CompileAs>
       <DisableSpecificWarnings>5050;5202;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>C:\Dev\SolbitEngine\box2d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>box2d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Dev\SolbitEngine\box2d;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -158,6 +162,7 @@
     <ClCompile Include="Common\Common.ixx" />
     <ClCompile Include="SolbitEngine\Core\Audio\Audio.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Animation.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Component\2D\CapsuleCollider2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\ParallexBackground.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\PositionConstraint.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Tilemap.ixx" />
@@ -175,7 +180,6 @@
     <ClCompile Include="SolbitEngine\Game\Player.ixx" />
     <ClCompile Include="SolbitEngine\Core\Input\EInputCode.ixx" />
     <ClCompile Include="SolbitEngine\Core\Input\Input.ixx" />
-    <ClCompile Include="SolbitEngine\Core\Physics\2D\CollisionListener2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Physics\2D\Physics2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\PhysicMaterialManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\Resource.ixx" />

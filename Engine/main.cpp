@@ -7,7 +7,6 @@ import SolbitSTL;
 import SolbitEngine.Time;
 import SolbitEngine.Renderer;
 import SolbitEngine.Physics2D;
-import SolbitEngine.Physics2D.CollisionListener2D;
 import SolbitEngine.Audio;
 import SolbitEngine.Resource;
 import SolbitEngine.Input;
@@ -36,13 +35,14 @@ int main(void)
 	ComponentManager::Regist<Transform2D>("Transform2D");
 	ComponentManager::Regist<RigidBody2D>("RigidBody2D");
 	ComponentManager::Regist<BoxCollider2D>("BoxCollider2D");
+	ComponentManager::Regist<CapsuleCollider2D>("CapsuleCollider2D");
 	ComponentManager::Regist<PixelPerfectCamera>("PixelPerfectCamera");
 	ComponentManager::Regist<SpriteRenderer>("SpriteRenderer");
 	ComponentManager::Regist<TilemapRenderer>("TilemapRenderer");
 	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
 	ComponentManager::Regist<ParallexBackground>("ParallexBackground");
 	ComponentManager::Regist<Animation>("Animation");
-
+	
 	// Initialize Renderer
 	Renderer::Initialize();
 
@@ -191,7 +191,7 @@ int main(void)
 			int k = std::rand();
 			if (k % 1 == 0)
 			{
-				Tile* tile = new Tile(IVector2{ x - (XN / 2), y - (YN + 3) });
+				Tile* tile = new Tile(IVector2{ x - (XN / 2), y - (YN + 15) });
 				gameObjects.push_back(tile);
 			}
 		}
@@ -209,8 +209,6 @@ int main(void)
 
 	// Initialize Phyiscs
 	Physics2D::Initialize();
-	CollisionListener2D* collisionListener = new CollisionListener2D;
-	Physics2D::GetInstance()->RegistContactListener(collisionListener);
 	for (auto obj : gameObjects)
 	{
 		Physics2D::GetInstance()->AddBody(*obj);
@@ -253,7 +251,7 @@ int main(void)
 
 		// Physics
 		fixedUpdateTime += dt;
-		if (fixedUpdateTime >= 1.0f / 120.0f)
+		if (dt >= 1.0f / 60.0f)
 		{
 			for (auto obj : gameObjects)
 			{
@@ -264,7 +262,7 @@ int main(void)
 			{
 				Physics2D::GetInstance()->ApplyToSBBody(*obj);
 			}
-			fixedUpdateTime -= 1.0f / 120.0f;
+			fixedUpdateTime -= 1.0f / 60.0f;
 		}
 
 		// Input
@@ -293,7 +291,6 @@ int main(void)
 		{
 			AnimationSys.Execute(obj->GetEntity());
 		}
-
 
 		// Render
 		Renderer::GetInstance()->SetRTTexture("ParallexBackground");

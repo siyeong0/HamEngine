@@ -1,28 +1,55 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#undef main
-int main(int argc, char* args[]) {
-    SDL_Init(SDL_INIT_AUDIO);
+#include <box2d\box2d.h>
+#include <iostream>
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        fprintf(stderr, "Failed to initialize SDL_mixer: %s\n", Mix_GetError());
-        exit(1);
-    }
 
-    Mix_Music* music = Mix_LoadMUS("../Resource/Audio/Peaceful.mp3");
-    if (music == NULL) {
-        fprintf(stderr, "Failed to load MP3 file: %s\n", Mix_GetError());
-        exit(1);
-    }
+int main(int argc, char* args[]) 
+{
+	b2WorldDef worldDef = b2DefaultWorldDef();
+	worldDef.gravity = { 0.0f, -10.0f };
+	b2WorldId worldId = b2CreateWorld(&worldDef);
 
-    Mix_PlayMusic(music, 1);
-    
-    SDL_Delay(5000); // Wait for 5 seconds to play the entire MP3 file
+	b2BodyDef groundBodyDef = b2DefaultBodyDef();
+	groundBodyDef.position = { 0.0f, -10.0f };
+	b2BodyId groundId = b2CreateBody(worldId, &groundBodyDef);
 
-    Mix_PauseMusic();
+	b2Polygon groundBox = b2MakeBox(50.0f, 10.0f);
+	b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+	b2CreatePolygonShape(groundId, &groundShapeDef, &groundBox);
 
-    Mix_CloseAudio();
-    SDL_Quit();
+	b2BodyDef bodyDef = b2DefaultBodyDef();
+	bodyDef.type = b2_dynamicBody;
+	bodyDef.position = { 0.0f, 4.0f };
+	b2BodyId bodyId = b2CreateBody(worldId, &bodyDef);
 
-    return 0;
+	b2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f);
+
+	b2ShapeDef shapeDef = b2DefaultShapeDef();
+	shapeDef.density = 1.0f;
+	shapeDef.friction = 0.3f;
+	shapeDef.enableContactEvents = true;
+	shapeDef.enableHitEvents = true;
+
+	b2CreatePolygonShape(bodyId, &shapeDef, &dynamicBox);
+
+	float timeStep = 1.0f / 60.0f;
+	int subStepCount = 4;
+
+	for (int i = 0; i < 90; ++i)
+	{
+		b2World_Step(worldId, timeStep, subStepCount);
+		b2Vec2 position = b2Body_GetPosition(bodyId);
+		b2Rot rotation = b2Body_GetRotation(bodyId);
+		printf("%4.2f %4.2f %4.2f\n", position.x, position.y, b2Rot_GetAngle(rotation));
+
+		b2ContactEvents contactEvents = b2World_GetContactEvents(worldId);
+		for (int i = 0; i < contactEvents.beginCount; ++i)
+		{
+			b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;
+		}
+
+		for (int i = 0; i < contactEvents.hitCount; ++i)
+		{
+			b2ContactHitEvent* hitEvent = contactEvents.hitEvents + i;
+		}
+	}
 }

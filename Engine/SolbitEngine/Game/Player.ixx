@@ -22,7 +22,7 @@ export namespace solbit
 		virtual void Update(FLOAT dt) override;
 		virtual void LateUpdate(FLOAT dt) override;
 		virtual void OnCollisionEnter(Collision2D& collision) override;
-		virtual void OnCollisionExit(Collision2D& collision) override;
+		virtual void OnCollisionExit(GameObject* other) override;
 		virtual void OnDestroy() override;
 	private:
 		bool mbOnGround;
@@ -104,6 +104,7 @@ namespace solbit
 			rigidbody.Velocity.Y += 10.0f;
 			Audio::GetInstance()->Play(SName("jump"));
 		}
+		std::cout << mbOnGround << std::endl;
 	}
 
 	void Player::LateUpdate(FLOAT dt)
@@ -113,15 +114,15 @@ namespace solbit
 
 	void Player::OnCollisionEnter(Collision2D& collision)
 	{
-		if (std::fabs(collision.ContactNormal.Dot(FVector2{ 0.0f, 1.0f })) > std::cosf(PI / 4.f))
+		if (collision.ContactPoint.Y < GetComponent<Transform2D>().Position.Y)
 		{
 			mbOnGround = true;
 		}
 	}
 
-	void Player::OnCollisionExit(Collision2D& collision)
+	void Player::OnCollisionExit(GameObject* other)
 	{
-		mbOnGround = false;
+		mbOnGround = mbOnGround;
 	}
 
 	void Player::OnDestroy()

@@ -25,7 +25,6 @@ export namespace solbit
 		inline FLOAT Magnitude() const;
 		inline FLOAT SqrMagnitude() const;
 		inline FLOAT Length() const;
-		inline IVector2 Normalize() const;
 		inline void Rotate(FLOAT rad);
 
 		inline IVector2 operator+=(const IVector2& other);
@@ -88,11 +87,6 @@ namespace solbit
 	inline FLOAT IVector2::Length() const
 	{
 		return SqrMagnitude();
-	}
-
-	inline IVector2 IVector2::Normalize() const
-	{
-		return *this / static_cast<int>(Length());
 	}
 
 	inline void IVector2::Rotate(FLOAT rad)

@@ -1,7 +1,5 @@
 module;
 
-#include <box2d\box2d.h>
-
 import Common;
 import Math;
 import SolbitEngine.Resource.Sprite;

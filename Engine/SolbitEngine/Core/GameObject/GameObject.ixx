@@ -21,7 +21,7 @@ export namespace solbit
 		virtual void Update(FLOAT dt);
 		virtual void LateUpdate(FLOAT dt);
 		virtual void OnCollisionEnter(Collision2D& collision);
-		virtual void OnCollisionExit(Collision2D& collision);
+		virtual void OnCollisionExit(GameObject* other);
 		virtual void OnDestroy();
 
 		template <typename T>
@@ -86,7 +86,7 @@ namespace solbit
 
 	}
 
-	void GameObject::OnCollisionExit(Collision2D& collision)
+	void GameObject::OnCollisionExit(GameObject* other)
 	{
 
 	}
