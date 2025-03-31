@@ -70,5 +70,9 @@
     <ClCompile Include="SolbitEngine\Core\Component\2D\ParallexBackground.ixx" />
     <ClCompile Include="SolbitEngine\Game\Background.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Render\ParallexBackgroundSys.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Component\2D\Animation.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Resource\AnimationData.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Resource\AnimtationManager.ixx" />
+    <ClCompile Include="SolbitEngine\Core\System\Animation\AnimationSystem.ixx" />
   </ItemGroup>
 </Project>

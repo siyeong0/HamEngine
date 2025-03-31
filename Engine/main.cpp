@@ -17,6 +17,7 @@ import SolbitEngine.System.RigidbodyPhysicsSystem;
 import SolbitEngine.System.PixelPerfectTilemapRenderSystem;
 import SolbitEngine.System.PositionConstraintSystem;
 import SolbitEngine.System.ParallexBackgroundSys;
+import SolbitEngine.System.AnimationSystem;
 
 import Game.Player;
 import Game.Tile;
@@ -39,6 +40,7 @@ int main(void)
 	ComponentManager::Regist<TilemapRenderer>("TilemapRenderer");
 	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
 	ComponentManager::Regist<ParallexBackground>("ParallexBackground");
+	ComponentManager::Regist<Animation>("Animation");
 
 	// Initialize Renderer
 	Renderer::Initialize();
@@ -105,6 +107,12 @@ int main(void)
 		ASSERT(false);
 		return 1;
 	}
+	if (!TextureManager::GetInstance()->Load(SName("dancing_rat"), "../Resource/Animation/DancingRat/dancing_rat.png"))
+	{
+		std::cout << "Image Load Failed." << std::endl;
+		ASSERT(false);
+		return 1;
+	}
 
 	const uint32 PPU = 16;
 	SpriteManager::Initialize();
@@ -113,6 +121,9 @@ int main(void)
 	SpriteManager::GetInstance()->Add(SName("stone"), Sprite(SName("stone"), IRectangle(0, 0, 16, 16), PPU));
 	SpriteManager::GetInstance()->Add(SName("dirt"), Sprite(SName("dirt"), IRectangle(0, 0, 16, 16), PPU));
 	SpriteManager::GetInstance()->Add(SName("tile_map"), Sprite(SName("tile_map"), IRectangle(16, 16, 16, 16), PPU));
+
+	AnimationDataManager::Initialize();
+	AnimationDataManager::GetInstance()->Load(SName("dancing_rat"), "path");
 
 	PhysicalMaterailManager::Initialize();
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
@@ -156,7 +167,7 @@ int main(void)
 
 	// Create Tilemap
 	int XN = 512;
-	int YN = 6;
+	int YN = 4;
 	for (int y = 0; y < YN; ++y)
 	{
 		for (int x = 0; x < XN; ++x)
@@ -171,10 +182,10 @@ int main(void)
 	}
 
 	// Create parallex background
-	Background bg0(SName("bgr_natural_0"), FVector2(0.1f, 0.1f));
-	Background bg1(SName("bgr_natural_1"), FVector2(0.2f, 0.2f));
-	Background bg2(SName("bgr_natural_2"), FVector2(0.3f, 0.3f));
-	Background bg3(SName("bgr_natural_3"), FVector2(0.8f, 0.8f));
+	Background bg0(SName("bgr_natural_0"), FVector2(0.0f, 0.0f));
+	Background bg1(SName("bgr_natural_1"), FVector2(0.1f, 0.0f));
+	Background bg2(SName("bgr_natural_2"), FVector2(0.2f, 0.0f));
+	Background bg3(SName("bgr_natural_3"), FVector2(0.7f, 0.0f));
 	gameObjects.push_back(&bg0);
 	gameObjects.push_back(&bg1);
 	gameObjects.push_back(&bg2);
@@ -198,6 +209,7 @@ int main(void)
 	RigidbodyPhysicsSystem RigidBodyPhysicsSys;
 	PositionConstraintSystem PosConstraintSys;
 	ParallexBackgroundSys BackgroundSys;
+	AnimationSystem AnimationSys;
 
 	// Object Start
 	for (auto obj : gameObjects)
@@ -255,6 +267,12 @@ int main(void)
 		for (auto obj : gameObjects)
 		{
 			PosConstraintSys.Execute(obj->GetEntity());
+		}
+
+		// Animation
+		for (auto obj : gameObjects)
+		{
+			AnimationSys.Execute(obj->GetEntity());
 		}
 
 

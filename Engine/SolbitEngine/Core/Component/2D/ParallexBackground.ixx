@@ -11,14 +11,10 @@ export namespace solbit
 	{
 		ID TexId;
 		FVector2 EffectValue;
-		bool FreezeX;
-		bool FreezeY;
 
 		ParallexBackground()
 			: TexId(0)
 			, EffectValue({ 0.0f, 0.0f })
-			, FreezeX(false)
-			, FreezeY(true)
 		{
 
 		}

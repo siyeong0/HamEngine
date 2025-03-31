@@ -110,8 +110,12 @@ namespace solbit
 
 	inline ID Archetype::GetId() const
 	{
+		// TODO: optimization
 		uint32 hash = 0;
-		for (auto v : mSet)
+		Vector<int> sorted(mSet.begin(), mSet.end()); // Á¤·Ä
+		std::sort(sorted.begin(), sorted.end());
+
+		for (auto v : sorted)
 		{
 			hash = 65599 * hash + v;
 		}

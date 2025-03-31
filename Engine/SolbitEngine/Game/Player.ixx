@@ -37,11 +37,13 @@ namespace solbit
 		AddComponent<RigidBody2D>();
 		AddComponent<BoxCollider2D>();
 		AddComponent<SpriteRenderer>();
+		AddComponent<Animation>();
 
 		Transform2D& transform = GetComponent<Transform2D>();
 		RigidBody2D& rigidBody = GetComponent<RigidBody2D>();
 		BoxCollider2D& boxCollider = GetComponent<BoxCollider2D>();
 		SpriteRenderer& spriteRenderer = GetComponent<SpriteRenderer>();
+		Animation& animation = GetComponent<Animation>();
 
 		transform.Position = { 0.0f, 0.0f };
 		transform.Rotation = 0.f;
@@ -52,10 +54,11 @@ namespace solbit
 		rigidBody.GravityScale = 1.f;
 		rigidBody.PhysicMaterialId = SName("player");
 
-		const Sprite& sprite = SpriteManager::GetInstance()->Get(SName("glorp"));
+		const Sprite& sprite = SpriteManager::GetInstance()->Get(SName("dancing_rat_0"));
 		boxCollider.MatchSprite(sprite);
 
-		spriteRenderer.SpriteTexId = SName("glorp");
+		spriteRenderer.SpriteTexId = SName("dancing_rat_0");
+		animation.AnimId = SName("dancing_rat");
 	}
 
 	void Player::Start()
