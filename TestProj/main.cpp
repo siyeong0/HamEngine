@@ -1,16 +1,28 @@
-#include <iostream>
-#include <chrono>
-#include <cmath>
-int main(void)
-{
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#undef main
+int main(int argc, char* args[]) {
+    SDL_Init(SDL_INIT_AUDIO);
 
-    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-    int sum = 0;
-    for (int i = 0; i < 999999999; i++)
-        sum += i;
-    std::chrono::duration<double>sec = std::chrono::system_clock::now() - start;
-    std::cout << "for문을 돌리는데 걸리는 시간(초) : " << sec.count() << "seconds" << std::endl;
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        fprintf(stderr, "Failed to initialize SDL_mixer: %s\n", Mix_GetError());
+        exit(1);
+    }
 
+    Mix_Music* music = Mix_LoadMUS("../Resource/Audio/Peaceful.mp3");
+    if (music == NULL) {
+        fprintf(stderr, "Failed to load MP3 file: %s\n", Mix_GetError());
+        exit(1);
+    }
 
+    Mix_PlayMusic(music, 1);
+    
+    SDL_Delay(5000); // Wait for 5 seconds to play the entire MP3 file
 
+    Mix_PauseMusic();
+
+    Mix_CloseAudio();
+    SDL_Quit();
+
+    return 0;
 }

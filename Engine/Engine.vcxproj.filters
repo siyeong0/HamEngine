@@ -74,5 +74,11 @@
     <ClCompile Include="SolbitEngine\Core\Resource\AnimationData.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AnimtationManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\System\Animation\AnimationSystem.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Component\Sound\AudioSource.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Resource\AudioData.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Resource\AudioDataManager.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Audio\Audio.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Resource\MusicData.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Resource\MusicDataManager.ixx" />
   </ItemGroup>
 </Project>

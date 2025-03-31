@@ -8,6 +8,7 @@ import SolbitEngine.Time;
 import SolbitEngine.Renderer;
 import SolbitEngine.Physics2D;
 import SolbitEngine.Physics2D.CollisionListener2D;
+import SolbitEngine.Audio;
 import SolbitEngine.Resource;
 import SolbitEngine.Input;
 import SolbitEngine.GameObject;
@@ -41,9 +42,13 @@ int main(void)
 	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
 	ComponentManager::Regist<ParallexBackground>("ParallexBackground");
 	ComponentManager::Regist<Animation>("Animation");
+	ComponentManager::Regist<AudioSource>("AudioSource");
 
 	// Initialize Renderer
 	Renderer::Initialize();
+
+	// Initialize Audio
+	Audio::Initialize();
 
 	// Initialize ResourceManager
 	TextureManager::Initialize(Renderer::GetInstance()->GetRenderer());
@@ -125,6 +130,12 @@ int main(void)
 	AnimationDataManager::Initialize();
 	AnimationDataManager::GetInstance()->Load(SName("dancing_rat"), "path");
 
+	MusicDataManager::Initialize();
+	MusicDataManager::GetInstance()->Load(SName("peaceful"), "../Resource/Music/Peaceful.mp3");
+
+	AudioDataManager::Initialize();
+	AudioDataManager::GetInstance()->Load(SName("jump"), "../Resource/Audio/jump.wav");
+
 	PhysicalMaterailManager::Initialize();
 	PhysicalMaterailManager::GetInstance()->Add(DEFAULT_ID, PhysicalMaterial());
 	PhysicalMaterailManager::GetInstance()->Add(SName("stone"), PhysicalMaterial(2.f, 1.0f, 0.0f));
@@ -167,7 +178,7 @@ int main(void)
 
 	// Create Tilemap
 	int XN = 512;
-	int YN = 4;
+	int YN = 5;
 	for (int y = 0; y < YN; ++y)
 	{
 		for (int x = 0; x < XN; ++x)
@@ -202,7 +213,10 @@ int main(void)
 
 	// Set pixel perfect render target
 	Renderer::GetInstance()->AddRTTexture("PixelPerfect", mainCamera.GetComponent<PixelPerfectCamera>().RefResoulution);
-	Renderer::GetInstance()->AddRTTexture("ParallexBackground", {1920, 1080});
+	Renderer::GetInstance()->AddRTTexture("ParallexBackground", { 1920, 1080 });
+
+	// Play background music
+	Audio::GetInstance()->PlayMusic(MusicDataManager::GetInstance()->Get(SName("peaceful")));
 
 	// System set up
 	PixelPerfectSpriteRenderSystem SpriteRenderSys;
