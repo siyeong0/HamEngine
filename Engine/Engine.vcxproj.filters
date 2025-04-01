@@ -79,5 +79,6 @@
     <ClCompile Include="SolbitEngine\Core\Resource\MusicData.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\MusicDataManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\CapsuleCollider2D.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Physics\2D\PhysWorld2D.ixx" />
   </ItemGroup>
 </Project>

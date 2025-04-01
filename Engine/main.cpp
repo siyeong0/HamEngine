@@ -7,6 +7,7 @@ import SolbitSTL;
 import SolbitEngine.Time;
 import SolbitEngine.Renderer;
 import SolbitEngine.Physics2D;
+import SolbitEngine.PhysWorld2D;
 import SolbitEngine.Audio;
 import SolbitEngine.Resource;
 import SolbitEngine.Input;
@@ -42,7 +43,7 @@ int main(void)
 	ComponentManager::Regist<PositionConstraint>("PositionConstraint");
 	ComponentManager::Regist<ParallexBackground>("ParallexBackground");
 	ComponentManager::Regist<Animation>("Animation");
-	
+
 	// Initialize Renderer
 	Renderer::Initialize();
 
@@ -208,10 +209,10 @@ int main(void)
 	gameObjects.push_back(&bg3);
 
 	// Initialize Phyiscs
-	Physics2D::Initialize();
+	PhysWorld2D physWorld;
 	for (auto obj : gameObjects)
 	{
-		Physics2D::GetInstance()->AddBody(*obj);
+		physWorld.AddBody(*obj);
 	}
 
 	// Set pixel perfect render target
@@ -255,12 +256,12 @@ int main(void)
 		{
 			for (auto obj : gameObjects)
 			{
-				Physics2D::GetInstance()->ApplyToB2Body(*obj);
+				physWorld.ApplyToB2Body(*obj);
 			}
-			Physics2D::GetInstance()->Update(dt);
+			physWorld.Update(dt);
 			for (auto obj : gameObjects)
 			{
-				Physics2D::GetInstance()->ApplyToSBBody(*obj);
+				physWorld.ApplyToSBBody(*obj);
 			}
 			fixedUpdateTime -= 1.0f / 60.0f;
 		}
@@ -317,7 +318,6 @@ int main(void)
 
 	Input::Finalize();
 	Renderer::Finalize();
-	Physics2D::Finalize();
 	ComponentManager::Finalize();
 	return 0;
 }

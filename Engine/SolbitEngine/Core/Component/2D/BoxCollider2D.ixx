@@ -12,10 +12,13 @@ export namespace solbit
 	{
 		FVector2 Size;
 		FVector2 Offset;
+		FLOAT Rounded;
+		bool EdgeGhost;
 
 		BoxCollider2D()
-			: Size({ 1.f, 1.f })
-			, Offset({ 0.f, 0.f })
+			: Size({ 1.0f, 1.0f })
+			, Offset({ 0.0f, 0.0f })
+			, Rounded(0.0f)
 		{
 
 		}

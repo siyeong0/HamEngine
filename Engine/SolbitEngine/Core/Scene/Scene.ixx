@@ -3,6 +3,7 @@ module;
 import Common;
 import Memory;
 import SolbitEngine.GameObject;
+import SolbitEngine.PhysWorld2D;
 
 export module SolbitEngine.Scene;
 

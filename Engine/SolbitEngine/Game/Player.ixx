@@ -12,10 +12,11 @@ export module Game.Player;
 
 export namespace solbit
 {
-	class Player final : public GameObject
+	class Player : public GameObject
 	{
 	public:
 		Player(const String& name);
+		virtual ~Player() = default;
 
 		virtual void Start() override;
 		virtual void FixedUpdate() override;
@@ -88,16 +89,24 @@ namespace solbit
 		}
 		if (Input::GetInstance()->GetButtonPressed(SName("MouseRight")))
 		{
-			
+
 		}
 
 		if (Input::GetInstance()->GetButtonState(SName("MoveLeft")))
 		{
 			rigidbody.Velocity.X = -5.0f;
 		}
+		if (Input::GetInstance()->GetButtonReleased(SName("MoveLeft")))
+		{
+			rigidbody.Velocity.X = 0.0f;
+		}
 		if (Input::GetInstance()->GetButtonState(SName("MoveRight")))
 		{
 			rigidbody.Velocity.X = 5.0f;
+		}
+		if (Input::GetInstance()->GetButtonReleased(SName("MoveRight")))
+		{
+			rigidbody.Velocity.X = 0.0f;
 		}
 		if (mbOnGround && Input::GetInstance()->GetButtonPressed(SName("Jump")))
 		{
@@ -122,7 +131,7 @@ namespace solbit
 
 	void Player::OnCollisionExit(GameObject* other)
 	{
-		mbOnGround = mbOnGround;
+		mbOnGround = false;
 	}
 
 	void Player::OnDestroy()

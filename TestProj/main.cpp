@@ -1,7 +1,6 @@
 #include <box2d\box2d.h>
 #include <iostream>
 
-
 int main(int argc, char* args[]) 
 {
 	b2WorldDef worldDef = b2DefaultWorldDef();

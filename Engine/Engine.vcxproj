@@ -114,7 +114,7 @@
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>true</BuildStlModules>
@@ -139,7 +139,7 @@
       <PreprocessorDefinitions>
       </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <TranslateIncludes>true</TranslateIncludes>
       <BuildStlModules>true</BuildStlModules>
@@ -167,6 +167,7 @@
     <ClCompile Include="SolbitEngine\Core\Component\2D\PositionConstraint.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\Tilemap.ixx" />
     <ClCompile Include="SolbitEngine\Core\Component\2D\TilemapRenderer.ixx" />
+    <ClCompile Include="SolbitEngine\Core\Physics\2D\PhysWorld2D.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AnimationData.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AnimtationManager.ixx" />
     <ClCompile Include="SolbitEngine\Core\Resource\AudioData.ixx" />
